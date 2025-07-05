@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "../../../styles/Flower.module.css";
 
+
 const Flower: React.FC = () => (
   <div className={styles.container}>
     <div className="night"></div>
