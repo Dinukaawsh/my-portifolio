@@ -9,7 +9,6 @@ import Blog from "./components/pages/blog";
 import Experience from "./components/pages/experience";
 import Skills from "./components/pages/skills";
 import Education from "./components/pages/education";
-import Footer from "./components/layouts/footer/Footer";
 
 const sections = [
   { key: "about", label: "About", Component: About },
@@ -25,15 +24,14 @@ const sections = [
 function Preloader({ onDone }: { onDone: () => void }) {
   const name = "DINUKA ASHAN WICKRAMARATHNA";
   const [displayed, setDisplayed] = useState("");
-  const [done, setDone] = useState(false);
   const [clock, setClock] = useState("");
 
   useEffect(() => {
     function showTime() {
       const date = new Date();
       let h = date.getHours();
-      let m = date.getMinutes();
-      let s = date.getSeconds();
+      const m = date.getMinutes();
+      const s = date.getSeconds();
       let session = "AM";
       if (h === 0) h = 12;
       if (h > 12) {
@@ -58,7 +56,7 @@ function Preloader({ onDone }: { onDone: () => void }) {
       }, 120);
     } else {
       timeout = setTimeout(() => {
-        setDone(true);
+        onDone();
         setTimeout(onDone, 700); // short pause before showing main app
       }, 900);
     }

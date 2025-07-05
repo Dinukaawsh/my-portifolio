@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import GlobeBackground from "@/app/components/backgrounds/globe/GlobeBackground";
+import Image from "next/image";
 
 const roles = [
   "Full Stack Developer",
@@ -142,7 +143,6 @@ export default function About() {
   // Typing animation for code block
   const codePrefix = "const developer = [";
   const codeSuffix = "];";
-  const [codeIndex, setCodeIndex] = useState(0);
   const [codeDisplayed, setCodeDisplayed] = useState("");
   const [codeTyping, setCodeTyping] = useState(true);
   const [codeArrayIndex, setCodeArrayIndex] = useState(0);
@@ -188,9 +188,11 @@ export default function About() {
         tabIndex={0}
         aria-label="About Dinuka Ashan"
       >
-        <img
+        <Image
           src="https://randomuser.me/api/portraits/men/32.jpg"
           alt="Dinuka Ashan profile"
+          width={96}
+          height={96}
           className="w-24 h-24 sm:w-32 sm:h-32 rounded-full shadow-lg mb-4 border-4 border-blue-500 object-cover"
         />
         <h2 className="text-2xl sm:text-4xl font-extrabold mb-1 tracking-tight text-gray-900 dark:text-white">
@@ -313,7 +315,7 @@ export default function About() {
             <br />
             {roles.map((role, i) => (
               <span key={role} className="block pl-6">
-                <span className="text-yellow-400"> "</span>
+                <span className="text-yellow-400">&quot;</span>
                 <span className="text-blue-400">
                   {i < codeArrayIndex
                     ? role
@@ -324,7 +326,7 @@ export default function About() {
                     <span className="border-r-2 border-blue-400 animate-pulse" />
                   )}
                 </span>
-                <span className="text-yellow-400">"</span>
+                <span className="text-yellow-400">&quot;</span>
                 <span className="text-white">
                   {i < roles.length - 1 ? "," : ""}
                 </span>

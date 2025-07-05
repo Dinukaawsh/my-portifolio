@@ -40,7 +40,7 @@ const Footer: React.FC = () => (
       reserved.
     </div>
     <div className="text-xs text-gray-400">
-      "Building dreams, one line of code at a time."
+      &quot;Building dreams, one line of code at a time.&quot;
     </div>
   </footer>
 );

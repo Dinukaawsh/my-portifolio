@@ -7,11 +7,11 @@ export default function GlobeBackground() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    let ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
     let width = canvas.offsetWidth;
     let height = canvas.offsetHeight;
     let animationId: number;
-    let resizeTimeout: any;
+    let resizeTimeout: number;
 
     // Device pixel ratio support
     function setCanvasSize() {
@@ -31,7 +31,7 @@ export default function GlobeBackground() {
 
     // Globe variables
     let rotation = 0;
-    let dots: any[] = [];
+    const dots: Dot[] = [];
     const DOTS_AMOUNT = 3000;
     const DOT_RADIUS = 2.5;
     let GLOBE_RADIUS = width * 0.7;
@@ -119,7 +119,7 @@ export default function GlobeBackground() {
     }
 
     function onResize() {
-      resizeTimeout = window.clearTimeout(resizeTimeout);
+      window.clearTimeout(resizeTimeout);
       resizeTimeout = window.setTimeout(afterResize, 500);
     }
 
