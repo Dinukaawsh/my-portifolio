@@ -10,6 +10,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { sendDiscordNotification } from "@/lib/discord";
 
 interface Comment {
   id: string;
@@ -60,6 +61,19 @@ export default function Contact() {
       await fetchComments(); // Refresh comments
       setFormData({ name: "", email: "", message: "" });
       setSubmitted(true);
+
+      // Send Discord notification for new comment
+      await sendDiscordNotification({
+        type: "comment",
+        data: {
+          comment: {
+            name: commentData.name,
+            email: commentData.email,
+            message: commentData.message,
+            timestamp: new Date().toLocaleString(),
+          },
+        },
+      });
     } catch (error) {
       console.error("Error adding comment:", error);
     } finally {

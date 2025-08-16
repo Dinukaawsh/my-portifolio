@@ -65,10 +65,12 @@ function Preloader({ onDone }: { onDone: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gray-950 text-white transition-opacity duration-700 min-h-screen p-4">
       <div
-        className="clock absolute top-2 sm:top-4 md:top-6 left-1/2 transform -translate-x-1/2 text-blue-400 font-mono"
+        className="clock absolute top-2 sm:top-4 md:top-6 left-0 right-0 mx-auto text-center text-blue-400 font-mono"
         style={{
           fontSize: "clamp(20px, 5vw, 48px)",
           letterSpacing: "clamp(1px, 0.8vw, 7px)",
+          width: "fit-content",
+          maxWidth: "100%",
         }}
         id="MyClockDisplay"
       >

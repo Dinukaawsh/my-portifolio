@@ -169,7 +169,7 @@ function PerformanceMonitor() {
   if (process.env.NODE_ENV !== "development") return null;
 
   return (
-    <div className="fixed top-20 right-4 z-50 bg-black/80 text-white px-2 py-1 rounded text-xs font-mono">
+    <div className="fixed top-24 right-4 z-50 bg-black/80 text-white px-2 py-1 rounded text-xs font-mono">
       FPS: {fps}
     </div>
   );
@@ -290,15 +290,18 @@ export default function About() {
   return (
     <section
       ref={sectionRef}
-      className="w-full h-full relative flex flex-col items-center justify-center lg:justify-start overflow-hidden px-2 sm:px-4 py-4 sm:py-8 lg:py-12"
+      className="w-full h-full relative flex flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
     >
-      <GlobeBackground />
-      <AnimatedJets />
+      {/* Fixed Background Components */}
+      <div className="fixed inset-0 z-0">
+        <GlobeBackground />
+        <AnimatedJets />
+      </div>
       <PerformanceMonitor />
 
       {/* Main Content Container */}
       <Suspense fallback={<ProfileSkeleton />}>
-        <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center lg:items-start gap-6 sm:gap-8 lg:gap-12">
+        <div className="relative z-10 w-full max-w-7xl mx-auto pb-16 flex flex-col lg:flex-row items-center lg:items-start gap-6 sm:gap-8 lg:gap-12">
           {/* Glassmorphism Card - Left Side on Desktop */}
           <div
             className={`relative z-10 w-full max-w-lg sm:max-w-xl lg:max-w-md xl:max-w-lg mx-auto lg:mx-0 p-4 sm:p-6 lg:p-6 xl:p-8 rounded-3xl shadow-2xl border border-blue-500/30 bg-gradient-to-br from-gray-900/80 via-blue-900/40 to-gray-900/80 backdrop-blur-xl flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-700 ${
@@ -317,6 +320,10 @@ export default function About() {
                 priority
                 className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-full shadow-lg border-4 border-blue-500 object-cover"
               />
+              {/* Floating Achievement Badge */}
+              <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-bounce">
+                ⭐ Full-Stack
+              </div>
             </div>
 
             {/* Name and Title */}
@@ -324,8 +331,10 @@ export default function About() {
               Dinuka Ashan
             </h2>
             <h3 className="text-sm sm:text-base md:text-lg lg:text-xl text-blue-400 font-semibold mb-4 min-h-[1.5rem] sm:min-h-[2rem] md:min-h-[2.5rem] flex items-center justify-center">
-              {displayed}
-              <span className="border-r-2 border-blue-400 animate-pulse ml-1" />
+              <span className="relative">
+                {displayed}
+                <span className="border-r-2 border-blue-400 animate-pulse ml-1 inline-block h-full" />
+              </span>
             </h3>
 
             {/* Description */}
@@ -348,7 +357,7 @@ export default function About() {
                   skills.map((skill) => (
                     <span
                       key={skill}
-                      className="px-2 sm:px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-semibold shadow-sm hover:scale-105 hover:bg-blue-500/30 transition-all duration-200 border border-blue-500/30"
+                      className="px-2 sm:px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-semibold shadow-sm hover:scale-105 hover:bg-blue-500/30 transition-all duration-200 border border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/25"
                     >
                       {skill}
                     </span>
@@ -357,8 +366,56 @@ export default function About() {
               )}
             </div>
 
+            {/* Desktop-only: Tech Stack Visualization */}
+            <div className="hidden lg:block mb-4 sm:mb-6">
+              <div className="bg-gradient-to-br from-gray-900/40 via-blue-900/20 to-gray-900/40 backdrop-blur-xl rounded-xl p-3 border border-blue-500/20">
+                <div className="text-center text-xs text-blue-300 mb-2">
+                  Tech Stack
+                </div>
+                <div className="flex justify-center">
+                  <div className="relative">
+                    {/* Frontend Layer */}
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-lg border border-blue-400/50 flex items-center justify-center text-xs text-white font-bold mb-2">
+                      Front
+                    </div>
+                    {/* Backend Layer */}
+                    <div className="w-12 h-12 bg-gradient-to-br from-green-500/30 to-emerald-500/30 rounded-lg border border-green-400/50 flex items-center justify-center text-xs text-white font-bold mb-2 ml-2">
+                      Back
+                    </div>
+                    {/* Database Layer */}
+                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500/30 to-red-500/30 rounded-lg border border-orange-400/50 flex items-center justify-center text-xs text-white font-bold ml-4">
+                      DB
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Typing Progress Indicator */}
+            <div className="w-full mb-4 sm:mb-6">
+              <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+                <span>Typing Progress</span>
+                <span>
+                  {Math.round(
+                    (displayed.length / roles[roleIndex].length) * 100
+                  )}
+                  %
+                </span>
+              </div>
+              <div className="w-full bg-white/10 rounded-full h-2">
+                <div
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300 ease-out"
+                  style={{
+                    width: `${
+                      (displayed.length / roles[roleIndex].length) * 100
+                    }%`,
+                  }}
+                />
+              </div>
+            </div>
+
             {/* Contact Info */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start items-center mb-4 sm:mb-6 w-full">
+            <div className="flex flex-col gap-3 justify-center lg:justify-start items-center lg:items-start mb-4 sm:mb-6 w-full">
               <span className="flex items-center gap-2 text-gray-300 text-xs sm:text-sm">
                 <svg
                   className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 flex-shrink-0"
@@ -375,9 +432,12 @@ export default function About() {
                 </svg>
                 <span className="truncate">Colombo, Sri Lanka</span>
               </span>
-              <span className="flex items-center gap-2 text-gray-300 text-xs sm:text-sm">
+              <a
+                href="mailto:dinukaaw.sh2@gmail.com"
+                className="flex items-center gap-2 text-gray-300 text-xs sm:text-sm hover:text-blue-400 transition-colors duration-200 group"
+              >
                 <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 flex-shrink-0"
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 flex-shrink-0 group-hover:text-blue-300 transition-colors duration-200"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -386,11 +446,13 @@ export default function About() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M16 12a4 4 0 01-8 0m8 0a4 4 0 00-8 0m8 0V8a4 4 0 00-8 0v4m8 0v4a4 4 0 01-8 0v-4"
+                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                   />
                 </svg>
-                <span className="truncate">dinuka.ashan@email.com</span>
-              </span>
+                <span className="truncate group-hover:text-blue-300 transition-colors duration-200">
+                  dinukaaw.sh2@gmail.com
+                </span>
+              </a>
             </div>
 
             {/* Download CV Button */}
@@ -438,7 +500,7 @@ export default function About() {
                 href="https://github.com/Dinukaawsh/Dinukaawsh"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group p-3 rounded-full bg-white/10 hover:bg-white/20 hover:scale-110 transition-all duration-200 border border-white/20"
+                className="group p-3 rounded-full bg-white/10 hover:scale-110 transition-all duration-200 border border-white/20"
                 aria-label="GitHub"
               >
                 <svg
@@ -452,8 +514,70 @@ export default function About() {
             </div>
           </div>
 
+          {/* Desktop-only: Timeline Section */}
+          <div className="hidden lg:block w-full max-w-md mx-auto lg:mx-0 mt-6">
+            <div className="bg-gradient-to-br from-gray-900/60 via-blue-900/20 to-gray-900/60 backdrop-blur-xl rounded-2xl p-4 border border-blue-500/30 shadow-lg shadow-blue-500/20">
+              <h4 className="text-sm font-semibold text-blue-300 mb-3 flex items-center gap-2">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                Journey Timeline
+              </h4>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
+                  <div>
+                    <div className="text-white text-sm font-medium">
+                      2021 - Present
+                    </div>
+                    <div className="text-gray-400 text-xs">
+                      ESOFT Metro Campus
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0" />
+                  <div>
+                    <div className="text-white text-sm font-medium">
+                      2025 - Present
+                    </div>
+                    <div className="text-gray-400 text-xs">Twist Digital</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
+                  <div>
+                    <div className="text-white text-sm font-medium">Future</div>
+                    <div className="text-gray-400 text-xs">
+                      Senior Developer
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Animated JS code block with editor bar - Right Side on Desktop */}
           <div className="relative z-10 w-full max-w-full sm:max-w-xl lg:max-w-lg xl:max-w-xl mx-auto lg:mx-0">
+            {/* Floating Stats Card */}
+            <div className="absolute -top-4 -right-4 z-20 bg-gradient-to-br from-gray-900/90 via-blue-900/40 to-gray-900/90 backdrop-blur-xl rounded-2xl p-3 border border-blue-500/30 shadow-2xl shadow-blue-500/20">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-400">
+                  {roles.length}
+                </div>
+                <div className="text-xs text-gray-300">Roles</div>
+              </div>
+            </div>
             <div className="w-full">
               {/* Editor top bar with lock and filename */}
               <div className="flex items-center gap-2 bg-gray-800/80 rounded-t-xl px-3 sm:px-4 py-2 border-b border-gray-700">
@@ -474,7 +598,7 @@ export default function About() {
                   developer.js
                 </span>
               </div>
-              <pre className="bg-gray-900/90 text-left rounded-b-xl shadow-lg p-3 sm:p-4 lg:p-4 xl:p-6 text-xs sm:text-sm font-mono text-gray-100 w-full overflow-x-auto border border-t-0 border-gray-800">
+              <pre className="bg-gray-900/90 text-left rounded-b-xl shadow-lg p-3 sm:p-4 lg:p-4 xl:p-6 text-xs sm:text-sm font-mono text-gray-100 w-full overflow-x-auto border border-t-0 border-gray-800 relative">
                 <span className="text-green-400">{codePrefix}</span>
                 <br />
                 {useMemo(
@@ -501,7 +625,77 @@ export default function About() {
                   [codeArrayIndex, codeDisplayed]
                 )}
                 <span className="text-green-400">{codeSuffix}</span>
+
+                {/* Code Animation Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/5 to-transparent animate-pulse pointer-events-none" />
               </pre>
+            </div>
+
+            {/* Desktop-only: Floating Achievements Section */}
+            <div className="hidden lg:block mt-6 space-y-4">
+              {/* Current Role Highlight */}
+              <div className="bg-gradient-to-br from-blue-900/40 via-purple-900/20 to-blue-900/40 backdrop-blur-xl rounded-2xl p-4 border border-blue-500/30 shadow-lg shadow-blue-500/20">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse" />
+                  <h4 className="text-sm font-semibold text-blue-300">
+                    Currently Typing
+                  </h4>
+                </div>
+                <p className="text-white text-lg font-mono">
+                  {roles[roleIndex]}
+                </p>
+                <div className="mt-2 text-xs text-gray-400">
+                  Role {roleIndex + 1} of {roles.length}
+                </div>
+              </div>
+
+              {/* Skills Progress */}
+              <div className="bg-gradient-to-br from-green-900/40 via-emerald-900/20 to-green-900/40 backdrop-blur-xl rounded-2xl p-4 border border-green-500/30 shadow-lg shadow-green-500/20">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
+                  <h4 className="text-sm font-semibold text-green-300">
+                    Top Skills
+                  </h4>
+                </div>
+                <div className="space-y-2">
+                  {skills.slice(0, 3).map((skill, index) => (
+                    <div
+                      key={skill}
+                      className="flex items-center justify-between"
+                    >
+                      <span className="text-white text-sm">{skill}</span>
+                      <div className="w-16 bg-white/10 rounded-full h-2">
+                        <div
+                          className="bg-gradient-to-r from-green-400 to-emerald-500 h-2 rounded-full transition-all duration-1000"
+                          style={{ width: `${85 + index * 5}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="bg-gradient-to-br from-purple-900/40 via-pink-900/20 to-purple-900/40 backdrop-blur-xl rounded-2xl p-4 border border-purple-500/30 shadow-lg shadow-purple-500/20">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse" />
+                  <h4 className="text-sm font-semibold text-purple-300">
+                    Quick Stats
+                  </h4>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-purple-400">
+                      {skills.length}
+                    </div>
+                    <div className="text-xs text-gray-400">Technologies</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-purple-400">3+</div>
+                    <div className="text-xs text-gray-400">Years Exp</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
