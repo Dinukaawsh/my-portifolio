@@ -3,22 +3,21 @@ import { useState, useEffect } from "react";
 import Navbar from "./components/layouts/navbar/Navbar";
 import About from "./components/pages/about";
 import Projects from "./components/pages/projects";
-import Resume from "./components/pages/resume";
 import Contact from "./components/pages/contact";
 import Blog from "./components/pages/blog";
 import Experience from "./components/pages/experience";
 import Skills from "./components/pages/skills";
 import Education from "./components/pages/education";
+import Horse from "./components/backgrounds/horse/Horse";
 
 const sections = [
   { key: "about", label: "About", Component: About },
+  { key: "skills", label: "Skills", Component: Skills },
   { key: "projects", label: "Projects", Component: Projects },
-  { key: "resume", label: "Resume", Component: Resume },
-  { key: "contact", label: "Contact", Component: Contact },
+  { key: "education", label: "Education", Component: Education },
   { key: "blog", label: "Blog", Component: Blog },
   { key: "experience", label: "Experience", Component: Experience },
-  { key: "skills", label: "Skills", Component: Skills },
-  { key: "education", label: "Education", Component: Education },
+  { key: "contact", label: "Contact", Component: Contact },
 ];
 
 function Preloader({ onDone }: { onDone: () => void }) {
@@ -66,25 +65,24 @@ function Preloader({ onDone }: { onDone: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gray-950 text-white transition-opacity duration-700 min-h-screen p-4">
       <div
-        className="clock"
+        className="clock absolute top-2 sm:top-4 md:top-6 left-1/2 transform -translate-x-1/2 text-blue-400 font-mono"
         style={{
-          position: "absolute",
-          top: 24,
-          left: "50%",
-          transform: "translateX(-50%)",
-          color: "#17D4FE",
-          fontSize: 48,
-          fontFamily: "Orbitron, monospace",
-          letterSpacing: 7,
+          fontSize: "clamp(20px, 5vw, 48px)",
+          letterSpacing: "clamp(1px, 0.8vw, 7px)",
         }}
         id="MyClockDisplay"
       >
         {clock}
       </div>
-      <h1 className="font-extrabold tracking-wide text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center break-words">
-        {displayed}
+      <h1 className="font-extrabold tracking-wide text-center break-words px-4 max-w-full">
+        <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
+          {displayed}
+        </span>
         <span className="border-r-2 border-blue-400 animate-pulse ml-1" />
       </h1>
+      <div className="mt-8 flex justify-center">
+        <Horse />
+      </div>
     </div>
   );
 }
