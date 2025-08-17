@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import Flower from "@/app/components/backgrounds/flower/Flower";
+import { motion, useScroll, useSpring } from "framer-motion";
 
 // Skills data organized by categories
 interface SkillItem {
@@ -82,8 +83,24 @@ export default function Skills() {
   const [progress, setProgress] = useState<Record<string, number[]>>({});
   const [isVisible, setIsVisible] = useState(false);
   const [slideDirection, setSlideDirection] = useState("right");
+  const [currentSkill, setCurrentSkill] = useState(0);
+  const [isAutoSliding, setIsAutoSliding] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const autoSlideRef = useRef<NodeJS.Timeout | null>(null);
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
+
+  // Skills rotation effect
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSkill((prev) => (prev + 1) % 4);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Initialize progress state
   useEffect(() => {
@@ -131,9 +148,9 @@ export default function Skills() {
     }
   }, [activeCategory]);
 
-  // Auto-sliding functionality with progress bar animation
+  // Simplified auto-sliding functionality with manual control
   useEffect(() => {
-    if (isVisible) {
+    if (isVisible && !autoSlideRef.current) {
       const startAutoSlide = () => {
         // First, animate the progress bars for current category
         animateProgress();
@@ -147,22 +164,92 @@ export default function Skills() {
             const nextIndex = (currentIndex + 1) % categories.length;
             return categories[nextIndex];
           });
-        }, 2500); // Wait 2.5 seconds (2s for progress + 0.5s buffer)
+        }, 5000); // Wait 5 seconds total
       };
 
       // Start the first cycle
       startAutoSlide();
 
-      // Set up recurring cycle
-      autoSlideRef.current = setInterval(startAutoSlide, 3000); // 3 second total cycle
+      // Set up recurring cycle - much slower for better user experience
+      autoSlideRef.current = setInterval(startAutoSlide, 8000); // 8 second total cycle
+      setIsAutoSliding(true);
     }
 
     return () => {
       if (autoSlideRef.current) {
         clearInterval(autoSlideRef.current);
+        setIsAutoSliding(false);
       }
     };
-  }, [isVisible, activeCategory, animateProgress]);
+  }, [isVisible, animateProgress]);
+
+  // Manual navigation functions
+  const goToNextCategory = useCallback(() => {
+    // Stop auto-sliding
+    if (autoSlideRef.current) {
+      clearInterval(autoSlideRef.current);
+      autoSlideRef.current = null;
+      setIsAutoSliding(false);
+    }
+
+    setSlideDirection("right");
+    setActiveCategory((prev) => {
+      const categories = Object.keys(skillsData);
+      const currentIndex = categories.indexOf(prev);
+      const nextIndex = (currentIndex + 1) % categories.length;
+      return categories[nextIndex];
+    });
+  }, []);
+
+  const goToPreviousCategory = useCallback(() => {
+    // Stop auto-sliding
+    if (autoSlideRef.current) {
+      clearInterval(autoSlideRef.current);
+      autoSlideRef.current = null;
+      setIsAutoSliding(false);
+    }
+
+    setSlideDirection("left");
+    setActiveCategory((prev) => {
+      const categories = Object.keys(skillsData);
+      const currentIndex = categories.indexOf(prev);
+      const prevIndex =
+        (currentIndex - 1 + categories.length) % categories.length;
+      return categories[prevIndex];
+    });
+  }, []);
+
+  const pauseAutoSlide = useCallback(() => {
+    if (autoSlideRef.current) {
+      clearInterval(autoSlideRef.current);
+      autoSlideRef.current = null;
+      setIsAutoSliding(false);
+    }
+  }, []);
+
+  const resumeAutoSlide = useCallback(() => {
+    if (!autoSlideRef.current && isVisible) {
+      const startAutoSlide = () => {
+        animateProgress();
+        setTimeout(() => {
+          setSlideDirection("right");
+          setActiveCategory((prev) => {
+            const categories = Object.keys(skillsData);
+            const currentIndex = categories.indexOf(prev);
+            const nextIndex = (currentIndex + 1) % categories.length;
+            return categories[nextIndex];
+          });
+        }, 5000);
+      };
+
+      // Start immediately
+      startAutoSlide();
+
+      // Then set up recurring cycle
+      autoSlideRef.current = setInterval(startAutoSlide, 8000);
+      setIsAutoSliding(true);
+    }
+  }, [isVisible, animateProgress]);
 
   // Intersection Observer for animations
   useEffect(() => {
@@ -216,71 +303,310 @@ export default function Skills() {
       ref={sectionRef}
       className="w-full h-full overflow-y-auto overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
     >
+      {/* Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transform origin-left z-50"
+        style={{ scaleX }}
+      />
+
       {/* Flower Background - Fixed */}
       <div className="fixed inset-0 z-0">
         <Flower />
       </div>
 
+      {/* Floating Skills Icons */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-green-400/30 rounded-full"
+            style={{
+              left: `${10 + i * 15}%`,
+              top: `${20 + i * 12}%`,
+            }}
+            animate={{
+              y: [0, -60, -120, -180],
+              x: [0, Math.random() * 40 - 20],
+              opacity: [0, 1, 0.8, 0],
+              scale: [0, 1, 1.4, 0],
+            }}
+            transition={{
+              duration: 16 + i * 1.5,
+              delay: i * 1.2,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+        ))}
+      </div>
+
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-6xl mx-auto pb-8 sm:pb-12 flex flex-col items-center">
-        {/* Header */}
-        <div
-          className={`text-center mb-6 sm:mb-8 transition-all duration-1000 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+        {/* Enhanced Header */}
+        <motion.div
+          className="text-center mb-6 sm:mb-8"
+          initial={{ opacity: 0, y: 50, scale: 0.9 }}
+          animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
+          transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
         >
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white mb-3 sm:mb-4 tracking-tight">
+          <motion.div
+            className="inline-block mb-4"
+            animate={{
+              rotate: [0, 4, -4, 0],
+              scale: [1, 1.05, 1],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          ></motion.div>
+
+          <motion.h1
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white mb-3 sm:mb-4 tracking-tight"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             Skills & Expertise
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-blue-200 max-w-2xl mx-auto px-2">
+          </motion.h1>
+
+          <motion.p
+            className="text-base sm:text-lg md:text-xl text-blue-200 max-w-2xl mx-auto px-2"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
             A comprehensive showcase of my technical skills and professional
             competencies
-          </p>
-        </div>
+          </motion.p>
 
-        {/* Auto-Sliding Category Display */}
-        <div
-          className={`text-center mb-6 sm:mb-8 transition-all duration-1000 delay-300 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          {/* Animated Skills Indicator */}
+          <motion.div
+            className="flex justify-center gap-2 mt-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            {["Technical", "Creative", "Analytical", "Innovative"].map(
+              (skill, index) => (
+                <motion.div
+                  key={skill}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${
+                    index === currentSkill
+                      ? "bg-gradient-to-r from-green-500 to-blue-600 text-white shadow-lg"
+                      : "bg-white/10 text-gray-300 border border-white/20"
+                  }`}
+                  animate={
+                    index === currentSkill ? { scale: 1.1 } : { scale: 1 }
+                  }
+                  transition={{ duration: 0.3 }}
+                >
+                  <span className="w-2 h-2 rounded-full bg-current" />
+                  {skill}
+                </motion.div>
+              )
+            )}
+          </motion.div>
+        </motion.div>
+
+        {/* Enhanced Auto-Sliding Category Display */}
+        <motion.div
+          className="text-center mb-6 sm:mb-8"
+          initial={{ opacity: 0, y: 50, scale: 0.9 }}
+          animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.3, type: "spring" }}
         >
-          <div className="relative overflow-hidden">
-            <div
+          <motion.div
+            className="relative overflow-hidden"
+            whileHover={{ scale: 1.05 }}
+          >
+            <motion.div
               key={activeCategory}
-              className={`transform transition-all duration-700 ease-in-out ${
-                slideDirection === "right"
-                  ? "animate-slide-in-right"
-                  : "animate-slide-in-left"
-              }`}
+              className="inline-block"
+              initial={{ opacity: 0, x: slideDirection === "right" ? 50 : -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: slideDirection === "right" ? -50 : 50 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
             >
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-full shadow-lg shadow-blue-500/25 inline-block">
-                <h3 className="text-lg sm:text-xl font-bold">
+              <motion.div
+                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-full shadow-lg shadow-blue-500/25 inline-block"
+                animate={{
+                  boxShadow: [
+                    "0 10px 25px rgba(59, 130, 246, 0.25)",
+                    "0 10px 25px rgba(147, 51, 234, 0.35)",
+                    "0 10px 25px rgba(59, 130, 246, 0.25)",
+                  ],
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                <motion.h3
+                  className="text-lg sm:text-xl font-bold"
+                  animate={{
+                    textShadow: [
+                      "0 0 5px rgba(255, 255, 255, 0.5)",
+                      "0 0 10px rgba(255, 255, 255, 0.8)",
+                      "0 0 5px rgba(255, 255, 255, 0.5)",
+                    ],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
                   {getCategoryName(activeCategory)}
-                </h3>
-              </div>
-            </div>
-          </div>
+                </motion.h3>
+              </motion.div>
+            </motion.div>
+          </motion.div>
 
-          {/* Progress Indicator */}
-          <div className="flex justify-center mt-4 gap-2">
+          {/* Enhanced Progress Indicator */}
+          <motion.div
+            className="flex justify-center mt-4 gap-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
             {Object.keys(skillsData).map((category) => (
-              <div
+              <motion.button
                 key={category}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
                   activeCategory === category
                     ? "bg-blue-500 scale-125"
                     : "bg-white/30"
                 }`}
+                whileHover={{ scale: 1.3 }}
+                animate={
+                  activeCategory === category
+                    ? {
+                        scale: [1, 1.4, 1.25],
+                        boxShadow: [
+                          "0 0 0 rgba(59, 130, 246, 0.4)",
+                          "0 0 15px rgba(59, 130, 246, 0.8)",
+                          "0 0 0 rgba(59, 130, 246, 0.4)",
+                        ],
+                      }
+                    : {}
+                }
+                transition={{ duration: 2, repeat: Infinity }}
+                onClick={() => setActiveCategory(category)}
               />
             ))}
-          </div>
-        </div>
+          </motion.div>
 
-        {/* Skills Content */}
-        <div
-          className={`transition-all duration-700 mb-6 sm:mb-8 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          {/* Manual Navigation Controls */}
+          <motion.div
+            className="flex justify-center items-center mt-6 gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.7 }}
+          >
+            {/* Previous Button */}
+            <motion.button
+              onClick={goToPreviousCategory}
+              className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200 border border-white/20 text-white"
+              whileHover={{ scale: 1.1, rotate: -5 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Previous category"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </motion.button>
+
+            {/* Play/Pause Button */}
+            <motion.button
+              onClick={isAutoSliding ? pauseAutoSlide : resumeAutoSlide}
+              className="p-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-200 text-white shadow-lg"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label={
+                isAutoSliding ? "Pause auto-slide" : "Resume auto-slide"
+              }
+            >
+              {isAutoSliding ? (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              )}
+            </motion.button>
+
+            {/* Next Button */}
+            <motion.button
+              onClick={goToNextCategory}
+              className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200 border border-white/20 text-white"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Next category"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </motion.button>
+          </motion.div>
+
+          {/* Auto-slide Status */}
+          <motion.div
+            className="text-center mt-3"
+            initial={{ opacity: 0 }}
+            animate={isVisible ? { opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.8 }}
+          >
+            <span className="text-xs text-gray-400">
+              {isAutoSliding
+                ? "🔄 Auto-sliding every 8 seconds"
+                : "⏸️ Auto-slide paused"}
+            </span>
+          </motion.div>
+        </motion.div>
+
+        {/* Enhanced Skills Content */}
+        <motion.div
+          className="mb-6 sm:mb-8"
+          initial={{ opacity: 0, y: 50, scale: 0.9 }}
+          animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.6, type: "spring" }}
         >
           {activeCategory === "softSkills" ? (
             // Soft Skills Display
@@ -345,34 +671,58 @@ export default function Skills() {
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
 
-        {/* Skills Overview Grid */}
-        <div
-          className={`mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 transition-all duration-1000 delay-500 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+        {/* Enhanced Skills Overview Grid */}
+        <motion.div
+          className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6"
+          initial={{ opacity: 0, y: 50 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.9 }}
         >
-          {Object.keys(skillsData).map((category) => (
-            <div
+          {Object.keys(skillsData).map((category, index) => (
+            <motion.div
               key={category}
               className="bg-gradient-to-br from-gray-900/60 via-blue-900/20 to-gray-900/60 backdrop-blur-xl rounded-2xl p-3 sm:p-4 border border-blue-500/30 hover:bg-gradient-to-br hover:from-gray-900/80 hover:via-blue-900/40 hover:to-gray-900/80 transition-all duration-300 transform hover:scale-105 cursor-pointer hover:shadow-lg hover:shadow-blue-500/25"
               onClick={() => setActiveCategory(category)}
+              initial={{ opacity: 0, y: 30, scale: 0.8 }}
+              animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
+              transition={{
+                duration: 0.6,
+                delay: 1.0 + index * 0.1,
+                type: "spring",
+              }}
+              whileHover={{
+                scale: 1.08,
+                y: -5,
+                boxShadow: "0 20px 40px rgba(59, 130, 246, 0.3)",
+              }}
+              whileTap={{ scale: 0.98 }}
             >
-              <h4 className="text-base sm:text-lg font-semibold text-white mb-2">
+              <motion.h4
+                className="text-base sm:text-lg font-semibold text-white mb-2"
+                whileHover={{ color: "#60a5fa" }}
+              >
                 {getCategoryName(category)}
-              </h4>
-              <p className="text-xs sm:text-sm text-blue-200">
+              </motion.h4>
+              <motion.p
+                className="text-xs sm:text-sm text-blue-200"
+                whileHover={{ color: "#93c5fd" }}
+              >
                 {skillsData[category as keyof SkillsData].length} skills
-              </p>
-              <div
+              </motion.p>
+              <motion.div
                 className={`w-12 sm:w-16 h-1 mt-3 rounded-full bg-gradient-to-r ${getCategoryColor(
                   category
                 )}`}
+                whileHover={{
+                  width: "100%",
+                  transition: { duration: 0.3 },
+                }}
               />
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* Custom Animations */}

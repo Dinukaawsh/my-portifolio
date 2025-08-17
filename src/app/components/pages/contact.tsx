@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { sendDiscordNotification } from "@/lib/discord";
+import { motion, useScroll, useSpring } from "framer-motion";
 
 interface Comment {
   id: string;
@@ -29,7 +30,22 @@ export default function Contact() {
     email: "",
     message: "",
   });
+  const [currentStep, setCurrentStep] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
+
+  // Contact form steps animation
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentStep((prev) => (prev + 1) % 3);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Fetch comments from Firebase
   const fetchComments = async () => {
@@ -105,41 +121,145 @@ export default function Contact() {
       ref={sectionRef}
       className="w-full h-full relative flex flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
     >
+      {/* Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transform origin-left z-50"
+        style={{ scaleX }}
+      />
+
       {/* Flower Background - Fixed */}
       <div className="fixed inset-0 z-0">
         <Flower />
       </div>
+
+      {/* Floating Contact Icons */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-blue-400/30 rounded-full"
+            style={{
+              left: `${20 + i * 15}%`,
+              top: `${30 + i * 10}%`,
+            }}
+            animate={{
+              y: [0, -100, -200, -300],
+              x: [0, Math.random() * 100 - 50],
+              opacity: [0, 1, 0.8, 0],
+              scale: [0, 1, 1.2, 0],
+            }}
+            transition={{
+              duration: 20 + i * 2,
+              delay: i * 2,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+        ))}
+      </div>
+
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col items-center">
-        {/* Header */}
-        <div
-          className={`text-center mb-8 sm:mb-12 transition-all duration-1000 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+        {/* Enhanced Header */}
+        <motion.div
+          className="text-center mb-8 sm:mb-12"
+          initial={{ opacity: 0, y: 50, scale: 0.9 }}
+          animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
+          transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
         >
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white mb-3 sm:mb-4 tracking-tight">
+          <motion.div
+            className="inline-block mb-4"
+            animate={{
+              rotate: [0, 5, -5, 0],
+              scale: [1, 1.05, 1],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          ></motion.div>
+
+          <motion.h1
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white mb-3 sm:mb-4 tracking-tight"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             Get In Touch
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-blue-200 max-w-2xl mx-auto px-2">
+          </motion.h1>
+
+          <motion.p
+            className="text-base sm:text-lg md:text-xl text-blue-200 max-w-2xl mx-auto px-2"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
             Let&apos;s connect and discuss opportunities, collaborations, or
             just have a chat!
-          </p>
-        </div>
+          </motion.p>
 
-        {/* Contact Card */}
-        <div
-          className={`w-full max-w-2xl mx-auto transition-all duration-700 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          {/* Animated Steps Indicator */}
+          <motion.div
+            className="flex justify-center gap-2 mt-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            {["Connect", "Collaborate", "Create"].map((step, index) => (
+              <motion.div
+                key={step}
+                className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${
+                  index === currentStep
+                    ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
+                    : "bg-white/10 text-gray-300 border border-white/20"
+                }`}
+                animate={index === currentStep ? { scale: 1.1 } : { scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <span className="w-2 h-2 rounded-full bg-current" />
+                {step}
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
+
+        {/* Enhanced Contact Card */}
+        <motion.div
+          className="w-full max-w-2xl mx-auto"
+          initial={{ opacity: 0, y: 50, scale: 0.9 }}
+          animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.3, type: "spring" }}
+          whileHover={{ scale: 1.02 }}
         >
-          <div className="bg-gradient-to-br from-gray-900/80 via-blue-900/40 to-gray-900/80 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-blue-500/30 shadow-2xl shadow-blue-500/20">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-3 tracking-tight text-white text-center">
+          <motion.div
+            className="bg-gradient-to-br from-gray-900/80 via-blue-900/40 to-gray-900/80 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-blue-500/30 shadow-2xl shadow-blue-500/20"
+            animate={{
+              boxShadow: [
+                "0 25px 50px rgba(59, 130, 246, 0.2)",
+                "0 25px 50px rgba(147, 51, 234, 0.3)",
+                "0 25px 50px rgba(59, 130, 246, 0.2)",
+              ],
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
+            <motion.h2
+              className="text-2xl sm:text-3xl font-extrabold mb-3 tracking-tight text-white text-center"
+              initial={{ opacity: 0, y: -20 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
               Contact Me
-            </h2>
-            <p className="text-sm sm:text-base text-gray-300 mb-8 text-center">
+            </motion.h2>
+            <motion.p
+              className="text-sm sm:text-base text-gray-300 mb-8 text-center"
+              initial={{ opacity: 0, y: -20 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
               Feel free to reach out for collaborations, opportunities, or just
               to say hi!
-            </p>
+            </motion.p>
             {/* Direct Email Contact */}
             <div className="mb-8 text-center">
               <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl p-6 border border-blue-500/30">
@@ -166,7 +286,7 @@ export default function Contact() {
                       d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                     />
                   </svg>
-                  dinukaaw.sh2@gmail.com
+                  dinukaaw.sh@gmail.com
                 </a>
               </div>
             </div>
@@ -237,23 +357,45 @@ export default function Contact() {
                 </button>
               </form>
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        {/* Comments Section */}
-        <div
-          className={`w-full max-w-4xl mx-auto mt-12 transition-all duration-700 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+        {/* Enhanced Comments Section */}
+        <motion.div
+          className="w-full max-w-4xl mx-auto mt-12"
+          initial={{ opacity: 0, y: 50 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.7 }}
         >
-          <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">
+          <motion.div
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: -20 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.8 }}
+          >
+            <motion.h2
+              className="text-2xl sm:text-3xl font-extrabold text-white mb-3"
+              animate={{
+                textShadow: [
+                  "0 0 5px rgba(59, 130, 246, 0.5)",
+                  "0 0 20px rgba(59, 130, 246, 0.8)",
+                  "0 0 5px rgba(59, 130, 246, 0.5)",
+                ],
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
               💬 Community Comments
-            </h2>
-            <p className="text-blue-200 text-sm sm:text-base">
+            </motion.h2>
+            <motion.p
+              className="text-blue-200 text-sm sm:text-base"
+              animate={{
+                color: ["#93c5fd", "#60a5fa", "#93c5fd"],
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
               See what others are saying about my work
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
 
           {comments.length === 0 ? (
             <div className="text-center py-12">
@@ -293,7 +435,7 @@ export default function Contact() {
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

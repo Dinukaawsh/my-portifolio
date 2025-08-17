@@ -7,10 +7,10 @@ const educationData = [
     degree: "Bachelor of Information Technology (Honours)",
     specialization: "Computer Software Engineering",
     period: "2021 - 2025",
-    status: "Final Year Student",
+    status: "Completed",
     location: "Bambalapitiya, Sri Lanka",
     description:
-      "Final-year student pursuing a Bachelor of Information Technology (Hons) degree at ESOFT Metro Campus, Bambalapitiya. Passionate about technology and continuously developing skills in software development, problem-solving, and innovative IT solutions. Excited to contribute to impactful projects and grow as an IT professional.",
+      "Completed a Bachelor of Information Technology (Hons) degree at ESOFT Metro Campus, Bambalapitiya. Passionate about technology and continuously developing skills in software development, problem-solving, and innovative IT solutions. Excited to contribute to impactful projects and grow as an IT professional.",
     skills: [
       "PHP",
       "CSS",
@@ -33,14 +33,14 @@ const educationData = [
     ],
   },
   {
-    institution: "Advanced Level Education",
-    degree: "Physical Science Stream",
-    specialization: "Mathematics & Physics",
-    period: "2019 - 2021",
+    institution: "Ku/parakramabahu National School",
+    degree: "G.C.E. Advanced Level",
+    specialization: "Technology Stream",
+    period: "2016 - 2018",
     status: "Completed",
-    location: "Colombo, Sri Lanka",
+    location: "Kurunegala, Sri Lanka",
     description:
-      "Completed Advanced Level education with focus on Mathematics and Physics, building a strong foundation in analytical thinking and problem-solving skills that are essential for software development and technology fields.",
+      "Completed G.C.E. Advanced Level with a Technology Stream, building a strong foundation in mathematics and physics.",
     skills: [
       "Mathematics",
       "Physics",
@@ -48,7 +48,6 @@ const educationData = [
       "Analytical Thinking",
       "Critical Analysis",
       "Logical Reasoning",
-      "Research Skills",
     ],
     logo: "🔬",
     achievements: [
