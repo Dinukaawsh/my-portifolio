@@ -12,6 +12,11 @@ import {
 import { db } from "@/lib/firebase";
 import { sendDiscordNotification } from "@/lib/discord";
 import { motion, useScroll, useSpring } from "framer-motion";
+import {
+  contactContent,
+  getContactSteps,
+  getParticleConfig,
+} from "@/app/components/content/contact";
 
 interface Comment {
   id: string;
@@ -42,8 +47,8 @@ export default function Contact() {
   // Contact form steps animation
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentStep((prev) => (prev + 1) % 3);
-    }, 3000);
+      setCurrentStep((prev) => (prev + 1) % getContactSteps().length);
+    }, contactContent.animation.rotationInterval);
     return () => clearInterval(timer);
   }, []);
 
@@ -134,28 +139,34 @@ export default function Contact() {
 
       {/* Floating Contact Icons */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        {[0, 1, 2, 3, 4].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-blue-400/30 rounded-full"
-            style={{
-              left: `${20 + i * 15}%`,
-              top: `${30 + i * 10}%`,
-            }}
-            animate={{
-              y: [0, -100, -200, -300],
-              x: [0, Math.random() * 100 - 50],
-              opacity: [0, 1, 0.8, 0],
-              scale: [0, 1, 1.2, 0],
-            }}
-            transition={{
-              duration: 20 + i * 2,
-              delay: i * 2,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          />
-        ))}
+        {Array.from(
+          { length: contactContent.animation.floatingParticles },
+          (_, i) => {
+            const config = getParticleConfig(i);
+            return (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 bg-blue-400/30 rounded-full"
+                style={{
+                  left: config.left,
+                  top: config.top,
+                }}
+                animate={{
+                  y: [0, -100, -200, -300],
+                  x: [0, Math.random() * 100 - 50],
+                  opacity: [0, 1, 0.8, 0],
+                  scale: [0, 1, 1.2, 0],
+                }}
+                transition={{
+                  duration: config.duration,
+                  delay: config.delay,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              />
+            );
+          }
+        )}
       </div>
 
       {/* Main Content */}
@@ -186,7 +197,7 @@ export default function Contact() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Get In Touch
+            {contactContent.header.title}
           </motion.h1>
 
           <motion.p
@@ -195,8 +206,7 @@ export default function Contact() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            Let&apos;s connect and discuss opportunities, collaborations, or
-            just have a chat!
+            {contactContent.header.subtitle}
           </motion.p>
 
           {/* Animated Steps Indicator */}
@@ -206,7 +216,7 @@ export default function Contact() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            {["Connect", "Collaborate", "Create"].map((step, index) => (
+            {getContactSteps().map((step, index) => (
               <motion.div
                 key={step}
                 className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${
@@ -249,7 +259,7 @@ export default function Contact() {
               animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.5 }}
             >
-              Contact Me
+              {contactContent.form.title}
             </motion.h2>
             <motion.p
               className="text-sm sm:text-base text-gray-300 mb-8 text-center"
@@ -257,20 +267,19 @@ export default function Contact() {
               animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
-              Feel free to reach out for collaborations, opportunities, or just
-              to say hi!
+              {contactContent.form.description}
             </motion.p>
             {/* Direct Email Contact */}
             <div className="mb-8 text-center">
               <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl p-6 border border-blue-500/30">
                 <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">
-                  📧 Direct Email Contact
+                  {contactContent.directEmail.title}
                 </h3>
                 <p className="text-gray-300 text-sm sm:text-base mb-4">
-                  Prefer to email directly? Feel free to reach out at:
+                  {contactContent.directEmail.description}
                 </p>
                 <a
-                  href="mailto:dinukaaw.sh2@gmail.com"
+                  href={`mailto:${contactContent.contactInfo.email}`}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-full hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:scale-105"
                 >
                   <svg
@@ -286,7 +295,7 @@ export default function Contact() {
                       d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                     />
                   </svg>
-                  dinukaaw.sh@gmail.com
+                  {contactContent.contactInfo.emailDisplay}
                 </a>
               </div>
             </div>
@@ -295,16 +304,16 @@ export default function Contact() {
             {submitted ? (
               <div className="text-center py-8">
                 <div className="text-green-400 font-semibold text-lg mb-2">
-                  ✨ Thank you for your feedback!
+                  {contactContent.form.successMessage.title}
                 </div>
                 <p className="text-gray-300 text-sm">
-                  Your comment has been added to the comments section below.
+                  {contactContent.form.successMessage.description}
                 </p>
                 <button
                   onClick={() => setSubmitted(false)}
                   className="mt-4 px-6 py-2 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 hover:bg-blue-500/30 transition-all duration-200"
                 >
-                  Add Another Comment
+                  {contactContent.form.successMessage.actionButton}
                 </button>
               </div>
             ) : (
@@ -319,7 +328,7 @@ export default function Contact() {
                   type="text"
                   name="name"
                   required
-                  placeholder="Your Name"
+                  placeholder={contactContent.form.fields.name.placeholder}
                   value={formData.name}
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
@@ -330,7 +339,7 @@ export default function Contact() {
                   type="email"
                   name="email"
                   required
-                  placeholder="Your Email"
+                  placeholder={contactContent.form.fields.email.placeholder}
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
@@ -340,8 +349,8 @@ export default function Contact() {
                 <textarea
                   name="message"
                   required
-                  placeholder="Your Message/Comment"
-                  rows={4}
+                  placeholder={contactContent.form.fields.message.placeholder}
+                  rows={contactContent.form.fields.message.rows}
                   value={formData.message}
                   onChange={(e) =>
                     setFormData({ ...formData, message: e.target.value })
@@ -353,7 +362,9 @@ export default function Contact() {
                   disabled={loading}
                   className="mt-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:from-blue-600 hover:to-purple-700 hover:shadow-xl hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? "Adding Comment..." : "Add Comment"}
+                  {loading
+                    ? contactContent.form.submitButton.loadingText
+                    : contactContent.form.submitButton.text}
                 </button>
               </form>
             )}
@@ -384,7 +395,7 @@ export default function Contact() {
               }}
               transition={{ duration: 3, repeat: Infinity }}
             >
-              💬 Community Comments
+              {contactContent.comments.title}
             </motion.h2>
             <motion.p
               className="text-blue-200 text-sm sm:text-base"
@@ -393,15 +404,17 @@ export default function Contact() {
               }}
               transition={{ duration: 3, repeat: Infinity }}
             >
-              See what others are saying about my work
+              {contactContent.comments.subtitle}
             </motion.p>
           </motion.div>
 
           {comments.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-gray-400 text-lg mb-2">🌟</div>
+              <div className="text-gray-400 text-lg mb-2">
+                {contactContent.comments.emptyState.icon}
+              </div>
               <p className="text-gray-400 text-sm sm:text-base">
-                Be the first to leave a comment!
+                {contactContent.comments.emptyState.message}
               </p>
             </div>
           ) : (

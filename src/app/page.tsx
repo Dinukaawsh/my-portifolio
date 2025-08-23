@@ -8,7 +8,11 @@ import Blog from "./components/pages/blog";
 import Experience from "./components/pages/experience";
 import Skills from "./components/pages/skills";
 import Education from "./components/pages/education";
+import Certificates from "./components/pages/certificates";
+import Achievements from "./components/pages/achievements";
+import References from "./components/pages/references";
 import Horse from "./components/backgrounds/horse/Horse";
+import ThreeDScene from "./components/backgrounds/3d-text/3DScene";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
@@ -17,13 +21,16 @@ const sections = [
   { key: "skills", label: "Skills", Component: Skills },
   { key: "projects", label: "Projects", Component: Projects },
   { key: "education", label: "Education", Component: Education },
-  { key: "blog", label: "Blog", Component: Blog },
   { key: "experience", label: "Experience", Component: Experience },
+  { key: "certificates", label: "Certificates", Component: Certificates },
+  { key: "achievements", label: "Achievements", Component: Achievements },
+  { key: "references", label: "References", Component: References },
+  { key: "blog", label: "Blog", Component: Blog },
   { key: "contact", label: "Contact", Component: Contact },
 ];
 
 function Preloader({ onDone }: { onDone: () => void }) {
-  const name = "DINUKA ASHAN WICKRAMARATHNA";
+  const name = "DINUKA WICKRAMARATHNA";
   const [displayed, setDisplayed] = useState("");
   const [clock, setClock] = useState("");
   const [showParticles, setShowParticles] = useState(false);
@@ -55,14 +62,16 @@ function Preloader({ onDone }: { onDone: () => void }) {
     if (displayed.length < name.length) {
       timeout = setTimeout(() => {
         setDisplayed(name.slice(0, displayed.length + 1));
-      }, 120);
+      }, 80);
     } else {
       // Show particles after typing is complete
-      setShowParticles(true);
       timeout = setTimeout(() => {
-        onDone();
-        setTimeout(onDone, 700); // short pause before showing main app
-      }, 900);
+        setShowParticles(true);
+        timeout = setTimeout(() => {
+          onDone();
+          setTimeout(onDone, 300); // short pause before showing main app
+        }, 500);
+      }, 300);
     }
     return () => clearTimeout(timeout);
   }, [displayed, name, onDone]);
@@ -80,14 +89,14 @@ function Preloader({ onDone }: { onDone: () => void }) {
               top: `${15 + i * 10}%`,
             }}
             animate={{
-              y: [0, -100, -200, -300],
-              x: [0, Math.random() * 60 - 30],
+              y: [0, -80, -160, -240],
+              x: [0, Math.random() * 40 - 20],
               opacity: [0, 1, 0.8, 0],
-              scale: [0, 1, 1.5, 0],
+              scale: [0, 1, 1.3, 0],
             }}
             transition={{
-              duration: 20 + i * 2,
-              delay: i * 1.5,
+              duration: 15 + i * 1.5,
+              delay: i * 1,
               repeat: Infinity,
               ease: "linear",
             }}
@@ -97,7 +106,7 @@ function Preloader({ onDone }: { onDone: () => void }) {
 
       {/* Enhanced Clock */}
       <motion.div
-        className="clock absolute top-2 sm:top-4 md:top-6 left-0 right-0 mx-auto text-center text-blue-400 font-mono"
+        className="clock absolute top-2 sm:top-4 md:top-6 left-0 right-0 mx-auto text-center text-blue-400 font-mono z-10"
         style={{
           fontSize: "clamp(20px, 5vw, 48px)",
           letterSpacing: "clamp(1px, 0.8vw, 7px)",
@@ -107,42 +116,66 @@ function Preloader({ onDone }: { onDone: () => void }) {
         id="MyClockDisplay"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.5 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
       >
         {clock}
       </motion.div>
 
-      {/* Enhanced Name Display */}
-      <motion.h1
-        className="font-extrabold tracking-wide text-center break-words px-4 max-w-full relative"
+      {/* 3D Name Display */}
+      <motion.div
+        className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 relative flex items-center justify-center"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, delay: 0.3 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
       >
-        <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent">
-          {displayed}
-        </span>
-        <motion.span
-          className="border-r-2 border-blue-400 ml-1 inline-block"
-          animate={{
-            opacity: [1, 0, 1],
-            scaleY: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 1.2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      </motion.h1>
+        {/* Fallback 2D text only during initial typing */}
+        {displayed.length < 3 && (
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center z-20"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+          >
+            <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent font-extrabold tracking-wide text-center px-4">
+              {displayed}
+            </span>
+          </motion.div>
+        )}
+
+        {/* 3D Text - hidden on very small screens, shows progressively during typing */}
+        <motion.div
+          className="hidden sm:block w-full h-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: displayed.length > 0 ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <ThreeDScene
+            text={displayed}
+            size={displayed.length > 20 ? 1.0 : 1.5}
+            height={0.15}
+          />
+        </motion.div>
+
+        {/* 2D Text for mobile */}
+        <div className="sm:hidden w-full h-full flex items-center justify-center">
+          <motion.span
+            className="text-2xl sm:text-3xl bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent font-extrabold tracking-wide text-center px-4 leading-tight"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            {displayed}
+          </motion.span>
+        </div>
+      </motion.div>
 
       {/* Success Message */}
       {showParticles && (
         <motion.div
-          className="text-center mt-4"
+          className="absolute bottom-20 sm:bottom-24 md:bottom-28 left-1/2 transform -translate-x-1/2 z-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.3 }}
         >
           <motion.div
             className="flex items-center justify-center gap-2 text-blue-300 text-lg"
@@ -165,18 +198,18 @@ function Preloader({ onDone }: { onDone: () => void }) {
 
       {/* Enhanced Horse Animation */}
       <motion.div
-        className="mt-8 flex justify-center"
+        className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-10"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.7 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
       >
         <motion.div
           animate={{
-            rotate: [0, 1, -1, 0],
-            scale: [1, 1.02, 1],
+            rotate: [0, 0.5, -0.5, 0],
+            scale: [1, 1.01, 1],
           }}
           transition={{
-            duration: 4,
+            duration: 3,
             repeat: Infinity,
             ease: "easeInOut",
           }}
@@ -212,8 +245,8 @@ export default function Home() {
                 className="absolute inset-0 flex items-center justify-center"
                 initial={{
                   opacity: 0,
-                  x: prevActive < active ? 100 : -100,
-                  scale: 0.95,
+                  x: prevActive < active ? 50 : -50,
+                  scale: 0.98,
                 }}
                 animate={{
                   opacity: 1,
@@ -222,14 +255,12 @@ export default function Home() {
                 }}
                 exit={{
                   opacity: 0,
-                  x: prevActive < active ? -100 : 100,
-                  scale: 0.95,
+                  x: prevActive < active ? -50 : 50,
+                  scale: 0.98,
                 }}
                 transition={{
-                  duration: 0.6,
-                  type: "spring",
-                  stiffness: 100,
-                  damping: 20,
+                  duration: 0.25,
+                  ease: "easeOut",
                 }}
               >
                 {ActiveSection && <ActiveSection />}

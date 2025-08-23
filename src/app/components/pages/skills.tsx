@@ -2,80 +2,46 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import Flower from "@/app/components/backgrounds/flower/Flower";
 import { motion, useScroll, useSpring } from "framer-motion";
+import * as LucideIcons from "lucide-react";
+import CustomIcon from "@/app/components/icons/skillsicons";
+import {
+  skillsContent,
+  getSkillsByCategory,
+  getAllCategories,
+  getParticleConfig,
+  getSkillsCount,
+} from "@/app/components/content/skills";
 
 // Skills data organized by categories
 interface SkillItem {
   name: string;
   level: number;
   color: string;
+  icon: string;
 }
 
-interface SkillsData {
-  languages: SkillItem[];
-  frontendFrameworks: SkillItem[];
-  backendFrameworks: SkillItem[];
-  databases: SkillItem[];
-  cloudServices: SkillItem[];
-  tools: SkillItem[];
-  softSkills: string[];
+interface SoftSkillItem {
+  name: string;
+  icon: string;
 }
 
-const skillsData: SkillsData = {
-  languages: [
-    { name: "JavaScript", level: 95, color: "#F7DF1E" },
-    { name: "TypeScript", level: 90, color: "#3178C6" },
-    { name: "Python", level: 85, color: "#3776AB" },
-    { name: "PHP", level: 80, color: "#777BB4" },
-  ],
+// Helper function to get icon component
+const getIconComponent = (iconName: string) => {
+  // Check if it's a custom icon
+  if (iconName.startsWith("custom:")) {
+    const CustomIconWrapper = (props: {
+      className?: string;
+      size?: number;
+    }) => <CustomIcon iconName={iconName} {...props} />;
+    CustomIconWrapper.displayName = `CustomIconWrapper(${iconName})`;
+    return CustomIconWrapper;
+  }
 
-  frontendFrameworks: [
-    { name: "React.js", level: 95, color: "#61DAFB" },
-    { name: "Next.js", level: 90, color: "#000000" },
-    { name: "Vue.js", level: 85, color: "#42B883" },
-    { name: "Tailwind CSS", level: 88, color: "#06B6D4" },
-    { name: "Bootstrap", level: 88, color: "#563D7C" },
-  ],
-
-  backendFrameworks: [
-    { name: "Node.js", level: 92, color: "#339933" },
-    { name: "Laravel", level: 85, color: "#FF2D20" },
-    { name: "Django", level: 80, color: "#092E20" },
-    { name: "Express.js", level: 88, color: "#000000" },
-  ],
-
-  databases: [
-    { name: "MongoDB", level: 85, color: "#47A248" },
-    { name: "MySQL", level: 80, color: "#4479A1" },
-  ],
-
-  cloudServices: [
-    { name: "AWS", level: 80, color: "#FF9900" },
-    { name: "Vercel", level: 90, color: "#000000" },
-    { name: "Railway", level: 90, color: "#0B0D0E" },
-  ],
-
-  tools: [
-    { name: "Postman", level: 90, color: "#FF6C37" },
-    { name: "Figma", level: 85, color: "#F24E1E" },
-    { name: "VS Code", level: 95, color: "#007ACC" },
-    { name: "Git", level: 88, color: "#F05032" },
-    { name: "Docker", level: 75, color: "#2496ED" },
-  ],
-
-  softSkills: [
-    "Teamwork",
-    "Communication",
-    "Problem Solving",
-    "Adaptability",
-    "Creativity",
-    "Time Management",
-    "Leadership",
-    "Empathy",
-    "Critical Thinking",
-    "Conflict Resolution",
-    "Work Ethic",
-    "Attention to Detail",
-  ],
+  // Fallback to Lucide icons
+  const IconComponent = LucideIcons[
+    iconName as keyof typeof LucideIcons
+  ] as React.ComponentType<{ className?: string; size?: number }>;
+  return IconComponent || LucideIcons.HelpCircle;
 };
 
 export default function Skills() {
@@ -98,18 +64,16 @@ export default function Skills() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSkill((prev) => (prev + 1) % 4);
-    }, 3000);
+    }, skillsContent.animation.skillsRotationInterval);
     return () => clearInterval(timer);
   }, []);
 
   // Initialize progress state
   useEffect(() => {
     const initialProgress: Record<string, number[]> = {};
-    Object.keys(skillsData).forEach((category) => {
+    getAllCategories().forEach((category) => {
       if (category !== "softSkills") {
-        initialProgress[category] = skillsData[
-          category as keyof SkillsData
-        ].map(() => 0);
+        initialProgress[category] = getSkillsByCategory(category).map(() => 0);
       }
     });
     setProgress(initialProgress);
@@ -118,8 +82,7 @@ export default function Skills() {
   // Animate progress bars for current category
   const animateProgress = useCallback(() => {
     // Reset progress for current category first
-    const currentCategorySkills =
-      skillsData[activeCategory as keyof SkillsData];
+    const currentCategorySkills = getSkillsByCategory(activeCategory);
     if (
       activeCategory !== "softSkills" &&
       Array.isArray(currentCategorySkills) &&
@@ -142,7 +105,7 @@ export default function Skills() {
                 i === index ? skill.level : val
               ),
             }));
-          }, index * 200);
+          }, index * skillsContent.animation.progressAnimationDelay);
         });
       }, 100);
     }
@@ -159,19 +122,22 @@ export default function Skills() {
         setTimeout(() => {
           setSlideDirection("right");
           setActiveCategory((prev) => {
-            const categories = Object.keys(skillsData);
+            const categories = getAllCategories();
             const currentIndex = categories.indexOf(prev);
             const nextIndex = (currentIndex + 1) % categories.length;
             return categories[nextIndex];
           });
-        }, 5000); // Wait 5 seconds total
+        }, skillsContent.autoSlide.progressAnimationTime); // Wait for progress bars to complete
       };
 
       // Start the first cycle
       startAutoSlide();
 
       // Set up recurring cycle - much slower for better user experience
-      autoSlideRef.current = setInterval(startAutoSlide, 8000); // 8 second total cycle
+      autoSlideRef.current = setInterval(
+        startAutoSlide,
+        skillsContent.autoSlide.interval
+      );
       setIsAutoSliding(true);
     }
 
@@ -194,7 +160,7 @@ export default function Skills() {
 
     setSlideDirection("right");
     setActiveCategory((prev) => {
-      const categories = Object.keys(skillsData);
+      const categories = getAllCategories();
       const currentIndex = categories.indexOf(prev);
       const nextIndex = (currentIndex + 1) % categories.length;
       return categories[nextIndex];
@@ -211,7 +177,7 @@ export default function Skills() {
 
     setSlideDirection("left");
     setActiveCategory((prev) => {
-      const categories = Object.keys(skillsData);
+      const categories = getAllCategories();
       const currentIndex = categories.indexOf(prev);
       const prevIndex =
         (currentIndex - 1 + categories.length) % categories.length;
@@ -234,19 +200,22 @@ export default function Skills() {
         setTimeout(() => {
           setSlideDirection("right");
           setActiveCategory((prev) => {
-            const categories = Object.keys(skillsData);
+            const categories = getAllCategories();
             const currentIndex = categories.indexOf(prev);
             const nextIndex = (currentIndex + 1) % categories.length;
             return categories[nextIndex];
           });
-        }, 5000);
+        }, skillsContent.autoSlide.progressAnimationTime);
       };
 
       // Start immediately
       startAutoSlide();
 
       // Then set up recurring cycle
-      autoSlideRef.current = setInterval(startAutoSlide, 8000);
+      autoSlideRef.current = setInterval(
+        startAutoSlide,
+        skillsContent.autoSlide.interval
+      );
       setIsAutoSliding(true);
     }
   }, [isVisible, animateProgress]);
@@ -316,28 +285,34 @@ export default function Skills() {
 
       {/* Floating Skills Icons */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        {[0, 1, 2, 3, 4, 5].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-green-400/30 rounded-full"
-            style={{
-              left: `${10 + i * 15}%`,
-              top: `${20 + i * 12}%`,
-            }}
-            animate={{
-              y: [0, -60, -120, -180],
-              x: [0, Math.random() * 40 - 20],
-              opacity: [0, 1, 0.8, 0],
-              scale: [0, 1, 1.4, 0],
-            }}
-            transition={{
-              duration: 16 + i * 1.5,
-              delay: i * 1.2,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          />
-        ))}
+        {Array.from(
+          { length: skillsContent.animation.floatingParticles },
+          (_, i) => {
+            const config = getParticleConfig(i);
+            return (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 bg-green-400/30 rounded-full"
+                style={{
+                  left: config.left,
+                  top: config.top,
+                }}
+                animate={{
+                  y: [0, -60, -120, -180],
+                  x: [0, Math.random() * 40 - 20],
+                  opacity: [0, 1, 0.8, 0],
+                  scale: [0, 1, 1.4, 0],
+                }}
+                transition={{
+                  duration: config.duration,
+                  delay: config.delay,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              />
+            );
+          }
+        )}
       </div>
 
       {/* Main Content */}
@@ -368,7 +343,7 @@ export default function Skills() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Skills & Expertise
+            {skillsContent.header.title}
           </motion.h1>
 
           <motion.p
@@ -377,8 +352,7 @@ export default function Skills() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            A comprehensive showcase of my technical skills and professional
-            competencies
+            {skillsContent.header.subtitle}
           </motion.p>
 
           {/* Animated Skills Indicator */}
@@ -388,25 +362,21 @@ export default function Skills() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            {["Technical", "Creative", "Analytical", "Innovative"].map(
-              (skill, index) => (
-                <motion.div
-                  key={skill}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${
-                    index === currentSkill
-                      ? "bg-gradient-to-r from-green-500 to-blue-600 text-white shadow-lg"
-                      : "bg-white/10 text-gray-300 border border-white/20"
-                  }`}
-                  animate={
-                    index === currentSkill ? { scale: 1.1 } : { scale: 1 }
-                  }
-                  transition={{ duration: 0.3 }}
-                >
-                  <span className="w-2 h-2 rounded-full bg-current" />
-                  {skill}
-                </motion.div>
-              )
-            )}
+            {skillsContent.header.indicators.map((skill, index) => (
+              <motion.div
+                key={skill}
+                className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${
+                  index === currentSkill
+                    ? "bg-gradient-to-r from-green-500 to-blue-600 text-white shadow-lg"
+                    : "bg-white/10 text-gray-300 border border-white/20"
+                }`}
+                animate={index === currentSkill ? { scale: 1.1 } : { scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <span className="w-2 h-2 rounded-full bg-current" />
+                {skill}
+              </motion.div>
+            ))}
           </motion.div>
         </motion.div>
 
@@ -464,7 +434,7 @@ export default function Skills() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            {Object.keys(skillsData).map((category) => (
+            {getAllCategories().map((category) => (
               <motion.button
                 key={category}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
@@ -595,7 +565,9 @@ export default function Skills() {
           >
             <span className="text-xs text-gray-400">
               {isAutoSliding
-                ? "🔄 Auto-sliding every 8 seconds"
+                ? `🔄 Auto-sliding every ${
+                    skillsContent.autoSlide.interval / 1000
+                  } seconds`
                 : "⏸️ Auto-slide paused"}
             </span>
           </motion.div>
@@ -615,17 +587,25 @@ export default function Skills() {
                 {getCategoryName(activeCategory)}
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
-                {skillsData.softSkills.map((skill, index) => (
-                  <div
-                    key={skill}
-                    className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-blue-500/30 text-center transform hover:scale-105 transition-all duration-300 animate-fade-in-up hover:shadow-lg hover:shadow-blue-500/25"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <span className="text-sm sm:text-base font-semibold text-blue-200">
-                      {skill}
-                    </span>
-                  </div>
-                ))}
+                {(getSkillsByCategory(activeCategory) as SoftSkillItem[]).map(
+                  (skill, index) => {
+                    const IconComponent = getIconComponent(skill.icon);
+                    return (
+                      <div
+                        key={skill.name}
+                        className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-blue-500/30 text-center transform hover:scale-105 transition-all duration-300 animate-fade-in-up hover:shadow-lg hover:shadow-blue-500/25"
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                      >
+                        <div className="flex flex-col items-center gap-2">
+                          <IconComponent className="w-6 h-6 text-blue-400" />
+                          <span className="text-sm sm:text-base font-semibold text-blue-200">
+                            {skill.name}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  }
+                )}
               </div>
             </div>
           ) : (
@@ -635,39 +615,49 @@ export default function Skills() {
                 {getCategoryName(activeCategory)}
               </h3>
               <div className="space-y-4 sm:space-y-6">
-                {(
-                  skillsData[activeCategory as keyof SkillsData] as SkillItem[]
-                ).map((skill, index) => (
-                  <div
-                    key={skill.name}
-                    className="group"
-                    style={{ animationDelay: `${index * 0.2}s` }}
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
-                      <div className="flex items-center gap-3 mb-2 sm:mb-0">
-                        <div
-                          className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: skill.color }}
-                        />
-                        <span className="font-semibold text-white text-sm sm:text-base">
-                          {skill.name}
-                        </span>
-                      </div>
-                      <span className="text-xs sm:text-sm text-blue-200 font-mono">
-                        {progress[activeCategory]?.[index] || 0}%
-                      </span>
-                    </div>
-                    <div className="w-full h-3 sm:h-4 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
+                {(getSkillsByCategory(activeCategory) as SkillItem[]).map(
+                  (skill, index) => {
+                    const IconComponent = getIconComponent(skill.icon);
+                    return (
                       <div
-                        className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full transition-all duration-1000 ease-out shadow-lg shadow-blue-500/25"
-                        style={{
-                          width: `${progress[activeCategory]?.[index] || 0}%`,
-                          background: `linear-gradient(90deg, ${skill.color}80, ${skill.color})`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                        key={skill.name}
+                        className="group"
+                        style={{ animationDelay: `${index * 0.2}s` }}
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
+                          <div className="flex items-center gap-3 mb-2 sm:mb-0">
+                            <div className="flex items-center gap-2">
+                              <IconComponent className="w-5 h-5 text-blue-400" />
+                              <div
+                                className="w-4 h-4 rounded-full"
+                                style={{ backgroundColor: skill.color }}
+                              />
+                            </div>
+                            <span className="font-semibold text-white text-sm sm:text-base">
+                              {skill.name}
+                            </span>
+                          </div>
+                          <span className="text-xs sm:text-sm text-blue-200 font-mono">
+                            {progress[activeCategory]?.[index] || 0}%
+                          </span>
+                        </div>
+                        <div
+                          className={`w-full ${skillsContent.progressBars.height.sm} sm:${skillsContent.progressBars.height.md} bg-white/10 rounded-full overflow-hidden backdrop-blur-sm`}
+                        >
+                          <div
+                            className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full transition-all duration-1000 ease-out shadow-lg shadow-blue-500/25"
+                            style={{
+                              width: `${
+                                progress[activeCategory]?.[index] || 0
+                              }%`,
+                              background: `linear-gradient(90deg, ${skill.color}80, ${skill.color})`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  }
+                )}
               </div>
             </div>
           )}
@@ -680,48 +670,67 @@ export default function Skills() {
           animate={isVisible ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.9 }}
         >
-          {Object.keys(skillsData).map((category, index) => (
-            <motion.div
-              key={category}
-              className="bg-gradient-to-br from-gray-900/60 via-blue-900/20 to-gray-900/60 backdrop-blur-xl rounded-2xl p-3 sm:p-4 border border-blue-500/30 hover:bg-gradient-to-br hover:from-gray-900/80 hover:via-blue-900/40 hover:to-gray-900/80 transition-all duration-300 transform hover:scale-105 cursor-pointer hover:shadow-lg hover:shadow-blue-500/25"
-              onClick={() => setActiveCategory(category)}
-              initial={{ opacity: 0, y: 30, scale: 0.8 }}
-              animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
-              transition={{
-                duration: 0.6,
-                delay: 1.0 + index * 0.1,
-                type: "spring",
-              }}
-              whileHover={{
-                scale: 1.08,
-                y: -5,
-                boxShadow: "0 20px 40px rgba(59, 130, 246, 0.3)",
-              }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <motion.h4
-                className="text-base sm:text-lg font-semibold text-white mb-2"
-                whileHover={{ color: "#60a5fa" }}
-              >
-                {getCategoryName(category)}
-              </motion.h4>
-              <motion.p
-                className="text-xs sm:text-sm text-blue-200"
-                whileHover={{ color: "#93c5fd" }}
-              >
-                {skillsData[category as keyof SkillsData].length} skills
-              </motion.p>
+          {getAllCategories().map((category, index) => {
+            // Get a representative icon for each category
+            const categoryIconMap: Record<string, string> = {
+              languages: "custom:js",
+              frontendFrameworks: "custom:react",
+              backendFrameworks: "custom:nodejs",
+              databases: "custom:mongodb",
+              cloudServices: "custom:aws",
+              tools: "custom:vscode",
+              softSkills: "Users",
+            };
+            const IconComponent = getIconComponent(
+              categoryIconMap[category] || "Star"
+            );
+
+            return (
               <motion.div
-                className={`w-12 sm:w-16 h-1 mt-3 rounded-full bg-gradient-to-r ${getCategoryColor(
-                  category
-                )}`}
-                whileHover={{
-                  width: "100%",
-                  transition: { duration: 0.3 },
+                key={category}
+                className="bg-gradient-to-br from-gray-900/60 via-blue-900/20 to-gray-900/60 backdrop-blur-xl rounded-2xl p-3 sm:p-4 border border-blue-500/30 hover:bg-gradient-to-br hover:from-gray-900/80 hover:via-blue-900/40 hover:to-gray-900/80 transition-all duration-300 transform hover:scale-105 cursor-pointer hover:shadow-lg hover:shadow-blue-500/25"
+                onClick={() => setActiveCategory(category)}
+                initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
+                transition={{
+                  duration: 0.6,
+                  delay: 1.0 + index * 0.1,
+                  type: "spring",
                 }}
-              />
-            </motion.div>
-          ))}
+                whileHover={{
+                  scale: 1.08,
+                  y: -5,
+                  boxShadow: "0 20px 40px rgba(59, 130, 246, 0.3)",
+                }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <IconComponent className="w-5 h-5 text-blue-400" />
+                  <motion.h4
+                    className="text-base sm:text-lg font-semibold text-white"
+                    whileHover={{ color: "#60a5fa" }}
+                  >
+                    {getCategoryName(category)}
+                  </motion.h4>
+                </div>
+                <motion.p
+                  className="text-xs sm:text-sm text-blue-200"
+                  whileHover={{ color: "#93c5fd" }}
+                >
+                  {getSkillsCount(category)} skills
+                </motion.p>
+                <motion.div
+                  className={`w-12 sm:w-16 h-1 mt-3 rounded-full bg-gradient-to-r ${getCategoryColor(
+                    category
+                  )}`}
+                  whileHover={{
+                    width: "100%",
+                    transition: { duration: 0.3 },
+                  }}
+                />
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
 

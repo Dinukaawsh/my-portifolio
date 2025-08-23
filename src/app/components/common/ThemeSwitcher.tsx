@@ -1,7 +1,6 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
-
-export type Theme = "dark" | "light" | "water" | "sunset" | "forest";
+import React, { useState } from "react";
+import { useTheme, Theme } from "../../contexts/ThemeContext";
 
 interface ThemeSwitcherProps {
   className?: string;
@@ -41,123 +40,11 @@ const themes: { key: Theme; name: string; icon: string; gradient: string }[] = [
 ];
 
 export default function ThemeSwitcher({ className = "" }: ThemeSwitcherProps) {
-  const [currentTheme, setCurrentTheme] = useState<Theme>("dark");
+  const { currentTheme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
 
-  const updateNavbarTheme = useCallback((theme: Theme) => {
-    const navbar = document.querySelector("nav");
-    if (navbar) {
-      // Remove existing theme classes
-      navbar.classList.remove(
-        "theme-navbar-dark",
-        "theme-navbar-light",
-        "theme-navbar-water",
-        "theme-navbar-sunset",
-        "theme-navbar-forest"
-      );
-
-      // Add new theme class
-      navbar.classList.add(`theme-navbar-${theme}`);
-    }
-  }, []);
-
-  const updatePageThemes = useCallback((theme: Theme) => {
-    // Find all elements with theme-specific classes and update them
-    const themeElements = document.querySelectorAll(
-      '[class*="bg-gradient-to-br"], [class*="bg-gradient-to-r"]'
-    );
-
-    themeElements.forEach((element) => {
-      const classes = element.className;
-
-      // Remove existing theme classes
-      let newClasses = classes
-        .replace(/from-gray-900\/80/g, "")
-        .replace(/via-blue-900\/40/g, "")
-        .replace(/to-gray-900\/80/g, "")
-        .replace(/from-blue-900\/80/g, "")
-        .replace(/via-cyan-600/g, "")
-        .replace(/from-orange-500/g, "")
-        .replace(/via-pink-500/g, "")
-        .replace(/to-orange-500/g, "")
-        .replace(/from-green-900/g, "")
-        .replace(/via-emerald-700/g, "")
-        .replace(/from-white/g, "")
-        .replace(/via-blue-50/g, "")
-        .replace(/from-blue-500/g, "")
-        .replace(/to-purple-600/g, "");
-
-      // Add new theme classes based on element type
-      if (classes.includes("bg-gradient-to-br")) {
-        // Main card backgrounds
-        switch (theme) {
-          case "light":
-            newClasses += " from-white/80 via-blue-50/40 to-white/80";
-            break;
-          case "water":
-            newClasses += " from-blue-900/80 via-cyan-600/40 to-blue-900/80";
-            break;
-          case "sunset":
-            newClasses +=
-              " from-orange-500/80 via-pink-500/40 to-orange-500/80";
-            break;
-          case "forest":
-            newClasses +=
-              " from-green-900/80 via-emerald-700/40 to-green-900/80";
-            break;
-          default: // dark
-            newClasses += " from-gray-900/80 via-blue-900/40 to-gray-900/80";
-            break;
-        }
-      } else if (classes.includes("bg-gradient-to-r")) {
-        // Header and slide navigation backgrounds
-        switch (theme) {
-          case "light":
-            newClasses += " from-blue-500 to-blue-600";
-            break;
-          case "water":
-            newClasses += " from-cyan-500 to-cyan-600";
-            break;
-          case "sunset":
-            newClasses += " from-orange-500 to-pink-500";
-            break;
-          case "forest":
-            newClasses += " from-emerald-500 to-emerald-600";
-            break;
-          default: // dark
-            newClasses += " from-blue-500 to-purple-600";
-            break;
-        }
-      }
-
-      // Apply the new classes
-      element.className = newClasses.trim();
-    });
-  }, []);
-
-  const applyTheme = useCallback(
-    (theme: Theme) => {
-      // Update navbar theme
-      updateNavbarTheme(theme);
-
-      // Update page backgrounds based on theme
-      updatePageThemes(theme);
-    },
-    [updateNavbarTheme, updatePageThemes]
-  );
-
-  // Load theme from localStorage on mount
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("portfolio-theme") as Theme;
-    if (savedTheme && themes.some((t) => t.key === savedTheme)) {
-      setCurrentTheme(savedTheme);
-      applyTheme(savedTheme);
-    }
-  }, [applyTheme]);
-
   const handleThemeChange = (theme: Theme) => {
-    setCurrentTheme(theme);
-    applyTheme(theme);
+    setTheme(theme);
     setIsOpen(false);
   };
 

@@ -18,8 +18,11 @@ const sections = [
   { key: "projects", label: "Projects" },
   { key: "skills", label: "Skills" },
   { key: "education", label: "Education" },
-  { key: "blog", label: "Blog" },
   { key: "experience", label: "Experience" },
+  // { key: "certificates", label: "Certificates" },
+  // { key: "achievements", label: "Achievements" },
+  // { key: "references", label: "References" },
+  // { key: "blog", label: "Blog" },
   { key: "contact", label: "Contact" },
 ];
 
@@ -86,7 +89,7 @@ export default function Navbar({ active, setActiveSection }: NavbarProps) {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-between w-full">
           {/* Left side - Navigation */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-1">
             {sections.map((section, index) => (
               <motion.button
                 key={section.key}
@@ -124,7 +127,7 @@ export default function Navbar({ active, setActiveSection }: NavbarProps) {
           </div>
 
           {/* Right side - Theme Switcher */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 ml-8">
             <ThemeSwitcher />
           </div>
         </div>
@@ -231,19 +234,19 @@ export default function Navbar({ active, setActiveSection }: NavbarProps) {
 
               {/* Animated Mobile Menu */}
               <motion.div
-                className="md:hidden absolute top-full left-0 right-0 mt-2 bg-gradient-to-b from-gray-900/95 to-gray-900/98 backdrop-blur-xl border border-blue-500/30 rounded-2xl shadow-2xl shadow-blue-500/20 z-50 overflow-hidden"
+                className="md:hidden absolute top-full left-0 right-0 mt-2 bg-gradient-to-b from-gray-900/95 to-gray-900/98 backdrop-blur-xl border border-blue-500/30 rounded-2xl shadow-2xl shadow-blue-500/20 z-50 max-h-[80vh] overflow-y-auto"
                 initial={{ opacity: 0, y: -20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -20, scale: 0.95 }}
                 transition={{ duration: 0.3, type: "spring" }}
               >
                 <div className="p-4">
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-h-fit">
                     {sections.map((section, index) => (
                       <motion.button
                         key={section.key}
                         onClick={() => handleSectionClick(section.key)}
-                        className={`relative px-6 py-4 text-left rounded-xl font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+                        className={`relative px-6 py-4 text-left rounded-xl font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 flex-shrink-0 ${
                           active === section.key
                             ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/50 transform scale-105"
                             : "text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105"

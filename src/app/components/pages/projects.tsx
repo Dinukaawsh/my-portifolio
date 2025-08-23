@@ -1,138 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import Flower from "@/app/components/backgrounds/flower/Flower";
 import { motion, useScroll, useSpring } from "framer-motion";
-
-const projectsData = [
-  {
-    id: 1,
-    title: "blog application",
-    description:
-      "This project is a blog application built using Django. It allows users to register, log in, create, read, update, and delete blog posts. Users can also comment on posts.",
-    technologies: [
-      "Django",
-      "Python",
-      "HTML",
-      "CSS",
-      "JavaScript",
-      "Bootstrap",
-      "SQLite",
-      "Django Admin",
-      "Django Rest Framework",
-      "Django Jasmin",
-    ],
-    image: "/project1.jpg",
-    github: "https://github.com/Dinukaawsh/blog-application",
-    live: "https://www.youtube.com/watch?v=yVFk-kpsdVM",
-    category: "Full-Stack",
-    featured: true,
-  },
-  {
-    id: 2,
-    title: "E-Commerce Platform",
-    description:
-      "A full-stack e-commerce solution built with PHP, featuring user authentication, product management, shopping cart, and payment integration with Stripe.",
-    technologies: [
-      "PHP",
-      "MySQL",
-      "HTML",
-      "CSS",
-      "JavaScript",
-      "Bootstrap",
-      "jQuery",
-      "Ajax",
-      "PHPMyAdmin",
-      "XAMPP",
-    ],
-    image: "/project2.jpg",
-    github: "https://github.com/Dinukaawsh/e-commerce-web-site",
-    live: false,
-    category: "Full-Stack",
-    featured: false,
-  },
-  {
-    id: 3,
-    title: "Language Translator App",
-    description:
-      "A language translator application that allows users to translate text from one language to another using the Google Translate API.",
-    technologies: [
-      "React",
-      "JavaScript",
-      "HTML",
-      "Tailwind CSS",
-      "Google Translate API",
-      "DeepL API",
-    ],
-    image: "/project3.jpg",
-    github: "https://github.com/Dinukaawsh/translator",
-    live: "https://dinukaawsh.github.io/translator/",
-    category: "Frontend",
-    featured: false,
-  },
-  {
-    id: 4,
-    title: "Online Blood Bank Web Site",
-    description:
-      "A full-stack online blood bank web site built with PHP, featuring user authentication, blood donation, blood request, and blood donation management.",
-    technologies: [
-      "PHP",
-      "MySQL",
-      "HTML",
-      "CSS",
-      "JavaScript",
-      "Bootstrap",
-      "jQuery",
-      "Ajax",
-      "PHPMyAdmin",
-      "XAMPP",
-    ],
-    image: "/project4.jpg",
-    github: "https://github.com/Dinukaawsh/Online-blood-bank-web-site",
-    live: false,
-    category: "Full-Stack",
-    featured: false,
-  },
-  {
-    id: 5,
-    title: "Portfolio Website",
-    description:
-      "A modern, responsive portfolio website built with Next.js and Tailwind CSS, featuring smooth animations and dark mode. And also firebase for storing the data.",
-    technologies: [
-      "Next.js",
-      "React",
-      "Tailwind CSS",
-      "Framer Motion",
-      "TypeScript",
-      "Vercel",
-      "Firebase",
-    ],
-    image: "/project5.jpg",
-    github: "https://github.com/Dinukaawsh/my-portfolio",
-    live: "https://my-portfolio-6w9u.vercel.app/",
-    category: "Frontend",
-    featured: true,
-  },
-  {
-    id: 6,
-    title: "Movie Rental System",
-    description:
-      "A full-stack movie rental system built with PHP, featuring user authentication, movie management, rental management, and payment integration with Stripe.",
-    technologies: [
-      "PHP",
-      "XML",
-      "HTML",
-      "CSS",
-      "JavaScript",
-      "Bootstrap",
-      "jQuery",
-      "Ajax",
-    ],
-    image: "/project6.jpg",
-    github: "https://github.com/Dinukaawsh/Movie-rental-system",
-    live: false,
-    category: "Backend",
-    featured: false,
-  },
-];
+import ProjectIcon from "@/app/components/icons/projectsicons";
+import {
+  projectsContent,
+  getProjectsByCategory,
+  getParticleConfig,
+} from "@/app/components/content/projects";
 
 export default function Projects() {
   const [isVisible, setIsVisible] = useState(false);
@@ -150,16 +24,14 @@ export default function Projects() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentProject((prev) => (prev + 1) % 3);
-    }, 3500);
+    }, projectsContent.animation.rotationInterval);
     return () => clearInterval(timer);
   }, []);
 
-  const categories = ["All", "Full-Stack", "Frontend", "Backend"];
-
   const filteredProjects =
     activeCategory === "All"
-      ? projectsData
-      : projectsData.filter((project) => project.category === activeCategory);
+      ? projectsContent.projects
+      : getProjectsByCategory(activeCategory);
 
   // Intersection Observer for animations
   useEffect(() => {
@@ -197,28 +69,34 @@ export default function Projects() {
 
       {/* Floating Project Icons */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        {[0, 1, 2, 3, 4].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-indigo-400/30 rounded-full"
-            style={{
-              left: `${8 + i * 20}%`,
-              top: `${18 + i * 14}%`,
-            }}
-            animate={{
-              y: [0, -65, -130, -195],
-              x: [0, Math.random() * 45 - 22.5],
-              opacity: [0, 1, 0.8, 0],
-              scale: [0, 1, 1.6, 0],
-            }}
-            transition={{
-              duration: 19 + i * 1.8,
-              delay: i * 1.3,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          />
-        ))}
+        {Array.from(
+          { length: projectsContent.animation.floatingParticles },
+          (_, i) => {
+            const config = getParticleConfig(i);
+            return (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 bg-indigo-400/30 rounded-full"
+                style={{
+                  left: config.left,
+                  top: config.top,
+                }}
+                animate={{
+                  y: [0, -65, -130, -195],
+                  x: [0, Math.random() * 45 - 22.5],
+                  opacity: [0, 1, 0.8, 0],
+                  scale: [0, 1, 1.6, 0],
+                }}
+                transition={{
+                  duration: config.duration,
+                  delay: config.delay,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              />
+            );
+          }
+        )}
       </div>
 
       {/* Main Content */}
@@ -249,7 +127,7 @@ export default function Projects() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            My Projects
+            {projectsContent.header.title}
           </motion.h1>
 
           <motion.p
@@ -258,8 +136,7 @@ export default function Projects() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            A collection of my work showcasing different technologies and
-            problem-solving approaches
+            {projectsContent.header.subtitle}
           </motion.p>
 
           {/* Animated Project Indicator */}
@@ -269,7 +146,7 @@ export default function Projects() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            {["Building", "Creating", "Innovating"].map((project, index) => (
+            {projectsContent.header.indicators.map((project, index) => (
               <motion.div
                 key={project}
                 className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${
@@ -297,7 +174,7 @@ export default function Projects() {
           transition={{ duration: 0.8, delay: 0.3, type: "spring" }}
         >
           <div className="flex flex-wrap justify-center gap-3">
-            {categories.map((category, index) => (
+            {projectsContent.categories.map((category, index) => (
               <motion.button
                 key={category}
                 onClick={() => setActiveCategory(category)}
@@ -380,12 +257,13 @@ export default function Projects() {
                               rotate: 5,
                               transition: { duration: 0.2 },
                             }}
+                            title={tech}
                           >
-                            <span className="text-xs sm:text-sm font-bold text-blue-300">
-                              {tech.length > 4
-                                ? tech.slice(0, 4) + "..."
-                                : tech}
-                            </span>
+                            <ProjectIcon
+                              technologyName={tech}
+                              className="text-blue-300"
+                              size={16}
+                            />
                           </motion.div>
                         ))}
                       </div>
@@ -453,8 +331,13 @@ export default function Projects() {
                         {project.technologies.map((tech, techIndex) => (
                           <span
                             key={techIndex}
-                            className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-medium border border-blue-500/30"
+                            className="px-3 py-2 bg-blue-500/20 text-blue-300 rounded-full text-xs font-medium border border-blue-500/30 flex items-center gap-2 hover:bg-blue-500/30 transition-colors duration-200"
                           >
+                            <ProjectIcon
+                              technologyName={tech}
+                              className="text-blue-300"
+                              size={14}
+                            />
                             {tech}
                           </span>
                         ))}
@@ -498,12 +381,14 @@ export default function Projects() {
         {/* Empty State */}
         {filteredProjects.length === 0 && (
           <div className="text-center py-16">
-            <div className="text-gray-400 text-6xl mb-4">🔍</div>
+            <div className="text-gray-400 text-6xl mb-4">
+              {projectsContent.emptyState.icon}
+            </div>
             <h3 className="text-xl font-semibold text-white mb-2">
-              No projects found
+              {projectsContent.emptyState.title}
             </h3>
             <p className="text-gray-400">
-              Try selecting a different category or check back later!
+              {projectsContent.emptyState.message}
             </p>
           </div>
         )}

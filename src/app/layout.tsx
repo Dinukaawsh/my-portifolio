@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import "./styles/globals.css";
+import "./globals.css";
 import VisitTracker from "./components/common/VisitTracker";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 export const metadata: Metadata = {
   title: "Dinuka Wickramarathna - Portfolio",
@@ -20,8 +21,10 @@ export default function RootLayout({
         className="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 min-h-screen"
         suppressHydrationWarning={true}
       >
-        <VisitTracker />
-        {children}
+        <ThemeProvider>
+          <VisitTracker />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

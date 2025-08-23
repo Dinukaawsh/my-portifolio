@@ -2,43 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Flower from "@/app/components/backgrounds/flower/Flower";
 import { motion, useScroll, useSpring } from "framer-motion";
-
-const experiences = [
-  {
-    company: "Twist Digital",
-    title: "Software Engineer (Full-Stack)",
-    period: "Mar 2025 - Present",
-    duration: "6 months",
-    type: "Internship",
-    location: "Remote",
-    description:
-      "Currently working as a Software Engineer at Twist Digital, where I'm gaining hands-on experience in full-stack web development using modern technologies. My work spans both frontend and backend development, with a strong focus on Next.js for building scalable and high-performance applications.",
-    responsibilities: [
-      "Full-stack web development using Next.js and modern technologies",
-      "Deploying applications and managing CI/CD pipelines",
-      "Database design and migrations",
-      "Cloud hosting and DevOps practices",
-      "Building efficient, user-centric applications",
-    ],
-    skills: [
-      "Next.js",
-      "React.js",
-      "Node.js",
-      "TypeScript",
-      "JavaScript",
-      "Tailwind CSS",
-      "MongoDB",
-      "AWS",
-      "GitHub",
-      "Git",
-      "REST APIs",
-      "CI/CD",
-      "Data Migration",
-      "Webhooks",
-      "WebSockets",
-    ],
-  },
-];
+import {
+  experienceContent,
+  getParticleConfig,
+} from "@/app/components/content/experience";
 
 export default function Experience() {
   const [isVisible, setIsVisible] = useState(false);
@@ -56,7 +23,7 @@ export default function Experience() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSkill((prev) => (prev + 1) % 3);
-    }, 4000);
+    }, experienceContent.animation.skillsRotationInterval);
     return () => clearInterval(timer);
   }, []);
 
@@ -96,28 +63,31 @@ export default function Experience() {
 
       {/* Floating Experience Icons */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        {[0, 1, 2, 3, 4].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-purple-400/30 rounded-full"
-            style={{
-              left: `${15 + i * 18}%`,
-              top: `${25 + i * 12}%`,
-            }}
-            animate={{
-              y: [0, -80, -160, -240],
-              x: [0, Math.random() * 60 - 30],
-              opacity: [0, 1, 0.8, 0],
-              scale: [0, 1, 1.3, 0],
-            }}
-            transition={{
-              duration: 18 + i * 2,
-              delay: i * 1.5,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          />
-        ))}
+        {Array.from({ length: experienceContent.particles.count }, (_, i) => {
+          const config = getParticleConfig(i);
+          return (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-purple-400/30 rounded-full"
+              style={{
+                left: config.left,
+                top: config.top,
+              }}
+              animate={{
+                y: [0, -80, -160, -240],
+                x: [0, Math.random() * 60 - 30],
+                opacity: [0, 1, 0.8, 0],
+                scale: [0, 1, 1.3, 0],
+              }}
+              transition={{
+                duration: config.duration,
+                delay: config.delay,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Main Content */}
@@ -148,7 +118,7 @@ export default function Experience() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Professional Experience
+            {experienceContent.header.title}
           </motion.h1>
 
           <motion.p
@@ -157,7 +127,7 @@ export default function Experience() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            My journey in software development and technology
+            {experienceContent.header.subtitle}
           </motion.p>
 
           {/* Animated Skills Indicator */}
@@ -167,7 +137,7 @@ export default function Experience() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            {["Development", "Innovation", "Growth"].map((skill, index) => (
+            {experienceContent.header.indicators.map((skill, index) => (
               <motion.div
                 key={skill}
                 className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${
@@ -215,7 +185,7 @@ export default function Experience() {
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                {experiences[activeIndex].company}
+                {experienceContent.experiences[activeIndex].company}
               </motion.h3>
             </motion.div>
           </motion.div>
@@ -230,7 +200,9 @@ export default function Experience() {
             <motion.button
               onClick={() =>
                 setActiveIndex(
-                  (prev) => (prev - 1 + experiences.length) % experiences.length
+                  (prev) =>
+                    (prev - 1 + experienceContent.experiences.length) %
+                    experienceContent.experiences.length
                 )
               }
               className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200 border border-white/20"
@@ -255,7 +227,7 @@ export default function Experience() {
 
             {/* Enhanced Progress Indicator */}
             <div className="flex gap-2">
-              {experiences.map((exp, index) => (
+              {experienceContent.experiences.map((exp, index) => (
                 <motion.button
                   key={index}
                   onClick={() => setActiveIndex(index)}
@@ -285,7 +257,9 @@ export default function Experience() {
 
             <motion.button
               onClick={() =>
-                setActiveIndex((prev) => (prev + 1) % experiences.length)
+                setActiveIndex(
+                  (prev) => (prev + 1) % experienceContent.experiences.length
+                )
               }
               className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200 border border-white/20"
               aria-label="Next experience"
@@ -332,8 +306,8 @@ export default function Experience() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-6">
               <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex-shrink-0">
                 <Image
-                  src="/twist.png"
-                  alt="Twist Digital Logo"
+                  src={experienceContent.experiences[activeIndex].logo}
+                  alt={experienceContent.experiences[activeIndex].logoAlt}
                   width={96}
                   height={96}
                   className="w-full h-full object-contain"
@@ -343,19 +317,36 @@ export default function Experience() {
               <div className="flex-1">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                   <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
-                    {experiences[activeIndex].title}
+                    {experienceContent.experiences[activeIndex].title}
                   </h3>
                   <div className="flex items-center gap-2">
-                    <span className="px-3 py-1 bg-blue-500/20 text-blue-300 text-xs sm:text-sm rounded-full border border-blue-500/30">
-                      {experiences[activeIndex].type}
+                    <span
+                      className={`px-3 py-1 rounded-full ${
+                        experienceContent.experienceTypes[
+                          experienceContent.experiences[
+                            activeIndex
+                          ].type.toLowerCase() as keyof typeof experienceContent.experienceTypes
+                        ]?.color ||
+                        experienceContent.experienceTypes.internship.color
+                      }`}
+                    >
+                      {experienceContent.experiences[activeIndex].type}
                     </span>
-                    <span className="px-3 py-1 bg-purple-500/20 text-purple-300 text-xs sm:text-sm rounded-full border border-purple-500/30">
-                      {experiences[activeIndex].location}
+                    <span
+                      className={`px-3 py-1 rounded-full ${
+                        experienceContent.locations[
+                          experienceContent.experiences[
+                            activeIndex
+                          ].location.toLowerCase() as keyof typeof experienceContent.locations
+                        ]?.color || experienceContent.locations.remote.color
+                      }`}
+                    >
+                      {experienceContent.experiences[activeIndex].location}
                     </span>
                   </div>
                 </div>
                 <h4 className="text-lg sm:text-xl text-blue-400 font-semibold mb-2">
-                  {experiences[activeIndex].company}
+                  {experienceContent.experiences[activeIndex].company}
                 </h4>
                 <div className="flex items-center gap-4 text-sm text-gray-300">
                   <span className="flex items-center gap-2">
@@ -372,7 +363,7 @@ export default function Experience() {
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                       />
                     </svg>
-                    {experiences[activeIndex].period}
+                    {experienceContent.experiences[activeIndex].period}
                   </span>
                   <span className="flex items-center gap-2">
                     <svg
@@ -388,7 +379,7 @@ export default function Experience() {
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    {experiences[activeIndex].duration}
+                    {experienceContent.experiences[activeIndex].duration}
                   </span>
                 </div>
               </div>
@@ -396,7 +387,7 @@ export default function Experience() {
 
             {/* Description */}
             <p className="text-gray-200 text-sm sm:text-base leading-relaxed mb-6">
-              {experiences[activeIndex].description}
+              {experienceContent.experiences[activeIndex].description}
             </p>
 
             {/* Enhanced Responsibilities */}
@@ -410,7 +401,9 @@ export default function Experience() {
                 Key Responsibilities:
               </motion.h5>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {experiences[activeIndex].responsibilities.map((resp, idx) => (
+                {experienceContent.experiences[
+                  activeIndex
+                ].responsibilities.map((resp, idx) => (
                   <motion.div
                     key={idx}
                     className="flex items-start gap-2"
@@ -454,28 +447,30 @@ export default function Experience() {
                 Technologies & Skills:
               </motion.h5>
               <div className="flex flex-wrap gap-2">
-                {experiences[activeIndex].skills.map((skill, idx) => (
-                  <motion.span
-                    key={idx}
-                    className="px-2 sm:px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-medium border border-blue-500/30 hover:bg-blue-500/30 transition-colors duration-200"
-                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                    animate={isVisible ? { opacity: 1, scale: 1, y: 0 } : {}}
-                    transition={{
-                      duration: 0.5,
-                      delay: 0.9 + idx * 0.05,
-                      type: "spring",
-                      stiffness: 200,
-                    }}
-                    whileHover={{
-                      scale: 1.1,
-                      backgroundColor: "rgba(59, 130, 246, 0.3)",
-                      borderColor: "rgba(59, 130, 246, 0.6)",
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {skill}
-                  </motion.span>
-                ))}
+                {experienceContent.experiences[activeIndex].skills.map(
+                  (skill, idx) => (
+                    <motion.span
+                      key={idx}
+                      className="px-2 sm:px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-medium border border-blue-500/30 hover:bg-blue-500/30 transition-colors duration-200"
+                      initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                      animate={isVisible ? { opacity: 1, scale: 1, y: 0 } : {}}
+                      transition={{
+                        duration: 0.5,
+                        delay: 0.9 + idx * 0.05,
+                        type: "spring",
+                        stiffness: 200,
+                      }}
+                      whileHover={{
+                        scale: 1.1,
+                        backgroundColor: "rgba(59, 130, 246, 0.3)",
+                        borderColor: "rgba(59, 130, 246, 0.6)",
+                      }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {skill}
+                    </motion.span>
+                  )
+                )}
               </div>
             </div>
           </motion.div>

@@ -1,63 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import Flower from "@/app/components/backgrounds/flower/Flower";
+import { educationContent } from "@/app/components/content/education";
 
-const educationData = [
-  {
-    institution: "ESOFT Metro Campus",
-    degree: "Bachelor of Information Technology (Honours)",
-    specialization: "Computer Software Engineering",
-    period: "2021 - 2025",
-    status: "Completed",
-    location: "Bambalapitiya, Sri Lanka",
-    description:
-      "Completed a Bachelor of Information Technology (Hons) degree at ESOFT Metro Campus, Bambalapitiya. Passionate about technology and continuously developing skills in software development, problem-solving, and innovative IT solutions. Excited to contribute to impactful projects and grow as an IT professional.",
-    skills: [
-      "PHP",
-      "CSS",
-      "Figma",
-      "MySQL",
-      "Firebase",
-      "Java",
-      "XML",
-      "HTML",
-      "C#",
-      "Bootstrap",
-      "Android Studio",
-    ],
-    logo: "🎓",
-    achievements: [
-      "Maintaining strong academic performance",
-      "Active participation in technology projects",
-      "Developing practical software solutions",
-      "Collaborating with peers on innovative ideas",
-    ],
-  },
-  {
-    institution: "Ku/parakramabahu National School",
-    degree: "G.C.E. Advanced Level",
-    specialization: "Technology Stream",
-    period: "2016 - 2018",
-    status: "Completed",
-    location: "Kurunegala, Sri Lanka",
-    description:
-      "Completed G.C.E. Advanced Level with a Technology Stream, building a strong foundation in mathematics and physics.",
-    skills: [
-      "Mathematics",
-      "Physics",
-      "Problem Solving",
-      "Analytical Thinking",
-      "Critical Analysis",
-      "Logical Reasoning",
-    ],
-    logo: "🔬",
-    achievements: [
-      "Strong foundation in mathematical concepts",
-      "Developed analytical thinking skills",
-      "Enhanced problem-solving abilities",
-      "Built logical reasoning capabilities",
-    ],
-  },
-];
+const educationData = educationContent.institutions;
 
 export default function Education() {
   const [isVisible, setIsVisible] = useState(false);
@@ -101,10 +46,10 @@ export default function Education() {
           }`}
         >
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white mb-3 sm:mb-4 tracking-tight">
-            Educational Journey
+            {educationContent.header.title}
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-blue-200 max-w-2xl mx-auto px-2">
-            My academic path in technology and software development
+            {educationContent.header.subtitle}
           </p>
         </div>
 
@@ -192,7 +137,9 @@ export default function Education() {
         {/* Education Cards */}
         <div className="w-full max-w-4xl mx-auto">
           <div
-            className={`transition-all duration-700 ${
+            className={`transition-all duration-${
+              educationContent.animation.transitionDuration
+            } ${
               isVisible
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-8"
@@ -215,8 +162,11 @@ export default function Education() {
                         className={`px-3 py-1 text-xs sm:text-sm rounded-full border ${
                           educationData[activeIndex].status ===
                           "Final Year Student"
-                            ? "bg-green-500/20 text-green-300 border-green-500/30"
-                            : "bg-blue-500/20 text-blue-300 border-blue-500/30"
+                            ? educationContent.statusConfig.finalYear.color
+                            : educationData[activeIndex].status ===
+                              "In Progress"
+                            ? educationContent.statusConfig.inProgress.color
+                            : educationContent.statusConfig.completed.color
                         }`}
                       >
                         {educationData[activeIndex].status}
@@ -297,38 +247,6 @@ export default function Education() {
           </div>
         </div>
       </div>
-
-      {/* Custom Animations */}
-      <style jsx>{`
-        .animate-gradient {
-          background-size: 400% 400%;
-          animation: gradientShift 15s ease infinite;
-        }
-
-        @keyframes gradientShift {
-          0%,
-          100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-        }
-
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px) rotate(0deg);
-          }
-          50% {
-            transform: translateY(-20px) rotate(180deg);
-          }
-        }
-      `}</style>
     </section>
   );
 }

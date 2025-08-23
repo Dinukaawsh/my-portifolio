@@ -12,6 +12,7 @@ import Image from "next/image";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Code2, TrendingUp, Heart, Target } from "lucide-react";
+import { aboutContent, getDynamicStats } from "@/app/components/content/about";
 
 // Enhanced Loading Skeleton Component with animations
 function ProfileSkeleton() {
@@ -119,32 +120,19 @@ function FloatingParticles() {
 function AnimatedStats() {
   const [ref, inView] = useInView({ triggerOnce: true });
 
-  const stats = [
-    {
-      label: "Years Experience",
-      value: 1,
-      icon: TrendingUp,
-      color: "from-blue-500 to-cyan-500",
-    },
-    {
-      label: "Projects Completed",
-      value: 12,
-      icon: Target,
-      color: "from-green-500 to-emerald-500",
-    },
-    {
-      label: "Technologies",
-      value: skills.length,
-      icon: Code2,
-      color: "from-purple-500 to-pink-500",
-    },
-    {
-      label: "Happy Clients",
-      value: 8,
-      icon: Heart,
-      color: "from-red-500 to-orange-500",
-    },
-  ];
+  const stats = getDynamicStats().map((stat) => ({
+    ...stat,
+    icon:
+      stat.icon === "TrendingUp"
+        ? TrendingUp
+        : stat.icon === "Target"
+        ? Target
+        : stat.icon === "Code2"
+        ? Code2
+        : stat.icon === "Heart"
+        ? Heart
+        : TrendingUp,
+  }));
 
   return (
     <motion.div
@@ -193,25 +181,8 @@ function AnimatedStats() {
   );
 }
 
-const roles = [
-  "Full Stack Developer",
-  "Frontend Developer",
-  "Backend Developer",
-  "UI/UX Designer",
-  "DevOps Engineer",
-];
-
-const skills = [
-  "React.js",
-  "Next.js",
-  "Node.js",
-  "TypeScript",
-  "MongoDB",
-  "MySQL",
-  "Tailwind CSS",
-  "Figma",
-  "AWS",
-];
+const roles = aboutContent.roles;
+const skills = aboutContent.skills;
 
 function AnimatedJets() {
   const [positions, setPositions] = useState([
@@ -370,7 +341,7 @@ export default function About() {
   });
 
   // Profile images array
-  const profileImages = ["/my.jpg", "/my2.jpg", "/my3.jpg"];
+  const profileImages = aboutContent.profileImages;
 
   // Profile image rotation effect
   useEffect(() => {
@@ -393,15 +364,18 @@ export default function About() {
       if (displayed.length < roles[roleIndex].length) {
         timeout = setTimeout(() => {
           setDisplayed(roles[roleIndex].slice(0, displayed.length + 1));
-        }, 80);
+        }, aboutContent.animation.typingSpeed);
       } else {
-        timeout = setTimeout(() => setTyping(false), 1200);
+        timeout = setTimeout(
+          () => setTyping(false),
+          aboutContent.animation.typingPause
+        );
       }
     } else {
       if (displayed.length > 0) {
         timeout = setTimeout(() => {
           setDisplayed(displayed.slice(0, -1));
-        }, 40);
+        }, aboutContent.animation.deletingSpeed);
       } else {
         setTyping(true);
         setRoleIndex((prev) => (prev + 1) % roles.length);
@@ -438,8 +412,8 @@ export default function About() {
   }, [isVisible]);
 
   // Typing animation for code block
-  const codePrefix = "const developer = [";
-  const codeSuffix = "];";
+  const codePrefix = aboutContent.codeBlock.prefix;
+  const codeSuffix = aboutContent.codeBlock.suffix;
   const [codeDisplayed, setCodeDisplayed] = useState("");
   const [codeTyping, setCodeTyping] = useState(true);
   const [codeArrayIndex, setCodeArrayIndex] = useState(0);
@@ -453,9 +427,12 @@ export default function About() {
       if (codeDisplayed.length < currentRole.length) {
         timeout = setTimeout(() => {
           setCodeDisplayed(currentRole.slice(0, codeDisplayed.length + 1));
-        }, 60);
+        }, aboutContent.animation.codeTypingSpeed);
       } else {
-        timeout = setTimeout(() => setCodeTyping(false), 700);
+        timeout = setTimeout(
+          () => setCodeTyping(false),
+          aboutContent.animation.codePause
+        );
       }
     } else {
       if (codeArrayIndex < roles.length - 1) {
@@ -463,7 +440,7 @@ export default function About() {
           setCodeArrayIndex((prev) => prev + 1);
           setCodeDisplayed("");
           setCodeTyping(true);
-        }, 400);
+        }, aboutContent.animation.codeChangeDelay);
       } else {
         setCodeDone(true);
       }
@@ -572,13 +549,15 @@ export default function About() {
                 }}
                 whileHover={{ scale: 1.1, rotate: 180 }}
               >
-                <span className="text-xs sm:text-sm">⭐ Full-Stack</span>
+                <span className="text-xs sm:text-sm">
+                  {aboutContent.achievement.text}
+                </span>
               </motion.div>
             </motion.div>
 
             {/* Enhanced Name and Title */}
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold mb-2 tracking-tight text-white">
-              Dinuka Ashan
+              {aboutContent.personal.name}
             </h2>
             <h3 className="text-sm sm:text-base md:text-lg lg:text-xl text-blue-400 font-semibold mb-4 min-h-[1.5rem] sm:min-h-[2rem] md:min-h-[2.5rem] flex items-center justify-center">
               <motion.div
@@ -665,15 +644,7 @@ export default function About() {
 
             {/* Description */}
             <p className="text-xs sm:text-sm md:text-base text-gray-200 mb-4 sm:mb-6 leading-relaxed max-w-md">
-              I&apos;m a passionate Full Stack Developer and Information
-              Technology student, following by Bachelor of Information
-              Technology (Hons), specializing in modern web technologies. With
-              expertise in React.js, Next.js, and Node.js, I build scalable
-              applications that deliver exceptional user experiences. My backend
-              skills include express.js, while I&apos;m proficient in both SQL
-              and NoSQL databases. I&apos;m committed to writing clean,
-              maintainable code and staying current with industry best
-              practices.
+              {aboutContent.personal.description}
             </p>
 
             {/* Enhanced Skills */}
@@ -832,7 +803,9 @@ export default function About() {
                     d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"
                   />
                 </svg>
-                <span className="truncate">Colombo, Sri Lanka</span>
+                <span className="truncate">
+                  {aboutContent.personal.location}
+                </span>
               </span>
               <a
                 href="mailto:dinukaaw.sh2@gmail.com"
@@ -852,15 +825,15 @@ export default function About() {
                   />
                 </svg>
                 <span className="truncate group-hover:text-blue-300 transition-colors duration-200">
-                  dinukaaw.sh@gmail.com
+                  {aboutContent.personal.email}
                 </span>
               </a>
             </div>
 
             {/* Enhanced Download CV Button */}
             <motion.a
-              href="/dinuka wickramarathna.pdf"
-              download="Dinuka_Wickramarathna_CV.pdf"
+              href={aboutContent.personal.cvFile}
+              download={aboutContent.personal.cvFileName}
               className="inline-block px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold shadow-lg shadow-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 text-sm sm:text-base mb-4 sm:mb-6"
               tabIndex={0}
               whileHover={{
@@ -897,26 +870,7 @@ export default function About() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
             >
-              {[
-                {
-                  href: "https://x.com/DinukaAshan14",
-                  icon: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z",
-                  label: "X (Twitter)",
-                  color: "group-hover:text-blue-400",
-                },
-                {
-                  href: "https://www.linkedin.com/in/dinuka-wickramarathna-88468b214/",
-                  icon: "M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.28c-.97 0-1.75-.79-1.75-1.75s.78-1.75 1.75-1.75 1.75.79 1.75 1.75-.78 1.75-1.75 1.75zm13.5 11.28h-3v-5.6c0-1.34-.03-3.07-1.87-3.07-1.87 0-2.16 1.46-2.16 2.97v5.7h-3v-10h2.89v1.36h.04c.4-.75 1.38-1.54 2.84-1.54 3.04 0 3.6 2 3.6 4.59v5.59z",
-                  label: "LinkedIn",
-                  color: "group-hover:text-blue-400",
-                },
-                {
-                  href: "https://github.com/Dinukaawsh/Dinukaawsh",
-                  icon: "M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.416-4.042-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.084-.729.084-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.834 2.809 1.304 3.495.997.108-.775.418-1.305.762-1.605-2.665-.305-5.466-1.334-5.466-5.93 0-1.31.469-2.381 1.236-3.221-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.301 1.23a11.52 11.52 0 0 1 3.003-.404c1.018.005 2.045.138 3.003.404 2.291-1.553 3.297-1.23 3.297-1.23.653 1.653.242 2.873.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.803 5.624-5.475 5.921.43.372.823 1.102.823 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12",
-                  label: "GitHub",
-                  color: "group-hover:text-white",
-                },
-              ].map((social, index) => (
+              {aboutContent.socialLinks.map((social, index) => (
                 <motion.a
                   key={social.label}
                   href={social.href}
@@ -985,9 +939,11 @@ export default function About() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.6 }}
                 >
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500/40 to-purple-500/40 rounded-xl border border-blue-400/50 flex items-center justify-center">
+                  <div
+                    className={`w-12 h-12 bg-gradient-to-br ${aboutContent.techStack.frontend.color} rounded-xl border ${aboutContent.techStack.frontend.borderColor} flex items-center justify-center`}
+                  >
                     <motion.div
-                      className="w-6 h-6 bg-blue-400 rounded-full"
+                      className={`w-6 h-6 ${aboutContent.techStack.frontend.dotColor} rounded-full`}
                       animate={{
                         scale: [1, 1.2, 1],
                         opacity: [0.7, 1, 0.7],
@@ -997,10 +953,10 @@ export default function About() {
                   </div>
                   <div className="flex-1">
                     <div className="text-white font-semibold text-sm">
-                      Frontend
+                      {aboutContent.techStack.frontend.title}
                     </div>
                     <div className="text-gray-400 text-xs">
-                      React, Next.js, TypeScript
+                      {aboutContent.techStack.frontend.description}
                     </div>
                   </div>
                 </motion.div>
@@ -1012,9 +968,11 @@ export default function About() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.7 }}
                 >
-                  <div className="w-10 h-10 bg-gradient-to-br from-green-500/40 to-emerald-500/40 rounded-xl border border-green-400/50 flex items-center justify-center ml-2">
+                  <div
+                    className={`w-10 h-10 bg-gradient-to-br ${aboutContent.techStack.backend.color} rounded-xl border ${aboutContent.techStack.backend.borderColor} flex items-center justify-center ml-2`}
+                  >
                     <motion.div
-                      className="w-5 h-5 bg-green-400 rounded-full"
+                      className={`w-5 h-5 ${aboutContent.techStack.backend.dotColor} rounded-full`}
                       animate={{
                         scale: [1, 1.2, 1],
                         opacity: [0.7, 1, 0.7],
@@ -1024,10 +982,10 @@ export default function About() {
                   </div>
                   <div className="flex-1">
                     <div className="text-white font-semibold text-sm">
-                      Backend
+                      {aboutContent.techStack.backend.title}
                     </div>
                     <div className="text-gray-400 text-xs">
-                      Node.js, Express.js, APIs
+                      {aboutContent.techStack.backend.description}
                     </div>
                   </div>
                 </motion.div>
@@ -1039,9 +997,11 @@ export default function About() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.8 }}
                 >
-                  <div className="w-8 h-8 bg-gradient-to-br from-orange-500/40 to-red-500/40 rounded-xl border border-orange-400/50 flex items-center justify-center ml-4">
+                  <div
+                    className={`w-8 h-8 bg-gradient-to-br ${aboutContent.techStack.database.color} rounded-xl border ${aboutContent.techStack.database.borderColor} flex items-center justify-center ml-4`}
+                  >
                     <motion.div
-                      className="w-4 h-4 bg-orange-400 rounded-full"
+                      className={`w-4 h-4 ${aboutContent.techStack.database.dotColor} rounded-full`}
                       animate={{
                         scale: [1, 1.2, 1],
                         opacity: [0.7, 1, 0.7],
@@ -1051,10 +1011,10 @@ export default function About() {
                   </div>
                   <div className="flex-1">
                     <div className="text-white font-semibold text-sm">
-                      Database
+                      {aboutContent.techStack.database.title}
                     </div>
                     <div className="text-gray-400 text-xs">
-                      MongoDB, MySQL, Firebase
+                      {aboutContent.techStack.database.description}
                     </div>
                   </div>
                 </motion.div>
@@ -1126,26 +1086,7 @@ export default function About() {
                 Journey Timeline
               </motion.h4>
               <div className="space-y-3">
-                {[
-                  {
-                    year: "2021 - Present",
-                    place: "ESOFT Metro Campus",
-                    color: "bg-blue-400",
-                    delay: 0.7,
-                  },
-                  {
-                    year: "2025 - Present",
-                    place: "Twist Digital",
-                    color: "bg-green-400",
-                    delay: 0.8,
-                  },
-                  {
-                    year: "Future",
-                    place: "Senior Developer",
-                    color: "bg-purple-400",
-                    delay: 0.9,
-                  },
-                ].map((item, index) => (
+                {aboutContent.timeline.map((item, index) => (
                   <motion.div
                     key={item.year}
                     className="flex items-start gap-3"
@@ -1221,57 +1162,149 @@ export default function About() {
                 <div className="text-xs text-gray-300">Roles</div>
               </motion.div>
             </motion.div>
-            <div className="w-full">
-              {/* Editor top bar with lock and filename */}
-              <div className="flex items-center gap-2 bg-gray-800/80 rounded-t-xl px-3 sm:px-4 py-2 border-b border-gray-700">
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 17a2 2 0 002-2v-2a2 2 0 00-2-2 2 2 0 00-2 2v2a2 2 0 002 2zm6-2v-2a6 6 0 10-12 0v2a2 2 0 00-2 2v2a2 2 0 002 2h12a2 2 0 002-2v-2a2 2 0 00-2-2z"
-                  />
-                </svg>
-                <span className="text-xs text-gray-300 font-mono">
-                  developer.js
-                </span>
-              </div>
-              <pre className="bg-gray-900/90 text-left rounded-b-xl shadow-lg p-3 sm:p-4 lg:p-4 xl:p-6 text-xs sm:text-sm font-mono text-gray-100 w-full overflow-x-auto border border-t-0 border-gray-800 relative">
-                <span className="text-green-400">{codePrefix}</span>
-                <br />
-                {useMemo(
-                  () =>
-                    roles.map((role, i) => (
-                      <span key={role} className="block pl-4 sm:pl-6">
-                        <span className="text-yellow-400">&quot;</span>
-                        <span className="text-blue-400">
-                          {i < codeArrayIndex
-                            ? role
-                            : i === codeArrayIndex
-                            ? codeDisplayed
-                            : ""}
-                          {i === codeArrayIndex && (
-                            <span className="border-r-2 border-blue-400 animate-pulse" />
-                          )}
-                        </span>
-                        <span className="text-yellow-400">&quot;</span>
-                        <span className="text-white">
-                          {i < roles.length - 1 ? "," : ""}
-                        </span>
-                      </span>
-                    )),
-                  [codeArrayIndex, codeDisplayed]
-                )}
-                <span className="text-green-400">{codeSuffix}</span>
 
-                {/* Code Animation Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/5 to-transparent animate-pulse pointer-events-none" />
-              </pre>
+            {/* Enhanced Code Editor Container with Glassmorphism */}
+            <div className="w-full">
+              {/* Enhanced Editor top bar with glassmorphism */}
+              <div className="flex items-center gap-2 bg-gradient-to-r from-gray-800/80 via-gray-700/60 to-gray-800/80 backdrop-blur-xl rounded-t-2xl px-3 sm:px-4 py-3 border-b border-blue-500/30 shadow-lg">
+                <motion.div
+                  className="flex items-center gap-2"
+                  animate={{
+                    scale: [1, 1.05, 1],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <svg
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 17a2 2 0 002-2v-2a2 2 0 00-2-2 2 2 0 00-2 2v2a2 2 0 002 2zm6-2v-2a6 6 0 10-12 0v2a2 2 0 00-2 2v2a2 2 0 002 2h12a2 2 0 002-2v-2a2 2 0 00-2-2z"
+                    />
+                  </svg>
+                  <span className="text-xs text-blue-300 font-mono font-semibold">
+                    {aboutContent.codeBlock.filename}
+                  </span>
+                </motion.div>
+
+                {/* Enhanced Editor Controls */}
+                <div className="ml-auto flex items-center gap-2">
+                  <motion.div
+                    className="w-3 h-3 bg-red-500 rounded-full"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      opacity: [0.7, 1, 0.7],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  <motion.div
+                    className="w-3 h-3 bg-yellow-500 rounded-full"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      opacity: [0.7, 1, 0.7],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                  />
+                  <motion.div
+                    className="w-3 h-3 bg-green-500 rounded-full"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      opacity: [0.7, 1, 0.7],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                  />
+                </div>
+              </div>
+
+              {/* Enhanced Code Content with Glassmorphism */}
+              <div className="bg-gradient-to-br from-gray-900/90 via-gray-800/60 to-gray-900/90 backdrop-blur-xl text-left rounded-b-2xl shadow-2xl p-4 sm:p-5 lg:p-5 xl:p-6 text-xs sm:text-sm font-mono text-gray-100 w-full overflow-x-auto border border-t-0 border-blue-500/30 relative overflow-hidden">
+                {/* Animated Background Pattern */}
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-transparent to-purple-500/20" />
+                  <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_80%,rgba(59,130,246,0.1),transparent_50%)]" />
+                  <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_20%,rgba(147,51,234,0.1),transparent_50%)]" />
+                </div>
+
+                {/* Code Content */}
+                <div className="relative z-10">
+                  <span className="text-green-400 font-semibold">
+                    {codePrefix}
+                  </span>
+                  <br />
+                  {useMemo(
+                    () =>
+                      roles.map((role, i) => (
+                        <span key={role} className="block pl-4 sm:pl-6">
+                          <span className="text-yellow-400">&quot;</span>
+                          <span className="text-blue-400 font-medium">
+                            {i < codeArrayIndex
+                              ? role
+                              : i === codeArrayIndex
+                              ? codeDisplayed
+                              : ""}
+                            {i === codeArrayIndex && (
+                              <motion.span
+                                className="border-r-2 border-blue-400 animate-pulse"
+                                animate={{
+                                  borderColor: [
+                                    "#60a5fa",
+                                    "#3b82f6",
+                                    "#60a5fa",
+                                  ],
+                                  boxShadow: [
+                                    "0 0 5px rgba(59, 130, 246, 0.5)",
+                                    "0 0 15px rgba(59, 130, 246, 0.8)",
+                                    "0 0 5px rgba(59, 130, 246, 0.5)",
+                                  ],
+                                }}
+                                transition={{ duration: 1.5, repeat: Infinity }}
+                              />
+                            )}
+                          </span>
+                          <span className="text-yellow-400">&quot;</span>
+                          <span className="text-white">
+                            {i < roles.length - 1 ? "," : ""}
+                          </span>
+                        </span>
+                      )),
+                    [codeArrayIndex, codeDisplayed]
+                  )}
+                  <span className="text-green-400 font-semibold">
+                    {codeSuffix}
+                  </span>
+                </div>
+
+                {/* Floating Code Particles */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {[0, 1, 2, 3].map((i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-1 h-1 bg-blue-400/60 rounded-full"
+                      style={{
+                        left: `${15 + i * 25}%`,
+                        top: `${20 + i * 20}%`,
+                      }}
+                      animate={{
+                        scale: [0, 1, 0],
+                        opacity: [0, 0.8, 0],
+                        y: [0, -10, 0],
+                        x: [0, Math.random() * 20 - 10, 0],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: i * 0.5,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Enhanced Floating Achievements Section */}
@@ -1417,19 +1450,6 @@ export default function About() {
           </motion.div>
         </div>
       </Suspense>
-
-      {/* Floating animated background shapes */}
-      <style>{`
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradientMove 8s ease-in-out infinite;
-        }
-        @keyframes gradientMove {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-      `}</style>
     </section>
   );
 }

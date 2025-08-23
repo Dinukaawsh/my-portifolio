@@ -1,15 +1,17 @@
+"use client";
+
 import React, { useEffect, useState, useRef } from "react";
 import Flower from "@/app/components/backgrounds/flower/Flower";
 import { motion, useScroll, useSpring } from "framer-motion";
-import { blogContent } from "@/app/components/content/blog";
+import {
+  achievementsContent,
+  getAchievementsByCategory,
+} from "@/app/components/content/achievements";
 
-const blogData = blogContent.posts;
-const platforms = blogContent.platforms;
-
-export default function Blog() {
+export default function Achievements() {
   const [isVisible, setIsVisible] = useState(false);
-  const [activePlatform, setActivePlatform] = useState("All");
-  const [currentBlog, setCurrentBlog] = useState(0);
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [currentIndicator, setCurrentIndicator] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -18,20 +20,20 @@ export default function Blog() {
     restDelta: 0.001,
   });
 
-  // Blog rotation effect
+  // Indicator rotation effect
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentBlog(
-        (prev) => (prev + 1) % blogContent.header.indicators.length
+      setCurrentIndicator(
+        (prev) => (prev + 1) % achievementsContent.header.indicators.length
       );
-    }, blogContent.animation.rotationInterval);
+    }, achievementsContent.animation.rotationInterval);
     return () => clearInterval(timer);
   }, []);
 
-  const filteredBlogs =
-    activePlatform === "All"
-      ? blogData
-      : blogData.filter((blog) => blog.platform === activePlatform);
+  const filteredAchievements =
+    activeCategory === "All"
+      ? achievementsContent.achievements
+      : getAchievementsByCategory(activeCategory);
 
   // Intersection Observer for animations
   useEffect(() => {
@@ -67,10 +69,10 @@ export default function Blog() {
         <Flower />
       </div>
 
-      {/* Floating Blog Icons */}
+      {/* Floating Achievement Icons */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {Array.from(
-          { length: blogContent.animation.floatingParticles },
+          { length: achievementsContent.animation.floatingParticles },
           (_, i) => (
             <motion.div
               key={i}
@@ -86,8 +88,9 @@ export default function Blog() {
                 scale: [0, 1, 1.5, 0],
               }}
               transition={{
-                duration: blogContent.animation.particleDuration + i * 2,
-                delay: i * blogContent.animation.particleDelay,
+                duration:
+                  achievementsContent.animation.particleDuration + i * 2,
+                delay: i * achievementsContent.animation.particleDelay,
                 repeat: Infinity,
                 ease: "linear",
               }}
@@ -124,7 +127,7 @@ export default function Blog() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            {blogContent.header.title}
+            {achievementsContent.header.title}
           </motion.h1>
 
           <motion.p
@@ -133,35 +136,37 @@ export default function Blog() {
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            {blogContent.header.subtitle}
+            {achievementsContent.header.subtitle}
           </motion.p>
 
-          {/* Animated Blog Indicator */}
+          {/* Animated Achievement Indicator */}
           <motion.div
             className="flex justify-center gap-2 mt-6"
             initial={{ opacity: 0, y: 20 }}
             animate={isVisible ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            {blogContent.header.indicators.map((blog, index) => (
+            {achievementsContent.header.indicators.map((indicator, index) => (
               <motion.div
-                key={blog}
+                key={indicator}
                 className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${
-                  index === currentBlog
+                  index === currentIndicator
                     ? "bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg"
                     : "bg-white/10 text-gray-300 border border-white/20"
                 }`}
-                animate={index === currentBlog ? { scale: 1.1 } : { scale: 1 }}
+                animate={
+                  index === currentIndicator ? { scale: 1.1 } : { scale: 1 }
+                }
                 transition={{ duration: 0.3 }}
               >
                 <span className="w-2 h-2 rounded-full bg-current" />
-                {blog}
+                {indicator}
               </motion.div>
             ))}
           </motion.div>
         </motion.div>
 
-        {/* Enhanced Platform Filter */}
+        {/* Enhanced Category Filter */}
         <motion.div
           className="w-full max-w-4xl mx-auto mb-8 sm:mb-12"
           initial={{ opacity: 0, y: 50, scale: 0.9 }}
@@ -169,12 +174,12 @@ export default function Blog() {
           transition={{ duration: 0.8, delay: 0.3, type: "spring" }}
         >
           <div className="flex flex-wrap justify-center gap-3">
-            {platforms.map((platform, index) => (
+            {achievementsContent.categories.map((category, index) => (
               <motion.button
-                key={platform}
-                onClick={() => setActivePlatform(platform)}
+                key={category}
+                onClick={() => setActiveCategory(category)}
                 className={`px-4 py-2 rounded-full text-sm sm:text-base font-medium transition-all duration-200 ${
-                  activePlatform === platform
+                  activeCategory === category
                     ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25 scale-105"
                     : "bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white border border-white/20"
                 }`}
@@ -192,13 +197,13 @@ export default function Blog() {
                 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {platform}
+                {category}
               </motion.button>
             ))}
           </div>
         </motion.div>
 
-        {/* Enhanced Blog Posts Grid */}
+        {/* Enhanced Achievements Grid */}
         <motion.div
           className="w-full max-w-6xl mx-auto"
           initial={{ opacity: 0, y: 50, scale: 0.9 }}
@@ -206,9 +211,9 @@ export default function Blog() {
           transition={{ duration: 0.8, delay: 0.6, type: "spring" }}
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-            {filteredBlogs.map((blog, index) => (
+            {filteredAchievements.map((achievement, index) => (
               <motion.div
-                key={blog.id}
+                key={achievement.id}
                 className="group"
                 initial={{ opacity: 0, y: 50, scale: 0.9 }}
                 animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
@@ -223,76 +228,72 @@ export default function Blog() {
                   transition: { duration: 0.3 },
                 }}
               >
-                {/* Blog Card */}
+                {/* Achievement Card */}
                 <div className="bg-gradient-to-br from-gray-900/80 via-blue-900/40 to-gray-900/80 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-blue-500/30 shadow-2xl shadow-blue-500/20 hover:shadow-2xl hover:shadow-blue-500/40 transition-all duration-300 hover:scale-105 h-full">
-                  {/* Platform Badge & Featured */}
+                  {/* Issuer Badge & Featured */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <span
-                        className={`w-8 h-8 ${blog.platformColor} rounded-full flex items-center justify-center text-white`}
+                        className={`w-8 h-8 ${achievement.color} rounded-full flex items-center justify-center text-white text-lg`}
                       >
-                        {/* Medium Logo Icon */}
-                        <svg
-                          className="w-4 h-4"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          aria-label="Medium"
-                        >
-                          <path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z" />
-                        </svg>
+                        {achievement.issuerLogo}
                       </span>
                       <span className="text-gray-300 text-sm font-medium">
-                        {blog.platform}
+                        {achievement.issuer}
                       </span>
                     </div>
-                    {blog.featured && (
+                    {achievement.featured && (
                       <span className="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold rounded-full">
                         ⭐ Featured
                       </span>
                     )}
                   </div>
 
-                  {/* Blog Content */}
+                  {/* Achievement Content */}
                   <div className="space-y-4 flex-1">
                     {/* Title */}
                     <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 group-hover:text-blue-300 transition-colors duration-200 line-clamp-2">
-                      {blog.title}
+                      {achievement.title}
                     </h3>
 
-                    {/* Excerpt */}
+                    {/* Description */}
                     <p className="text-gray-300 text-sm sm:text-base leading-relaxed line-clamp-3">
-                      {blog.excerpt}
+                      {achievement.description}
                     </p>
 
-                    {/* Tags */}
+                    {/* Skills */}
                     <div className="flex flex-wrap gap-2">
-                      {blog.tags.map((tag, tagIndex) => (
+                      {achievement.skills.map((skill, skillIndex) => (
                         <span
-                          key={tagIndex}
+                          key={skillIndex}
                           className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-medium border border-blue-500/30"
                         >
-                          {tag}
+                          {skill}
                         </span>
                       ))}
                     </div>
 
                     {/* Meta Info */}
                     <div className="flex items-center justify-between text-sm text-gray-400 pt-2">
-                      <span>{blog.readTime}</span>
+                      <span>{achievement.category}</span>
                       <span>
-                        {new Date(blog.publishDate).toLocaleDateString()}
+                        {new Date(achievement.date).toLocaleDateString()}
                       </span>
                     </div>
 
-                    {/* Read More Button */}
+                    {/* View Achievement Button */}
                     <div className="pt-4">
                       <a
-                        href={blog.url}
+                        href={
+                          achievement.certificateUrl ||
+                          achievement.mediaUrl ||
+                          "#"
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:scale-105 w-full justify-center"
                       >
-                        Read Full Article
+                        View Achievement
                         <svg
                           className="w-4 h-4"
                           fill="none"
@@ -316,14 +317,14 @@ export default function Blog() {
         </motion.div>
 
         {/* Empty State */}
-        {filteredBlogs.length === 0 && (
+        {filteredAchievements.length === 0 && (
           <div className="text-center py-16">
-            <div className="text-gray-400 text-6xl mb-4">📚</div>
+            <div className="text-gray-400 text-6xl mb-4">🏆</div>
             <h3 className="text-xl font-semibold text-white mb-2">
-              No blog posts found
+              No achievements found
             </h3>
             <p className="text-gray-400">
-              Try selecting a different platform or check back later!
+              Try selecting a different category or check back later!
             </p>
           </div>
         )}
@@ -353,7 +354,7 @@ export default function Blog() {
               animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 1.4 }}
             >
-              {blogContent.callToAction.title}
+              Ready to achieve more?
             </motion.h3>
             <motion.p
               className="text-gray-300 text-sm sm:text-base mb-6"
@@ -361,7 +362,7 @@ export default function Blog() {
               animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 1.5 }}
             >
-              {blogContent.callToAction.description}
+              Set new goals and push your boundaries to reach new heights
             </motion.p>
             <motion.div
               className="flex justify-center"
@@ -370,9 +371,7 @@ export default function Blog() {
               transition={{ duration: 0.6, delay: 1.6 }}
             >
               <motion.a
-                href={blogContent.callToAction.buttonUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#"
                 className="px-8 py-4 bg-orange-500 text-white font-semibold rounded-xl hover:bg-orange-600 transition-all duration-200 shadow-lg shadow-orange-500/25 flex items-center justify-center gap-3"
                 initial={{ opacity: 0, y: 20, scale: 0.8 }}
                 animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
@@ -388,16 +387,7 @@ export default function Blog() {
                 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {/* Medium Logo Icon */}
-                <svg
-                  className="w-6 h-6"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  aria-label="Medium"
-                >
-                  <path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z" />
-                </svg>
-                <span>{blogContent.callToAction.buttonText}</span>
+                <span>Set New Goals</span>
               </motion.a>
             </motion.div>
           </motion.div>
