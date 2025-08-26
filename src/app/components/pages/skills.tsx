@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import Flower from "@/app/components/backgrounds/flower/Flower";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import CustomIcon from "@/app/components/icons/skillsicons";
 import {
@@ -51,6 +51,7 @@ export default function Skills() {
   const [slideDirection, setSlideDirection] = useState("right");
   const [currentSkill, setCurrentSkill] = useState(0);
   const [isAutoSliding, setIsAutoSliding] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const autoSlideRef = useRef<NodeJS.Timeout | null>(null);
   const { scrollYProgress } = useScroll();
@@ -120,6 +121,7 @@ export default function Skills() {
 
         // Wait for progress bars to complete, then slide to next category
         setTimeout(() => {
+          setIsTransitioning(true);
           setSlideDirection("right");
           setActiveCategory((prev) => {
             const categories = getAllCategories();
@@ -127,7 +129,9 @@ export default function Skills() {
             const nextIndex = (currentIndex + 1) % categories.length;
             return categories[nextIndex];
           });
-        }, skillsContent.autoSlide.progressAnimationTime); // Wait for progress bars to complete
+          // Reset transition state after animation completes
+          setTimeout(() => setIsTransitioning(false), 800);
+        }, skillsContent.autoSlide.progressAnimationTime + 1000); // Added extra delay for smooth transition
       };
 
       // Start the first cycle
@@ -159,12 +163,18 @@ export default function Skills() {
     }
 
     setSlideDirection("right");
-    setActiveCategory((prev) => {
-      const categories = getAllCategories();
-      const currentIndex = categories.indexOf(prev);
-      const nextIndex = (currentIndex + 1) % categories.length;
-      return categories[nextIndex];
-    });
+    setIsTransitioning(true);
+    // Add a small delay to ensure smooth transition
+    setTimeout(() => {
+      setActiveCategory((prev) => {
+        const categories = getAllCategories();
+        const currentIndex = categories.indexOf(prev);
+        const nextIndex = (currentIndex + 1) % categories.length;
+        return categories[nextIndex];
+      });
+      // Reset transition state after animation completes
+      setTimeout(() => setIsTransitioning(false), 800);
+    }, 100);
   }, []);
 
   const goToPreviousCategory = useCallback(() => {
@@ -176,13 +186,19 @@ export default function Skills() {
     }
 
     setSlideDirection("left");
-    setActiveCategory((prev) => {
-      const categories = getAllCategories();
-      const currentIndex = categories.indexOf(prev);
-      const prevIndex =
-        (currentIndex - 1 + categories.length) % categories.length;
-      return categories[prevIndex];
-    });
+    setIsTransitioning(true);
+    // Add a small delay to ensure smooth transition
+    setTimeout(() => {
+      setActiveCategory((prev) => {
+        const categories = getAllCategories();
+        const currentIndex = categories.indexOf(prev);
+        const prevIndex =
+          (currentIndex - 1 + categories.length) % categories.length;
+        return categories[prevIndex];
+      });
+      // Reset transition state after animation completes
+      setTimeout(() => setIsTransitioning(false), 800);
+    }, 100);
   }, []);
 
   const pauseAutoSlide = useCallback(() => {
@@ -198,6 +214,7 @@ export default function Skills() {
       const startAutoSlide = () => {
         animateProgress();
         setTimeout(() => {
+          setIsTransitioning(true);
           setSlideDirection("right");
           setActiveCategory((prev) => {
             const categories = getAllCategories();
@@ -205,7 +222,9 @@ export default function Skills() {
             const nextIndex = (currentIndex + 1) % categories.length;
             return categories[nextIndex];
           });
-        }, skillsContent.autoSlide.progressAnimationTime);
+          // Reset transition state after animation completes
+          setTimeout(() => setIsTransitioning(false), 800);
+        }, skillsContent.autoSlide.progressAnimationTime + 1000); // Added extra delay for smooth transition
       };
 
       // Start immediately
@@ -247,6 +266,8 @@ export default function Skills() {
       backendFrameworks: "Backend Frameworks",
       databases: "Databases",
       cloudServices: "Cloud Services",
+      cicd: "CI/CD",
+      apis: "APIs",
       tools: "Development Tools",
       softSkills: "Soft Skills",
     };
@@ -261,6 +282,8 @@ export default function Skills() {
       backendFrameworks: "from-purple-500 to-purple-600",
       databases: "from-orange-500 to-orange-600",
       cloudServices: "from-indigo-500 to-indigo-600",
+      cicd: "from-red-500 to-red-600",
+      apis: "from-yellow-500 to-yellow-600",
       tools: "from-pink-500 to-pink-600",
       softSkills: "from-teal-500 to-teal-600",
     };
@@ -391,40 +414,70 @@ export default function Skills() {
             className="relative overflow-hidden"
             whileHover={{ scale: 1.05 }}
           >
-            <motion.div
-              key={activeCategory}
-              className="inline-block"
-              initial={{ opacity: 0, x: slideDirection === "right" ? 50 : -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: slideDirection === "right" ? -50 : 50 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-            >
+            <AnimatePresence mode="wait">
               <motion.div
-                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-full shadow-lg shadow-blue-500/25 inline-block"
-                animate={{
-                  boxShadow: [
-                    "0 10px 25px rgba(59, 130, 246, 0.25)",
-                    "0 10px 25px rgba(147, 51, 234, 0.35)",
-                    "0 10px 25px rgba(59, 130, 246, 0.25)",
-                  ],
+                key={activeCategory}
+                className={`inline-block ${
+                  isTransitioning ? "pointer-events-none" : ""
+                }`}
+                initial={{
+                  opacity: 0,
+                  x: slideDirection === "right" ? 100 : -100,
                 }}
-                transition={{ duration: 3, repeat: Infinity }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{
+                  opacity: 0,
+                  x: slideDirection === "right" ? -100 : 100,
+                }}
+                transition={{
+                  duration: 0.8,
+                  ease: "easeInOut",
+                  opacity: { duration: 0.4 },
+                  x: { duration: 0.8 },
+                  scale: { duration: 0.6 },
+                }}
+                whileInView={{ scale: [0.95, 1] }}
               >
-                <motion.h3
-                  className="text-lg sm:text-xl font-bold"
+                <motion.div
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-full shadow-lg shadow-blue-500/25 inline-block"
                   animate={{
-                    textShadow: [
-                      "0 0 5px rgba(255, 255, 255, 0.5)",
-                      "0 0 10px rgba(255, 255, 255, 0.8)",
-                      "0 0 5px rgba(255, 255, 255, 0.5)",
+                    boxShadow: [
+                      "0 10px 25px rgba(59, 130, 246, 0.25)",
+                      "0 10px 25px rgba(147, 51, 234, 0.35)",
+                      "0 10px 25px rgba(59, 130, 246, 0.25)",
                     ],
                   }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={{ duration: 3, repeat: Infinity }}
                 >
-                  {getCategoryName(activeCategory)}
-                </motion.h3>
+                  <motion.h3
+                    className="text-lg sm:text-xl font-bold"
+                    animate={{
+                      textShadow: [
+                        "0 0 5px rgba(255, 255, 255, 0.5)",
+                        "0 0 10px rgba(255, 255, 255, 0.8)",
+                        "0 0 5px rgba(255, 255, 255, 0.5)",
+                      ],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    {getCategoryName(activeCategory)}
+                    {isTransitioning && (
+                      <motion.span
+                        className="ml-2 inline-block"
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                      >
+                        🔄
+                      </motion.span>
+                    )}
+                  </motion.h3>
+                </motion.div>
               </motion.div>
-            </motion.div>
+            </AnimatePresence>
           </motion.div>
 
           {/* Enhanced Progress Indicator */}
@@ -456,7 +509,15 @@ export default function Skills() {
                     : {}
                 }
                 transition={{ duration: 2, repeat: Infinity }}
-                onClick={() => setActiveCategory(category)}
+                onClick={() => {
+                  // Stop auto-sliding when manually selecting
+                  if (autoSlideRef.current) {
+                    clearInterval(autoSlideRef.current);
+                    autoSlideRef.current = null;
+                    setIsAutoSliding(false);
+                  }
+                  setActiveCategory(category);
+                }}
               />
             ))}
           </motion.div>
@@ -471,9 +532,14 @@ export default function Skills() {
             {/* Previous Button */}
             <motion.button
               onClick={goToPreviousCategory}
-              className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200 border border-white/20 text-white"
-              whileHover={{ scale: 1.1, rotate: -5 }}
-              whileTap={{ scale: 0.95 }}
+              disabled={isTransitioning}
+              className={`p-3 rounded-full transition-colors duration-200 border text-white ${
+                isTransitioning
+                  ? "bg-white/5 border-white/10 cursor-not-allowed opacity-50"
+                  : "bg-white/10 hover:bg-white/20 border-white/20"
+              }`}
+              whileHover={isTransitioning ? {} : { scale: 1.1, rotate: -5 }}
+              whileTap={isTransitioning ? {} : { scale: 0.95 }}
               aria-label="Previous category"
             >
               <svg
@@ -494,9 +560,14 @@ export default function Skills() {
             {/* Play/Pause Button */}
             <motion.button
               onClick={isAutoSliding ? pauseAutoSlide : resumeAutoSlide}
-              className="p-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-200 text-white shadow-lg"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              disabled={isTransitioning}
+              className={`p-3 rounded-full transition-all duration-200 text-white shadow-lg ${
+                isTransitioning
+                  ? "bg-gradient-to-r from-gray-500 to-gray-600 cursor-not-allowed opacity-50"
+                  : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+              }`}
+              whileHover={isTransitioning ? {} : { scale: 1.1 }}
+              whileTap={isTransitioning ? {} : { scale: 0.95 }}
               aria-label={
                 isAutoSliding ? "Pause auto-slide" : "Resume auto-slide"
               }
@@ -535,9 +606,14 @@ export default function Skills() {
             {/* Next Button */}
             <motion.button
               onClick={goToNextCategory}
-              className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200 border border-white/20 text-white"
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              whileTap={{ scale: 0.95 }}
+              disabled={isTransitioning}
+              className={`p-3 rounded-full transition-colors duration-200 border text-white ${
+                isTransitioning
+                  ? "bg-white/5 border-white/10 cursor-not-allowed opacity-50"
+                  : "bg-white/10 hover:bg-white/20 border-white/20"
+              }`}
+              whileHover={isTransitioning ? {} : { scale: 1.1, rotate: 5 }}
+              whileTap={isTransitioning ? {} : { scale: 0.95 }}
               aria-label="Next category"
             >
               <svg
@@ -689,7 +765,15 @@ export default function Skills() {
               <motion.div
                 key={category}
                 className="bg-gradient-to-br from-gray-900/60 via-blue-900/20 to-gray-900/60 backdrop-blur-xl rounded-2xl p-3 sm:p-4 border border-blue-500/30 hover:bg-gradient-to-br hover:from-gray-900/80 hover:via-blue-900/40 hover:to-gray-900/80 transition-all duration-300 transform hover:scale-105 cursor-pointer hover:shadow-lg hover:shadow-blue-500/25"
-                onClick={() => setActiveCategory(category)}
+                onClick={() => {
+                  // Stop auto-sliding when manually selecting
+                  if (autoSlideRef.current) {
+                    clearInterval(autoSlideRef.current);
+                    autoSlideRef.current = null;
+                    setIsAutoSliding(false);
+                  }
+                  setActiveCategory(category);
+                }}
                 initial={{ opacity: 0, y: 30, scale: 0.8 }}
                 animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
                 transition={{

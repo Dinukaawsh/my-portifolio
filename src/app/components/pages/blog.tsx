@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import Flower from "@/app/components/backgrounds/flower/Flower";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { blogContent } from "@/app/components/content/blog";
@@ -225,6 +226,17 @@ export default function Blog() {
               >
                 {/* Blog Card */}
                 <div className="bg-gradient-to-br from-gray-900/80 via-blue-900/40 to-gray-900/80 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-blue-500/30 shadow-2xl shadow-blue-500/20 hover:shadow-2xl hover:shadow-blue-500/40 transition-all duration-300 hover:scale-105 h-full">
+                  {/* Blog Image */}
+                  <div className="mb-4 overflow-hidden rounded-2xl">
+                    <Image
+                      src={blog.image}
+                      alt={blog.title}
+                      width={400}
+                      height={192}
+                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+                    />
+                  </div>
+
                   {/* Platform Badge & Featured */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
@@ -373,7 +385,7 @@ export default function Blog() {
                 href={blogContent.callToAction.buttonUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-8 py-4 bg-orange-500 text-white font-semibold rounded-xl hover:bg-orange-600 transition-all duration-200 shadow-lg shadow-orange-500/25 flex items-center justify-center gap-3"
+                className="px-8 py-4 bg-[#05112b] text-white font-semibold rounded-xl hover:bg-[#05112b] transition-all duration-200 shadow-lg shadow-blue-500/25 flex items-center justify-center gap-3"
                 initial={{ opacity: 0, y: 20, scale: 0.8 }}
                 animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
                 transition={{

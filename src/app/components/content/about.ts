@@ -11,7 +11,7 @@ export const aboutContent = {
     cvFile: "/dinuka wickramarathna.pdf",
     cvFileName: "Dinuka_Wickramarathna_CV.pdf",
     description:
-      "I'm a passionate Full Stack Developer and Information Technology student, following by Bachelor of Information Technology (Hons), specializing in modern web technologies. With expertise in React.js, Next.js, and Node.js, I build scalable applications that deliver exceptional user experiences. My backend skills include express.js, while I'm proficient in both SQL and NoSQL databases. I'm committed to writing clean, maintainable code and staying current with industry best practices.",
+      "I'm a passionate Full Stack Developer and Information Technology student pursuing a Bachelor of Information Technology (Hons), specializing in modern web technologies. With expertise across the entire software development lifecycle, I build robust, scalable applications using cutting-edge technologies. My technical proficiency includes frontend development with React.js and Next.js, backend architecture using Node.js and Express.js, and proficiency in JavaScript, TypeScript, and Python. I have extensive experience with both SQL and NoSQL databases including MongoDB and MySQL. I excel in designing RESTful APIs and GraphQL endpoints, implementing secure authentication with JWT, and creating responsive user interfaces with Tailwind CSS. My cloud infrastructure knowledge covers AWS services, CI/CD pipelines with GitHub Actions, and containerization using Docker and Kubernetes. Beyond technical skills, I bring strong problem-solving abilities, effective communication, and collaborative teamwork to every project. I'm committed to writing clean, maintainable code following industry best practices and delivering high-quality solutions that meet both business requirements and user needs.",
   },
 
   // Professional Roles (for typing animation)
@@ -130,6 +130,18 @@ export const aboutContent = {
       icon: "M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.416-4.042-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.084-.729.084-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.834 2.809 1.304 3.495.997.108-.775.418-1.305.762-1.605-2.665-.305-5.466-1.334-5.466-5.93 0-1.31.469-2.381 1.236-3.221-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.301 1.23a11.52 11.52 0 0 1 3.003-.404c1.018.005 2.045.138 3.003.404 2.291-1.553 3.297-1.23 3.297-1.23.653 1.653.242 2.873.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.803 5.624-5.475 5.921.43.372.823 1.102.823 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12",
       label: "GitHub",
       color: "group-hover:text-white",
+    },
+    {
+      href: "https://medium.com/@dinukaaw.sh",
+      icon: "M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z",
+      label: "Medium",
+      color: "group-hover:text-green-400",
+    },
+    {
+      href: "https://web.facebook.com/dinuka.wickramarathna",
+      icon: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z",
+      label: "Facebook",
+      color: "group-hover:text-blue-600",
     },
   ],
 

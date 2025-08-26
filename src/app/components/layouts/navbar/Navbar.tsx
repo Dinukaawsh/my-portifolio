@@ -22,7 +22,7 @@ const sections = [
   // { key: "certificates", label: "Certificates" },
   // { key: "achievements", label: "Achievements" },
   // { key: "references", label: "References" },
-  // { key: "blog", label: "Blog" },
+  { key: "blog", label: "Blog" },
   { key: "contact", label: "Contact" },
 ];
 

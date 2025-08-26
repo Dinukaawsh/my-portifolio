@@ -24,8 +24,19 @@ import {
   SiDocker,
   SiNestjs,
   SiFirebase,
+  SiGraphql,
+  SiSwagger,
+  SiRender,
+  SiGithub,
+  SiJenkins,
+  SiKubernetes,
+  SiTerraform,
+  SiNginx,
+  SiNgrok,
 } from "react-icons/si";
 import { VscVscode } from "react-icons/vsc";
+import { BiGitBranch } from "react-icons/bi";
+import { TbApi, TbKey, TbPlug } from "react-icons/tb";
 
 interface CustomIconProps {
   iconName: string;
@@ -61,14 +72,31 @@ const CustomIcon: React.FC<CustomIconProps> = ({
     "custom:django": SiDjango,
     "custom:express": SiExpress,
     "custom:nestjs": SiNestjs,
+
+    // APIs
+    "custom:rest": TbApi,
+    "custom:graphql": SiGraphql,
+    "custom:swagger": SiSwagger,
+    "custom:jwt": TbKey,
+    "custom:websocket": TbPlug,
+
     // Databases
     "custom:mongodb": SiMongodb,
     "custom:mysql": SiMysql,
     "custom:firebase": SiFirebase,
+
     // Cloud Services
     "custom:aws": SiAmazon,
     "custom:vercel": SiVercel,
     "custom:railway": SiRailway,
+    "custom:render": SiRender,
+
+    // CI/CD & DevOps
+    "custom:github": SiGithub,
+    "custom:jenkins": SiJenkins,
+    "custom:kubernetes": SiKubernetes,
+    "custom:terraform": SiTerraform,
+    "custom:pipeline": BiGitBranch,
 
     // Development Tools
     "custom:postman": SiPostman,
@@ -76,6 +104,8 @@ const CustomIcon: React.FC<CustomIconProps> = ({
     "custom:vscode": VscVscode,
     "custom:git": SiGit,
     "custom:docker": SiDocker,
+    "custom:nginx": SiNginx,
+    "custom:ngrok": SiNgrok,
   };
 
   const IconComponent = iconMap[iconName];

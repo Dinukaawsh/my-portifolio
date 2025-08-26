@@ -33,6 +33,60 @@ export const educationContent = {
         "Bootstrap",
         "Android Studio",
       ],
+      coreModules: [
+        {
+          name: "Advanced Software Engineering",
+          code: "ECU4305",
+          credits: 4,
+          description:
+            "Principles of software development lifecycle and methodologies with Agile and Scrum",
+        },
+        {
+          name: "Advanced Database Systems",
+          code: "CCU4404",
+          credits: 4,
+          description:
+            "Advanced database design, SQL, and NoSQL databases with MongoDB and MySQL",
+        },
+        {
+          name: "Advanced Web Technologies",
+          code: "ECU4311",
+          credits: 3,
+          description:
+            "Modern web technologies and responsive design with Django and Tailwind CSS",
+        },
+        {
+          name: "Mobile Application Development",
+          code: "ECU3303",
+          credits: 3,
+          description: "Android development and mobile app architecture",
+        },
+        {
+          name: "Object-Oriented Programming with Visual Programming",
+          code: "ECU3310",
+          credits: 4,
+          description:
+            "Java and C# programming with OOP principles and Visual Programming",
+        },
+        {
+          name: "Artificial Intelligence",
+          code: "CCU4302",
+          credits: 3,
+          description: "Artificial intelligence and machine learning",
+        },
+        {
+          name: "Advanced Mathematics for Computing",
+          code: "ECU4307",
+          credits: 3,
+          description: "Advanced mathematics and statistics",
+        },
+        {
+          name: "Data Structures and Algorithms",
+          code: "CCU2305",
+          credits: 3,
+          description: "Data structures and algorithms",
+        },
+      ],
       logo: "🎓",
       achievements: [
         "Maintaining strong academic performance",
@@ -159,6 +213,19 @@ export const getSkillsByCategory = (category: string) => {
   };
 
   return categorySkills[category] || [];
+};
+
+// Helper function to get core modules for a specific institution
+export const getCoreModulesByInstitution = (institutionId: number) => {
+  const institution = educationContent.institutions.find(
+    (inst) => inst.id === institutionId
+  );
+  return institution?.coreModules || [];
+};
+
+// Helper function to get core modules for ESOFT Metro Campus specifically
+export const getESOFTCoreModules = () => {
+  return getCoreModulesByInstitution(1);
 };
 
 // Export individual sections for easier access

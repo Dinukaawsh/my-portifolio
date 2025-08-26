@@ -275,13 +275,34 @@ html {
 }
 
 
+/* Custom Scrollbar Styles */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.4);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.6);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59, 130, 246, 0.4) transparent;
+} 
 
 
 
-
-
-
-
+/* background flower animation */
 
 :root {
   --background: #ffffff;
@@ -310,7 +331,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-
+/* clock disply at perloader screen */
 .clock {
     position: absolute;
     top: 24px;
@@ -547,4 +568,4 @@ body {
 @keyframes moving-grass--2 { 0%, 100% { transform: scale(0.5) rotate(75deg) rotateX(10deg) rotateY(-200deg); } 50% { transform: scale(0.5) rotate(79deg) rotateX(10deg) rotateY(-200deg); } }
 .growing-grass { -webkit-animation: growing-grass-ans 1s 2s backwards; animation: growing-grass-ans 1s 2s backwards; }
 @-webkit-keyframes growing-grass-ans { 0% { transform: scale(0); } }
-@keyframes growing-grass-ans { 0% { transform: scale(0); } } 
+@keyframes growing-grass-ans { 0% { transform: scale(0); } }

@@ -16,7 +16,7 @@ export const skillsContent = {
       { name: "JavaScript", level: 95, color: "#F7DF1E", icon: "custom:js" },
       { name: "TypeScript", level: 90, color: "#3178C6", icon: "custom:ts" },
       { name: "Python", level: 85, color: "#3776AB", icon: "custom:python" },
-      { name: "PHP", level: 80, color: "#777BB4", icon: "custom:php" },
+      // { name: "PHP", level: 80, color: "#777BB4", icon: "custom:php" },
     ],
 
     frontendFrameworks: [
@@ -39,7 +39,7 @@ export const skillsContent = {
 
     backendFrameworks: [
       { name: "Node.js", level: 92, color: "#339933", icon: "custom:nodejs" },
-      { name: "Laravel", level: 85, color: "#FF2D20", icon: "custom:laravel" },
+      // { name: "Laravel", level: 85, color: "#FF2D20", icon: "custom:laravel" },
       { name: "Django", level: 80, color: "#092E20", icon: "custom:django" },
       {
         name: "Express.js",
@@ -52,6 +52,29 @@ export const skillsContent = {
         level: 80,
         color: "#000000",
         icon: "custom:nestjs",
+      },
+    ],
+
+    apis: [
+      { name: "REST APIs", level: 90, color: "#FF6B6B", icon: "custom:rest" },
+      { name: "GraphQL", level: 85, color: "#E535AB", icon: "custom:graphql" },
+      {
+        name: "OpenAPI/Swagger",
+        level: 80,
+        color: "#85EA2D",
+        icon: "custom:swagger",
+      },
+      {
+        name: "JWT Authentication",
+        level: 88,
+        color: "#FF6B35",
+        icon: "custom:jwt",
+      },
+      {
+        name: "WebSockets",
+        level: 85,
+        color: "#00D4AA",
+        icon: "custom:websocket",
       },
     ],
 
@@ -70,6 +93,36 @@ export const skillsContent = {
       { name: "AWS", level: 80, color: "#FF9900", icon: "custom:aws" },
       { name: "Vercel", level: 90, color: "#000000", icon: "custom:vercel" },
       { name: "Railway", level: 90, color: "#0B0D0E", icon: "custom:railway" },
+      { name: "Render", level: 80, color: "#008080", icon: "custom:render" },
+    ],
+
+    cicd: [
+      {
+        name: "GitHub Actions",
+        level: 85,
+        color: "#2088FF",
+        icon: "custom:github",
+      },
+      { name: "Jenkins", level: 80, color: "#D33833", icon: "custom:jenkins" },
+      { name: "Docker", level: 75, color: "#2496ED", icon: "custom:docker" },
+      {
+        name: "Kubernetes",
+        level: 70,
+        color: "#326CE5",
+        icon: "custom:kubernetes",
+      },
+      {
+        name: "Terraform",
+        level: 75,
+        color: "#7B42BC",
+        icon: "custom:terraform",
+      },
+      {
+        name: "CI/CD Pipelines",
+        level: 85,
+        color: "#00D4AA",
+        icon: "custom:pipeline",
+      },
     ],
 
     tools: [
@@ -78,6 +131,8 @@ export const skillsContent = {
       { name: "VS Code", level: 95, color: "#007ACC", icon: "custom:vscode" },
       { name: "Git", level: 88, color: "#F05032", icon: "custom:git" },
       { name: "Docker", level: 75, color: "#2496ED", icon: "custom:docker" },
+      { name: "Nginx", level: 80, color: "#009639", icon: "custom:nginx" },
+      { name: "ngrok", level: 75, color: "#FF6C37", icon: "custom:ngrok" },
     ],
 
     softSkills: [

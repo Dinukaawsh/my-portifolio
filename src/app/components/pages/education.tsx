@@ -228,7 +228,7 @@ export default function Education() {
               </div>
 
               {/* Skills */}
-              <div>
+              <div className="mb-6">
                 <h5 className="text-white font-semibold mb-3 text-sm sm:text-base">
                   Skills & Technologies:
                 </h5>
@@ -243,6 +243,59 @@ export default function Education() {
                   ))}
                 </div>
               </div>
+
+              {/* Core Modules - Only show for ESOFT Metro Campus (id: 1) */}
+              {educationData[activeIndex].id === 1 &&
+                educationData[activeIndex].coreModules && (
+                  <div className="mb-6">
+                    <h5 className="text-white font-semibold mb-3 text-sm sm:text-base flex items-center gap-2">
+                      <span className="text-blue-400">📚</span>
+                      Core Modules
+                    </h5>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                      {educationData[activeIndex].coreModules.map(
+                        (module, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-gradient-to-br from-gray-800/60 via-blue-900/20 to-gray-800/60 backdrop-blur-sm rounded-xl p-3 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 hover:scale-105"
+                          >
+                            <div className="flex items-start justify-between mb-2">
+                              <div className="flex-1">
+                                <h6 className="text-white font-medium text-sm mb-1">
+                                  {module.name}
+                                </h6>
+                                <p className="text-gray-400 text-xs mb-2">
+                                  {module.description}
+                                </p>
+                                <div className="flex items-center gap-3 text-xs">
+                                  <span className="text-blue-400 font-mono">
+                                    {module.code}
+                                  </span>
+                                  <span className="text-gray-500">
+                                    {module.credits} credits
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+
+                    {/* Academic Summary */}
+                    <div className="mt-4 p-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg border border-blue-500/20">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-300">Total Credits:</span>
+                        <span className="text-blue-400 font-semibold">
+                          {educationData[activeIndex].coreModules.reduce(
+                            (total, module) => total + module.credits,
+                            0
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
             </div>
           </div>
         </div>
