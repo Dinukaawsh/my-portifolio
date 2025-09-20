@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import Flower from "@/app/components/backgrounds/flower/Flower";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import {
   achievementsContent,
   getAchievementsByCategory,
@@ -12,6 +13,7 @@ export default function Achievements() {
   const [isVisible, setIsVisible] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
   const [currentIndicator, setCurrentIndicator] = useState(0);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -230,6 +232,70 @@ export default function Achievements() {
               >
                 {/* Achievement Card */}
                 <div className="bg-gradient-to-br from-gray-900/80 via-blue-900/40 to-gray-900/80 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-blue-500/30 shadow-2xl shadow-blue-500/20 hover:shadow-2xl hover:shadow-blue-500/40 transition-all duration-300 hover:scale-105 h-full">
+                  {/* Achievement Image */}
+                  {achievement.achievementImage && (
+                    <div className="mb-6 relative group">
+                      <div className="relative w-full h-64 sm:h-72 rounded-3xl overflow-hidden bg-gradient-to-br from-gray-800/60 to-gray-900/60 border-2 border-blue-500/30 shadow-2xl shadow-blue-500/20">
+                        <Image
+                          src={achievement.achievementImage}
+                          alt={`${achievement.title} Achievement`}
+                          fill
+                          className="object-contain transition-all duration-500 group-hover:scale-110 group-hover:brightness-110"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          priority={achievement.featured}
+                        />
+
+                        {/* Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                        {/* Corner Accent */}
+                        <div className="absolute top-3 right-3 w-3 h-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                        {/* View Button */}
+                        <button
+                          onClick={() =>
+                            setSelectedImage(achievement.achievementImage)
+                          }
+                          className="absolute inset-0 w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
+                        >
+                          <div className="bg-white/20 backdrop-blur-md rounded-2xl p-4 border border-white/30 shadow-xl transform scale-90 group-hover:scale-100 transition-transform duration-300">
+                            <svg
+                              className="w-10 h-10 text-white drop-shadow-lg"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2.5}
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                              />
+                            </svg>
+                          </div>
+                        </button>
+
+                        {/* Achievement Badge */}
+                        <div className="absolute bottom-3 left-3 bg-gradient-to-r from-blue-500/90 to-purple-600/90 backdrop-blur-sm rounded-xl px-3 py-1.5 border border-white/20">
+                          <span className="text-white text-xs font-semibold flex items-center gap-1">
+                            <svg
+                              className="w-3 h-3"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            Achievement
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Issuer Badge & Featured */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
@@ -329,70 +395,140 @@ export default function Achievements() {
           </div>
         )}
 
-        {/* Enhanced Call to Action */}
+        {/* Achievement Summary Stats */}
         <motion.div
-          className="w-full max-w-4xl mx-auto mt-12 text-center"
+          className="w-full max-w-4xl mx-auto mt-12"
           initial={{ opacity: 0, y: 50, scale: 0.9 }}
           animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
           transition={{ duration: 0.8, delay: 1.2, type: "spring" }}
         >
-          <motion.div
-            className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl p-8 border border-blue-500/30"
-            whileHover={{ scale: 1.02 }}
-            animate={{
-              boxShadow: [
-                "0 25px 50px rgba(59, 130, 246, 0.1)",
-                "0 25px 50px rgba(147, 51, 234, 0.2)",
-                "0 25px 50px rgba(59, 130, 246, 0.1)",
-              ],
-            }}
-            transition={{ duration: 4, repeat: Infinity }}
-          >
-            <motion.h3
-              className="text-xl sm:text-2xl font-bold text-white mb-4"
-              initial={{ opacity: 0, y: -20 }}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <motion.div
+              className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-2xl p-6 text-center border border-blue-500/30"
+              initial={{ opacity: 0, y: 20 }}
               animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 1.4 }}
             >
-              Ready to achieve more?
-            </motion.h3>
-            <motion.p
-              className="text-gray-300 text-sm sm:text-base mb-6"
-              initial={{ opacity: 0, y: -20 }}
+              <div className="text-2xl font-bold text-white mb-1">
+                {achievementsContent.achievements.length}
+              </div>
+              <div className="text-sm text-blue-200">Total Achievements</div>
+            </motion.div>
+
+            <motion.div
+              className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-2xl p-6 text-center border border-purple-500/30"
+              initial={{ opacity: 0, y: 20 }}
               animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 1.5 }}
             >
-              Set new goals and push your boundaries to reach new heights
-            </motion.p>
+              <div className="text-2xl font-bold text-white mb-1">
+                {
+                  achievementsContent.achievements.filter(
+                    (achievement) => achievement.featured
+                  ).length
+                }
+              </div>
+              <div className="text-sm text-purple-200">Featured</div>
+            </motion.div>
+
             <motion.div
-              className="flex justify-center"
+              className="bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-2xl p-6 text-center border border-green-500/30"
               initial={{ opacity: 0, y: 20 }}
               animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 1.6 }}
             >
-              <motion.a
-                href="#"
-                className="px-8 py-4 bg-orange-500 text-white font-semibold rounded-xl hover:bg-orange-600 transition-all duration-200 shadow-lg shadow-orange-500/25 flex items-center justify-center gap-3"
-                initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
-                transition={{
-                  duration: 0.5,
-                  delay: 1.7,
-                  type: "spring",
-                }}
-                whileHover={{
-                  scale: 1.05,
-                  y: -3,
-                  boxShadow: "0 15px 35px rgba(245, 101, 101, 0.4)",
-                }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span>Set New Goals</span>
-              </motion.a>
+              <div className="text-2xl font-bold text-white mb-1">
+                {
+                  new Set(
+                    achievementsContent.achievements.map(
+                      (achievement) => achievement.category
+                    )
+                  ).size
+                }
+              </div>
+              <div className="text-sm text-green-200">Categories</div>
             </motion.div>
-          </motion.div>
+
+            <motion.div
+              className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-2xl p-6 text-center border border-orange-500/30"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 1.7 }}
+            >
+              <div className="text-2xl font-bold text-white mb-1">
+                {
+                  new Set(
+                    achievementsContent.achievements.flatMap(
+                      (achievement) => achievement.skills
+                    )
+                  ).size
+                }
+              </div>
+              <div className="text-sm text-orange-200">Skills</div>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
+
+      {/* Image Modal/Lightbox */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+          >
+            <motion.div
+              className="relative w-full max-w-xs sm:max-w-sm md:max-w-2xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] sm:max-h-[95vh] mx-2 sm:mx-4"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="absolute -top-12 sm:-top-16 right-0 text-white hover:text-gray-300 transition-colors bg-black/50 backdrop-blur-sm rounded-full p-2 sm:p-3 border border-white/20 z-10"
+              >
+                <svg
+                  className="w-5 h-5 sm:w-6 sm:h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+
+              {/* Image Container */}
+              <div className="relative w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 shadow-2xl border-2 sm:border-4 border-white/20">
+                <Image
+                  src={selectedImage}
+                  alt="Achievement"
+                  width={1000}
+                  height={800}
+                  className="w-full h-full object-contain p-2 sm:p-4"
+                  priority
+                />
+              </div>
+
+              {/* Image Info */}
+              <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 bg-black/70 backdrop-blur-sm rounded-xl sm:rounded-2xl p-2 sm:p-4 border border-white/20">
+                <p className="text-white text-xs sm:text-sm font-medium text-center">
+                  Tap outside or press ESC to close
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
