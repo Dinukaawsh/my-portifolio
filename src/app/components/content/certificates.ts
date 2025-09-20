@@ -24,14 +24,16 @@ export const certificatesContent = {
   certificates: [
     {
       id: 1,
-      title: "Next.js 13 - The Complete Guide",
-      issuer: "Udemy",
+      title:
+        "Jenkins Project: Building CI/CD Pipeline for Scalable Web Applications",
+      issuer: "KodeKloud",
       issuerLogo: "🎓",
-      category: "Web Development",
-      issueDate: "2024-01-15",
+      category: "DevOps",
+      issueDate: "2025-09-14",
       expiryDate: null, // null for no expiry
-      credentialId: "UD-12345",
-      credentialUrl: "https://udemy.com/certificate/12345",
+      credentialId: "bf9e0608-2c56-4612-bd93-a7033291018d",
+      credentialUrl:
+        "https://certificates.kodekloud.com/ab7c016a-0f97-48af-8e83-af552b852923/f7b2d58c-4277-46ef-bfcc-d4e5e7c9e2f9/bf9e0608-2c56-4612-bd93-a7033291018d.pdf",
       description:
         "Comprehensive course covering Next.js 13 features including App Router, Server Components, and modern React patterns.",
       skills: [
