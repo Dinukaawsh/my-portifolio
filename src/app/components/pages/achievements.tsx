@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import Flower from "@/app/components/backgrounds/flower/Flower";
+
 import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import {
   achievementsContent,
   getAchievementsByCategory,
 } from "@/app/components/content/achievements";
+import { RollingGallery } from "../backgrounds/rolling gallery/gallery";
 
 export default function Achievements() {
   const [isVisible, setIsVisible] = useState(false);
@@ -58,7 +59,7 @@ export default function Achievements() {
   return (
     <section
       ref={sectionRef}
-      className="w-full h-full relative flex flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
+      className="w-full h-full relative flex flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8 bg-black"
     >
       {/* Progress Bar */}
       <motion.div
@@ -66,9 +67,9 @@ export default function Achievements() {
         style={{ scaleX }}
       />
 
-      {/* Flower Background - Fixed */}
-      <div className="fixed inset-0 z-0">
-        <Flower />
+      {/* Rolling Gallery Background - Fixed */}
+      <div className="fixed inset-0 z-0 bg-black">
+        <RollingGallery autoplay={true} pauseOnHover={false} />
       </div>
 
       {/* Floating Achievement Icons */}

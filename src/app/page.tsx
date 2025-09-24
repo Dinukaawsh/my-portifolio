@@ -12,7 +12,7 @@ import Certificates from "./components/pages/certificates";
 import Achievements from "./components/pages/achievements";
 import References from "./components/pages/references";
 import Horse from "./components/backgrounds/horse/Horse";
-import ThreeDScene from "./components/backgrounds/3d-text/3DScene";
+import TrueFocus from "./components/backgrounds/focus text/text";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
@@ -62,16 +62,16 @@ function Preloader({ onDone }: { onDone: () => void }) {
     if (displayed.length < name.length) {
       timeout = setTimeout(() => {
         setDisplayed(name.slice(0, displayed.length + 1));
-      }, 80);
+      }, 150);
     } else {
       // Show particles after typing is complete
       timeout = setTimeout(() => {
         setShowParticles(true);
         timeout = setTimeout(() => {
           onDone();
-          setTimeout(onDone, 300); // short pause before showing main app
-        }, 500);
-      }, 300);
+          setTimeout(onDone, 500); // short pause before showing main app
+        }, 1000);
+      }, 800);
     }
     return () => clearTimeout(timeout);
   }, [displayed, name, onDone]);
@@ -142,31 +142,23 @@ function Preloader({ onDone }: { onDone: () => void }) {
           </motion.div>
         )}
 
-        {/* 3D Text - hidden on very small screens, shows progressively during typing */}
+        {/* TrueFocus Text - shows progressively during typing */}
         <motion.div
-          className="hidden sm:block w-full h-full"
+          className="w-full h-full flex items-center justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: displayed.length > 0 ? 1 : 0 }}
           transition={{ duration: 0.3 }}
         >
-          <ThreeDScene
-            text={displayed}
-            size={displayed.length > 20 ? 1.0 : 1.5}
-            height={0.15}
+          <TrueFocus
+            sentence={displayed}
+            manualMode={false}
+            blurAmount={3}
+            borderColor="blue"
+            glowColor="rgba(59, 130, 246, 0.6)"
+            animationDuration={0.8}
+            pauseBetweenAnimations={1.2}
           />
         </motion.div>
-
-        {/* 2D Text for mobile */}
-        <div className="sm:hidden w-full h-full flex items-center justify-center">
-          <motion.span
-            className="text-2xl sm:text-3xl bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent font-extrabold tracking-wide text-center px-4 leading-tight"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            {displayed}
-          </motion.span>
-        </div>
       </motion.div>
 
       {/* Success Message */}

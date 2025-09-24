@@ -10,9 +10,12 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.7",
+    "@radix-ui/react-slot": "^1.2.3",
     "@react-spring/web": "^10.0.1",
     "@react-three/drei": "^10.7.3",
     "@react-three/fiber": "^9.3.0",
+    "@splinetool/react-spline": "^4.1.0",
+    "@splinetool/runtime": "^1.10.70",
     "@types/animejs": "^3.1.13",
     "@types/three": "^0.179.0",
     "animejs": "^4.1.3",

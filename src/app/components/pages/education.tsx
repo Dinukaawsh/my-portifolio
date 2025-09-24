@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import Flower from "@/app/components/backgrounds/flower/Flower";
+import { BackgroundPaths } from "@/app/components/backgrounds/line background/line-backgroung";
 import { educationContent } from "@/app/components/content/education";
 
 const educationData = educationContent.institutions;
@@ -32,9 +32,9 @@ export default function Education() {
       ref={sectionRef}
       className="w-full h-full relative flex flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
     >
-      {/* Flower Background - Fixed */}
+      {/* Line Background - Fixed */}
       <div className="fixed inset-0 z-0">
-        <Flower />
+        <BackgroundPaths  />
       </div>
 
       {/* Main Content */}
