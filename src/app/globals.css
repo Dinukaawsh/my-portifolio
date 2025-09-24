@@ -569,3 +569,33 @@ body {
 .growing-grass { -webkit-animation: growing-grass-ans 1s 2s backwards; animation: growing-grass-ans 1s 2s backwards; }
 @-webkit-keyframes growing-grass-ans { 0% { transform: scale(0); } }
 @keyframes growing-grass-ans { 0% { transform: scale(0); } }
+
+/* Experience Page Fixed Backgrounds */
+.experience-bg {
+  background-color: #000000 !important;
+  background-image: none !important;
+}
+
+.experience-card {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  background-image: none !important;
+}
+
+/* Override theme gradients for experience page */
+.theme-light .experience-bg,
+.theme-water .experience-bg,
+.theme-sunset .experience-bg,
+.theme-forest .experience-bg,
+.theme-dark .experience-bg {
+  background-color: #000000 !important;
+  background-image: none !important;
+}
+
+.theme-light .experience-card,
+.theme-water .experience-card,
+.theme-sunset .experience-card,
+.theme-forest .experience-card,
+.theme-dark .experience-card {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  background-image: none !important;
+}

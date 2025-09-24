@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import Flower from "@/app/components/backgrounds/flower/Flower";
+
 import {
   collection,
   addDoc,
@@ -17,6 +17,7 @@ import {
   getContactSteps,
   getParticleConfig,
 } from "@/app/components/content/contact";
+import { ParticleTextEffect } from "@/app/components/backgrounds/dotted-text/dottedtext";
 
 interface Comment {
   id: string;
@@ -133,9 +134,9 @@ export default function Contact() {
           style={{ scaleX }}
         />
 
-        {/* Flower Background - Fixed */}
+        {/* Dotted Text Background - Fixed */}
         <div className="fixed inset-0 z-0">
-          <Flower />
+          <ParticleTextEffect />
         </div>
 
         {/* Floating Contact Icons */}
@@ -283,7 +284,7 @@ export default function Contact() {
                   </p>
                   <motion.a
                     href={`mailto:${contactContent.contactInfo.email}`}
-                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold text-lg rounded-2xl border-2 border-blue-400/50 hover:from-blue-600 hover:to-purple-700 hover:border-blue-300 transition-all duration-300 shadow-2xl shadow-blue-500/30 hover:shadow-3xl hover:shadow-blue-500/50 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-400/50 focus:scale-105 active:scale-95"
+                    className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold text-sm sm:text-lg rounded-xl sm:rounded-2xl border-2 border-blue-400/50 hover:from-blue-600 hover:to-purple-700 hover:border-blue-300 transition-all duration-300 shadow-2xl shadow-blue-500/30 hover:shadow-3xl hover:shadow-blue-500/50 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-400/50 focus:scale-105 active:scale-95 w-full sm:w-auto justify-center"
                     whileHover={{
                       scale: 1.05,
                       boxShadow: "0 25px 50px rgba(59, 130, 246, 0.4)",
@@ -295,7 +296,7 @@ export default function Contact() {
                     }}
                   >
                     <motion.div
-                      className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center"
+                      className="w-5 h-5 sm:w-6 sm:h-6 bg-white/20 rounded-full flex items-center justify-center"
                       animate={{
                         rotate: [0, 5, -5, 0],
                         scale: [1, 1.1, 1],
@@ -307,7 +308,7 @@ export default function Contact() {
                       }}
                     >
                       <svg
-                        className="w-4 h-4"
+                        className="w-3 h-3 sm:w-4 sm:h-4"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

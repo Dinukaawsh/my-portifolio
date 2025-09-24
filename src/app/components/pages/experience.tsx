@@ -59,7 +59,7 @@ export default function Experience() {
       />
 
       {/* Hyperspeed Background - Fixed */}
-      <div className="fixed inset-0 z-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+      <div className="fixed inset-0 z-0 bg-black experience-bg">
         <Hyperspeed effectOptions={hyperspeedPresets.one} />
       </div>
 

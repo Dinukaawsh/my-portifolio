@@ -2,18 +2,22 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import Flower from "@/app/components/backgrounds/flower/Flower";
 import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import {
   certificatesContent,
   getCertificatesByCategory,
 } from "@/app/components/content/certificates";
+import {
+  Lightning,
+  ElasticHueSlider,
+} from "@/app/components/backgrounds/thunderbolt/thunderbolt";
 
 export default function Certificates() {
   const [isVisible, setIsVisible] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
   const [currentIndicator, setCurrentIndicator] = useState(0);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [lightningHue, setLightningHue] = useState(220); // Default hue for lightning
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -66,9 +70,15 @@ export default function Certificates() {
         style={{ scaleX }}
       />
 
-      {/* Flower Background - Fixed */}
+      {/* Lightning Background - Fixed */}
       <div className="fixed inset-0 z-0">
-        <Flower />
+        <Lightning
+          hue={lightningHue}
+          xOffset={0}
+          speed={1.6}
+          intensity={0.6}
+          size={2}
+        />
       </div>
 
       {/* Floating Certificate Icons */}
@@ -110,6 +120,20 @@ export default function Certificates() {
           animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
           transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
         >
+          {/* Lightning Hue Control */}
+          <motion.div
+            className="flex justify-center mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <ElasticHueSlider
+              value={lightningHue}
+              onChange={setLightningHue}
+              label="Adjust Lightning Hue"
+            />
+          </motion.div>
+
           <motion.div
             className="inline-block mb-4"
             animate={{

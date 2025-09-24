@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import Flower from "@/app/components/backgrounds/flower/Flower";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { blogContent } from "@/app/components/content/blog";
+import { SplineScene } from "@/app/components/backgrounds/robot/splite";
+import { Spotlight } from "@/app/components/backgrounds/robot/spotlight";
 
 const blogData = blogContent.posts;
 const platforms = blogContent.platforms;
@@ -63,11 +64,25 @@ export default function Blog() {
         style={{ scaleX }}
       />
 
-      {/* Flower Background - Fixed */}
+      {/* robot Background - Fixed */}
       <div className="fixed inset-0 z-0">
-        <Flower />
-      </div>
+        <div className="w-full h-full bg-black/[0.96] relative overflow-hidden">
+          <Spotlight
+            className="-top-40 left-0 md:left-60 md:-top-20"
+            size={200}
+          />
 
+          <div className="flex h-full w-full">
+            {/* Right content */}
+            <div className="flex-1 relative w-full h-full">
+              <SplineScene
+                scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                className="w-full h-full min-h-screen"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       {/* Floating Blog Icons */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {Array.from(
