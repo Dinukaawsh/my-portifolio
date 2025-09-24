@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import Flower from "@/app/components/backgrounds/flower/Flower";
 import { motion, useScroll, useSpring } from "framer-motion";
 import {
   experienceContent,
   getParticleConfig,
 } from "@/app/components/content/experience";
+import Hyperspeed, {
+  hyperspeedPresets,
+} from "../backgrounds/hyperspeed/hyperspeed";
 
 export default function Experience() {
   const [isVisible, setIsVisible] = useState(false);
@@ -56,9 +58,9 @@ export default function Experience() {
         style={{ scaleX }}
       />
 
-      {/* Flower Background - Fixed */}
-      <div className="fixed inset-0 z-0">
-        <Flower />
+      {/* Hyperspeed Background - Fixed */}
+      <div className="fixed inset-0 z-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+        <Hyperspeed effectOptions={hyperspeedPresets.one} />
       </div>
 
       {/* Floating Experience Icons */}

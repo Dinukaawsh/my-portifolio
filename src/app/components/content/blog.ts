@@ -28,7 +28,7 @@ export const blogContent = {
     },
     {
       id: 2,
-      image: "/blog-images/blog2.png",
+      image: "/blog-images/blog3.png",
       title: "CI/CD Pipelines: Automate Your Workflow Like a Pro",
       excerpt:
         "This blog post provides a comprehensive guide to CI/CD pipelines. It covers the benefits of automating your workflow, the different types of pipelines, and best practices for implementing them.",
@@ -42,7 +42,7 @@ export const blogContent = {
     },
     {
       id: 3,
-      image: "/blog-images/blog3.png",
+      image: "/blog-images/blog2.png",
       title:
         "Why TypeScript is Becoming the Standard for Modern Web Development",
       excerpt:

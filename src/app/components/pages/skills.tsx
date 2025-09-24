@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import Flower from "@/app/components/backgrounds/flower/Flower";
+import LetterGlitch from "@/app/components/backgrounds/letter-glich/glich";
 import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import CustomIcon from "@/app/components/icons/skillsicons";
@@ -301,9 +301,18 @@ export default function Skills() {
         style={{ scaleX }}
       />
 
-      {/* Flower Background - Fixed */}
-      <div className="fixed inset-0 z-0">
-        <Flower />
+      {/* LetterGlitch Background - Fixed */}
+      <div className="fixed inset-0 z-0 w-full h-full bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+        <div className="absolute inset-0 w-full h-full min-h-screen">
+          <LetterGlitch
+            glitchColors={["#1e40af", "#3b82f6", "#60a5fa", "#93c5fd"]}
+            glitchSpeed={80}
+            centerVignette={true}
+            outerVignette={false}
+            smooth={true}
+            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789"
+          />
+        </div>
       </div>
 
       {/* Floating Skills Icons */}

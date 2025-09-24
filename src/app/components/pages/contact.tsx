@@ -281,25 +281,67 @@ export default function Contact() {
                   <p className="text-gray-300 text-sm sm:text-base mb-4">
                     {contactContent.directEmail.description}
                   </p>
-                  <a
+                  <motion.a
                     href={`mailto:${contactContent.contactInfo.email}`}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-full hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:scale-105"
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold text-lg rounded-2xl border-2 border-blue-400/50 hover:from-blue-600 hover:to-purple-700 hover:border-blue-300 transition-all duration-300 shadow-2xl shadow-blue-500/30 hover:shadow-3xl hover:shadow-blue-500/50 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-400/50 focus:scale-105 active:scale-95"
+                    whileHover={{
+                      scale: 1.05,
+                      boxShadow: "0 25px 50px rgba(59, 130, 246, 0.4)",
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    whileFocus={{
+                      scale: 1.05,
+                      boxShadow: "0 25px 50px rgba(59, 130, 246, 0.4)",
+                    }}
                   >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                    <motion.div
+                      className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center"
+                      animate={{
+                        rotate: [0, 5, -5, 0],
+                        scale: [1, 1.1, 1],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2.5}
+                          d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </motion.div>
+                    <span className="relative">
+                      {contactContent.contactInfo.emailDisplay}
+                      <motion.div
+                        className="absolute -bottom-1 left-0 w-full h-0.5 bg-white/50 rounded-full"
+                        initial={{ scaleX: 0 }}
+                        whileHover={{ scaleX: 1 }}
+                        transition={{ duration: 0.3 }}
                       />
-                    </svg>
-                    {contactContent.contactInfo.emailDisplay}
-                  </a>
+                    </span>
+                    <motion.div
+                      className="w-2 h-2 bg-white/60 rounded-full"
+                      animate={{
+                        opacity: [0.6, 1, 0.6],
+                        scale: [1, 1.2, 1],
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  </motion.a>
                 </div>
               </div>
 

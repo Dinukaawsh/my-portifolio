@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import Flower from "@/app/components/backgrounds/flower/Flower";
 import { motion, useScroll, useSpring } from "framer-motion";
 import ProjectIcon from "@/app/components/icons/projectsicons";
 import {
@@ -7,6 +6,7 @@ import {
   getProjectsByCategory,
   getParticleConfig,
 } from "@/app/components/content/projects";
+import Balls from "../backgrounds/balls/balls";
 
 export default function Projects() {
   const [isVisible, setIsVisible] = useState(false);
@@ -62,9 +62,9 @@ export default function Projects() {
         style={{ scaleX }}
       />
 
-      {/* Flower Background - Fixed */}
-      <div className="fixed inset-0 z-0">
-        <Flower />
+      {/* balls background - Fixed */}
+      <div className="fixed inset-0 z-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+        <Balls />
       </div>
 
       {/* Floating Project Icons */}
