@@ -493,7 +493,7 @@ export default function About({ setActiveSection }: AboutProps = {}) {
       // Always use in-app modal; mobile will render image instead of PDF
       setShowCvPreview(true);
     }
-  }, [isMobile]);
+  }, []);
 
   return (
     <section
@@ -763,7 +763,7 @@ export default function About({ setActiveSection }: AboutProps = {}) {
                     ease: "easeInOut",
                   }}
                 >
-                  "
+                  &ldquo;
                 </motion.div>
 
                 {/* Main Quote Text */}
@@ -797,7 +797,7 @@ export default function About({ setActiveSection }: AboutProps = {}) {
                     delay: 0.5,
                   }}
                 >
-                  "
+                  &rdquo;
                 </motion.div>
 
                 {/* Floating Particles around Quote */}
@@ -1713,9 +1713,11 @@ export default function About({ setActiveSection }: AboutProps = {}) {
             <div className="w-full h-full">
               {isMobile ? (
                 <div className="w-full h-full bg-black flex items-center justify-center">
-                  <img
+                  <Image
                     src="/CV/cv.png"
                     alt="CV Preview"
+                    width={800}
+                    height={1000}
                     className="max-w-full max-h-full object-contain select-none"
                     onContextMenu={(e) => e.preventDefault()}
                     draggable={false}
