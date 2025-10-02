@@ -2,14 +2,56 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Heart, Code, Coffee, Sparkles } from "lucide-react";
+import { aboutContent } from "@/app/components/content/about";
+import Image from "next/image";
+import Threads from "@/app/components/backgrounds/footer_backgound/footer_background";
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  setActiveSection?: (key: string) => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
   const currentYear = new Date().getFullYear();
 
+  const sections = [
+    { key: "about", label: "About" },
+    { key: "projects", label: "Projects" },
+    { key: "skills", label: "Skills" },
+    { key: "education", label: "Education" },
+    { key: "experience", label: "Experience" },
+    { key: "certificates", label: "Certificates" },
+    { key: "achievements", label: "Achievements" },
+    { key: "blog", label: "Blog" },
+    { key: "contact", label: "Contact" },
+  ];
+
+  const handleSectionClick = (key: string) => {
+    if (setActiveSection) {
+      setActiveSection(key);
+    }
+  };
+
   return (
-    <footer className="relative w-full bg-gradient-to-br from-gray-900/95 via-blue-900/40 to-gray-900/95 backdrop-blur-xl border-t border-blue-500/30 shadow-2xl shadow-blue-500/20 py-8 px-4 sm:px-6 overflow-hidden">
+    <footer
+      className="relative w-full bg-gradient-to-br from-gray-900/95 via-blue-900/40 to-gray-900/95 backdrop-blur-xl border-t border-blue-500/30 shadow-2xl shadow-blue-500/20 py-8 px-4 sm:px-6 overflow-hidden"
+      style={{ backgroundColor: "rgba(17, 24, 39, 0.95)" }}
+    >
+      {/* Threads Background */}
+      <div
+        style={{
+          width: "100%",
+          height: "600px",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: 0,
+        }}
+      >
+        <Threads amplitude={1} distance={0} enableMouseInteraction={false} />
+      </div>
+
       {/* Floating Background Particles */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none z-1">
         {[0, 1, 2, 3, 4].map((i) => (
           <motion.div
             key={i}
@@ -50,7 +92,7 @@ const Footer: React.FC = () => {
               whileHover={{ scale: 1.05 }}
             >
               <motion.div
-                className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/25"
+                className="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-blue-500/25 border-2 border-blue-500/30"
                 animate={{
                   rotate: [0, 2, -2, 0],
                   scale: [1, 1.05, 1],
@@ -61,7 +103,14 @@ const Footer: React.FC = () => {
                   ease: "easeInOut",
                 }}
               >
-                <span className="text-white font-bold text-lg">DA</span>
+                <Image
+                  src="/my.jpg"
+                  alt="Dinuka Wickramarathna"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-cover"
+                  priority
+                />
               </motion.div>
               <motion.h3
                 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
@@ -96,20 +145,18 @@ const Footer: React.FC = () => {
               Quick Links
             </h4>
             <div className="space-y-2">
-              {["About", "Projects", "Skills", "Experience", "Contact"].map(
-                (link, index) => (
-                  <motion.a
-                    key={link}
-                    href={`#${link.toLowerCase()}`}
-                    className="block text-gray-300 hover:text-blue-400 transition-colors duration-300 text-sm"
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    {link}
-                  </motion.a>
-                )
-              )}
+              {sections.map((section, index) => (
+                <motion.button
+                  key={section.key}
+                  onClick={() => handleSectionClick(section.key)}
+                  className="block text-gray-300 hover:text-blue-400 transition-colors duration-300 text-sm text-left w-full"
+                  whileHover={{ x: 5 }}
+                  transition={{ duration: 0.2 }}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  {section.label}
+                </motion.button>
+              ))}
             </div>
           </motion.div>
 
@@ -126,7 +173,7 @@ const Footer: React.FC = () => {
             </h4>
             <div className="space-y-3">
               <motion.a
-                href="mailto:dinuka.ashan@example.com"
+                href={`mailto:${aboutContent.personal.email}`}
                 className="flex items-center justify-center md:justify-start gap-2 text-gray-300 hover:text-blue-400 transition-colors duration-300 text-sm"
                 whileHover={{ x: 5 }}
                 transition={{ duration: 0.2 }}
@@ -140,10 +187,13 @@ const Footer: React.FC = () => {
                 >
                   <path d="M12 13.065l-11.99-7.065v14h24v-14l-12.01 7.065zm11.99-9.065h-23.98l11.99 7.065 11.99-7.065z" />
                 </svg>
-                dinuka.ashan@example.com
+                {aboutContent.personal.email}
               </motion.a>
               <motion.a
-                href="https://github.com/Dinukaawsh"
+                href={`https://github.com/${aboutContent.socialLinks
+                  .find((s) => s.label === "GitHub")
+                  ?.href.split("/")
+                  .pop()}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center md:justify-start gap-2 text-gray-300 hover:text-blue-400 transition-colors duration-300 text-sm"
@@ -157,12 +207,15 @@ const Footer: React.FC = () => {
                   viewBox="0 0 24 24"
                   className="flex-shrink-0"
                 >
-                  <path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.73 1.27 3.4.97.11-.75.41-1.27.74-1.56-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 2.9-.39c.98 0 1.97.13 2.9.39 2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.41-5.27 5.7.42.36.79 1.09.79 2.2 0 1.59-.01 2.87-.01 3.26 0 .31.21.68.8.56A11.52 11.52 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5z" />
+                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.416-4.042-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.084-.729.084-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.834 2.809 1.304 3.495.997.108-.775.418-1.305.762-1.605-2.665-.305-5.466-1.334-5.466-5.93 0-1.31.469-2.381 1.236-3.221-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.301 1.23a11.52 11.52 0 0 1 3.003-.404c1.018.005 2.045.138 3.003.404 2.291-1.553 3.297-1.23 3.297-1.23.653 1.653.242 2.873.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.803 5.624-5.475 5.921.43.372.823 1.102.823 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
                 </svg>
                 @Dinukaawsh
               </motion.a>
               <motion.a
-                href="https://linkedin.com/in/dinuka-ashan"
+                href={
+                  aboutContent.socialLinks.find((s) => s.label === "LinkedIn")
+                    ?.href
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center md:justify-start gap-2 text-gray-300 hover:text-blue-400 transition-colors duration-300 text-sm"
@@ -178,86 +231,52 @@ const Footer: React.FC = () => {
                 >
                   <path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.28c-.97 0-1.75-.79-1.75-1.75s.78-1.75 1.75-1.75 1.75.79 1.75 1.75-.78 1.75-1.75 1.75zm15.5 11.28h-3v-5.6c0-1.34-.03-3.07-1.87-3.07-1.87 0-2.16 1.46-2.16 2.97v5.7h-3v-10h2.88v1.36h.04c.4-.75 1.38-1.54 2.84-1.54 3.04 0 3.6 2 3.6 4.59v5.59z" />
                 </svg>
-                Dinuka Ashan
+                {aboutContent.personal.name}
               </motion.a>
             </div>
           </motion.div>
         </div>
 
-        {/* Social Media Links */}
+        {/* Enhanced Social Media Links - Same Design as About Page */}
         <motion.div
-          className="flex justify-center items-center gap-6 mb-6"
+          className="flex justify-center items-center gap-4 sm:gap-6 mb-6"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
           viewport={{ once: true }}
         >
-          {[
-            {
-              href: "https://github.com/Dinukaawsh",
-              icon: (
-                <svg
-                  width="24"
-                  height="24"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.73 1.27 3.4.97.11-.75.41-1.27.74-1.56-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 2.9-.39c.98 0 1.97.13 2.9.39 2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.41-5.27 5.7.42.36.79 1.09.79 2.2 0 1.59-.01 2.87-.01 3.26 0 .31.21.68.8.56A11.52 11.52 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5z" />
-                </svg>
-              ),
-              label: "GitHub",
-            },
-            {
-              href: "https://linkedin.com/in/dinuka-ashan",
-              icon: (
-                <svg
-                  width="24"
-                  height="24"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.28c-.97 0-1.75-.79-1.75-1.75s.78-1.75 1.75-1.75 1.75.79 1.75 1.75-.78 1.75-1.75 1.75zm15.5 11.28h-3v-5.6c0-1.34-.03-3.07-1.87-3.07-1.87 0-2.16 1.46-2.16 2.97v5.7h-3v-10h2.88v1.36h.04c.4-.75 1.38-1.54 2.84-1.54 3.04 0 3.6 2 3.6 4.59v5.59z" />
-                </svg>
-              ),
-              label: "LinkedIn",
-            },
-            {
-              href: "mailto:dinuka.ashan@example.com",
-              icon: (
-                <svg
-                  width="24"
-                  height="24"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 13.065l-11.99-7.065v14h24v-14l-12.01 7.065zm11.99-9.065h-23.98l11.99 7.065 11.99-7.065z" />
-                </svg>
-              ),
-              label: "Email",
-            },
-          ].map((social, index) => (
+          {aboutContent.socialLinks.map((social, index) => (
             <motion.a
               key={social.label}
               href={social.href}
-              target={social.label === "Email" ? "_self" : "_blank"}
-              rel={social.label === "Email" ? "" : "noopener noreferrer"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group p-3 rounded-full bg-white/10 border border-white/20"
               aria-label={social.label}
-              className="p-3 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 text-blue-400 hover:text-white hover:from-blue-500/40 hover:to-purple-500/40 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/25"
-              whileHover={{
-                y: -3,
-                boxShadow: "0 10px 25px rgba(59, 130, 246, 0.3)",
-              }}
-              whileTap={{ scale: 0.95 }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0, rotate: -180 }}
+              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{
-                duration: 0.4,
+                duration: 0.6,
                 delay: 0.8 + index * 0.1,
                 type: "spring",
+                stiffness: 200,
               }}
+              whileHover={{
+                scale: 1.2,
+                rotate: 360,
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
+              }}
+              whileTap={{ scale: 0.9 }}
               viewport={{ once: true }}
             >
-              {social.icon}
+              <svg
+                className={`w-5 h-5 sm:w-6 sm:h-6 text-gray-300 ${social.color} transition-colors duration-200`}
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d={social.icon} />
+              </svg>
             </motion.a>
           ))}
         </motion.div>

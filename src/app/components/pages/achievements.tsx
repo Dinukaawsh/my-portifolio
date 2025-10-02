@@ -8,7 +8,8 @@ import {
   achievementsContent,
   getAchievementsByCategory,
 } from "@/app/components/content/achievements";
-import { RollingGallery } from "../backgrounds/rolling gallery/gallery";
+//import { RollingGallery } from "../backgrounds/rolling gallery/gallery";
+import PixelBlast from "../backgrounds/Pixel_blast/pixel";
 
 export default function Achievements() {
   const [isVisible, setIsVisible] = useState(false);
@@ -67,38 +68,64 @@ export default function Achievements() {
         style={{ scaleX }}
       />
 
-      {/* Rolling Gallery Background - Fixed */}
+      {/* PixelBlast Background - Fixed */}
       <div className="fixed inset-0 z-0 bg-black">
-        <RollingGallery autoplay={true} pauseOnHover={false} />
+        <PixelBlast
+          variant="circle"
+          pixelSize={6}
+          color="#8B5CF6"
+          patternScale={3}
+          patternDensity={1.2}
+          pixelSizeJitter={0.5}
+          enableRipples
+          rippleSpeed={0.4}
+          rippleThickness={0.12}
+          rippleIntensityScale={1.5}
+          liquid
+          liquidStrength={0.12}
+          liquidRadius={1.2}
+          liquidWobbleSpeed={5}
+          speed={0.6}
+          edgeFade={0.25}
+          transparent
+        />
       </div>
 
       {/* Floating Achievement Icons */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {Array.from(
           { length: achievementsContent.animation.floatingParticles },
-          (_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-2 h-2 bg-yellow-400/30 rounded-full"
-              style={{
-                left: `${12 + i * 18}%`,
-                top: `${22 + i * 15}%`,
-              }}
-              animate={{
-                y: [0, -70, -140, -210],
-                x: [0, Math.random() * 50 - 25],
-                opacity: [0, 1, 0.8, 0],
-                scale: [0, 1, 1.5, 0],
-              }}
-              transition={{
-                duration:
-                  achievementsContent.animation.particleDuration + i * 2,
-                delay: i * achievementsContent.animation.particleDelay,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-            />
-          )
+          (_, i) => {
+            const colors = [
+              "bg-violet-400/30",
+              "bg-green-400/30",
+              "bg-blue-400/30",
+            ];
+            const colorClass = colors[i % colors.length];
+            return (
+              <motion.div
+                key={i}
+                className={`absolute w-2 h-2 ${colorClass} rounded-full`}
+                style={{
+                  left: `${12 + i * 18}%`,
+                  top: `${22 + i * 15}%`,
+                }}
+                animate={{
+                  y: [0, -70, -140, -210],
+                  x: [0, Math.random() * 50 - 25],
+                  opacity: [0, 1, 0.8, 0],
+                  scale: [0, 1, 1.5, 0],
+                }}
+                transition={{
+                  duration:
+                    achievementsContent.animation.particleDuration + i * 2,
+                  delay: i * achievementsContent.animation.particleDelay,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              />
+            );
+          }
         )}
       </div>
 

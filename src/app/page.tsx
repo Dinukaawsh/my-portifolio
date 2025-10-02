@@ -12,7 +12,8 @@ import Certificates from "./components/pages/certificates";
 import Achievements from "./components/pages/achievements";
 import References from "./components/pages/references";
 import Horse from "./components/backgrounds/horse/Horse";
-import TrueFocus from "./components/backgrounds/focus text/text";
+//import TrueFocus from "./components/backgrounds/focus text/text";
+import LightRays from "./components/backgrounds/perloader/preloader";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
@@ -77,36 +78,60 @@ function Preloader({ onDone }: { onDone: () => void }) {
   }, [displayed, name, onDone]);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 text-white transition-opacity duration-700 min-h-screen p-4 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center text-white transition-opacity duration-700 min-h-screen p-4 overflow-hidden">
+      {/* LightRays Background */}
+      <div className="absolute inset-0 w-full h-full z-0 bg-black">
+        <LightRays
+          raysOrigin="top-center"
+          raysColor="#8B5CF6"
+          raysSpeed={1.5}
+          lightSpread={0.8}
+          rayLength={1.2}
+          followMouse={false}
+          mouseInfluence={0.1}
+          noiseAmount={0.1}
+          distortion={0.05}
+          className="custom-rays"
+        />
+      </div>
+
       {/* Floating Background Particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-blue-400/40 rounded-full"
-            style={{
-              left: `${10 + i * 12}%`,
-              top: `${15 + i * 10}%`,
-            }}
-            animate={{
-              y: [0, -80, -160, -240],
-              x: [0, Math.random() * 40 - 20],
-              opacity: [0, 1, 0.8, 0],
-              scale: [0, 1, 1.3, 0],
-            }}
-            transition={{
-              duration: 15 + i * 1.5,
-              delay: i * 1,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          />
-        ))}
+      <div className="absolute inset-0 pointer-events-none z-10">
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+          const colors = [
+            "bg-violet-400/40",
+            "bg-blue-400/40",
+            "bg-green-400/40",
+          ];
+          const colorClass = colors[i % colors.length];
+          return (
+            <motion.div
+              key={i}
+              className={`absolute w-1 h-1 ${colorClass} rounded-full`}
+              style={{
+                left: `${10 + i * 12}%`,
+                top: `${15 + i * 10}%`,
+              }}
+              animate={{
+                y: [0, -80, -160, -240],
+                x: [0, Math.random() * 40 - 20],
+                opacity: [0, 1, 0.8, 0],
+                scale: [0, 1, 1.3, 0],
+              }}
+              transition={{
+                duration: 15 + i * 1.5,
+                delay: i * 1,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Enhanced Clock */}
       <motion.div
-        className="clock absolute top-2 sm:top-4 md:top-6 left-0 right-0 mx-auto text-center text-blue-400 font-mono z-10"
+        className="clock absolute top-2 sm:top-4 md:top-6 left-0 right-0 mx-auto text-center text-blue-400 font-mono z-20"
         style={{
           fontSize: "clamp(20px, 5vw, 48px)",
           letterSpacing: "clamp(1px, 0.8vw, 7px)",
@@ -123,7 +148,7 @@ function Preloader({ onDone }: { onDone: () => void }) {
 
       {/* 3D Name Display */}
       <motion.div
-        className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 relative flex items-center justify-center"
+        className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 relative flex items-center justify-center z-20"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, delay: 0.2 }}
@@ -142,29 +167,58 @@ function Preloader({ onDone }: { onDone: () => void }) {
           </motion.div>
         )}
 
-        {/* TrueFocus Text - shows progressively during typing */}
+        {/* Custom Typing Effect with Focus */}
         <motion.div
           className="w-full h-full flex items-center justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: displayed.length > 0 ? 1 : 0 }}
           transition={{ duration: 0.3 }}
         >
-          <TrueFocus
-            sentence={displayed}
-            manualMode={false}
-            blurAmount={3}
-            borderColor="blue"
-            glowColor="rgba(59, 130, 246, 0.6)"
-            animationDuration={0.8}
-            pauseBetweenAnimations={1.2}
-          />
+          <div className="relative flex gap-1 sm:gap-2 md:gap-3 lg:gap-4 justify-center items-center flex-wrap">
+            {displayed.split("").map((char, index) => {
+              const isLastChar = index === displayed.length - 1;
+              const isSpace = char === " ";
+              const isSecondPart = index >= 6; // "DINUKA " is 6 characters
+
+              return (
+                <span
+                  key={index}
+                  className={`relative text-[1.5rem] sm:text-[2rem] md:text-[2.5rem] lg:text-[3rem] font-black transition-all duration-300 ${
+                    isLastChar && !isSpace
+                      ? "text-blue-400 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]"
+                      : "text-white"
+                  } ${isSpace && isSecondPart ? "w-full" : ""}`}
+                  style={{
+                    filter: isLastChar && !isSpace ? "blur(0px)" : "blur(1px)",
+                  }}
+                >
+                  {char}
+                  {isLastChar && !isSpace && (
+                    <motion.span
+                      className="absolute inset-0 border-2 border-blue-400 rounded-sm"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1.1 }}
+                      transition={{
+                        duration: 0.2,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                      }}
+                      style={{
+                        boxShadow: "0 0 10px rgba(59, 130, 246, 0.6)",
+                      }}
+                    />
+                  )}
+                </span>
+              );
+            })}
+          </div>
         </motion.div>
       </motion.div>
 
       {/* Success Message */}
       {showParticles && (
         <motion.div
-          className="absolute bottom-20 sm:bottom-24 md:bottom-28 left-1/2 transform -translate-x-1/2 z-20"
+          className="absolute bottom-20 sm:bottom-24 md:bottom-28 left-1/2 transform -translate-x-1/2 z-30"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -190,7 +244,7 @@ function Preloader({ onDone }: { onDone: () => void }) {
 
       {/* Enhanced Horse Animation */}
       <motion.div
-        className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-10"
+        className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
@@ -225,16 +279,16 @@ export default function Home() {
   }, [active]);
 
   return (
-    <div className="w-full h-screen flex flex-col">
+    <div className="w-full min-h-screen flex flex-col">
       {loading && <Preloader onDone={() => setLoading(false)} />}
       {!loading && (
         <>
           <Navbar active={active} setActiveSection={setActive} />
-          <main className="relative flex-1 flex items-center justify-center overflow-hidden">
+          <main className="relative flex-1 flex items-center justify-center">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
-                className="absolute inset-0 flex items-center justify-center"
+                className="w-full h-full flex items-center justify-center"
                 initial={{
                   opacity: 0,
                   x: prevActive < active ? 50 : -50,
@@ -255,7 +309,9 @@ export default function Home() {
                   ease: "easeOut",
                 }}
               >
-                {ActiveSection && <ActiveSection />}
+                {ActiveSection && (
+                  <ActiveSection setActiveSection={setActive} />
+                )}
               </motion.div>
             </AnimatePresence>
           </main>

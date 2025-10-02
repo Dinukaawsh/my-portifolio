@@ -4,6 +4,37 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { sendDiscordNotification } from "@/lib/discord";
 
+function parseDeviceInfo(userAgent: string) {
+  const ua = userAgent || "";
+  const isMobile = /Android|iPhone|iPod/i.test(ua);
+  const isTablet =
+    /iPad|Tablet/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua));
+  const deviceType = isMobile
+    ? "mobile"
+    : isTablet
+    ? "tablet"
+    : /Mobi|Mobile/i.test(ua)
+    ? "mobile"
+    : "desktop";
+
+  let os = "unknown";
+  if (/Windows NT/i.test(ua)) os = "Windows";
+  else if (/Mac OS X/i.test(ua))
+    os = /iPhone|iPad|iPod/i.test(ua) ? "iOS" : "macOS";
+  else if (/Android/i.test(ua)) os = "Android";
+  else if (/Linux/i.test(ua)) os = "Linux";
+
+  let browser = "unknown";
+  if (/Edg\//i.test(ua)) browser = "Edge";
+  else if (/OPR\//i.test(ua) || /Opera/i.test(ua)) browser = "Opera";
+  else if (/Chrome\//i.test(ua)) browser = "Chrome";
+  else if (/Safari\//i.test(ua) && /Version\//i.test(ua)) browser = "Safari";
+  else if (/Firefox\//i.test(ua)) browser = "Firefox";
+  else if (/MSIE |Trident\//i.test(ua)) browser = "IE";
+
+  return { deviceType, os, browser } as const;
+}
+
 export default function VisitTracker() {
   const pathname = usePathname();
 
@@ -35,6 +66,7 @@ export default function VisitTracker() {
 
         // Get visitor info (basic)
         const userAgent = navigator.userAgent;
+        const { deviceType, os, browser } = parseDeviceInfo(userAgent);
         const timestamp = new Date().toLocaleString();
         const sessionId =
           sessionStorage.getItem("portfolioSessionId") || "unknown";
@@ -46,6 +78,9 @@ export default function VisitTracker() {
           data: {
             visitor: {
               userAgent,
+              deviceType,
+              os,
+              browser,
               timestamp,
               page: pathname,
               sessionId: sessionId.substring(0, 8), // Short version for display

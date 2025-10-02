@@ -171,10 +171,10 @@ export const RollingGallery: React.FC<RollingGalleryProps> = ({
               <Image
                 src={url}
                 alt={`Gallery image ${i + 1}`}
-                width={790}
-                height={320}
-                className="pointer-events-none h-[130px] w-[320px] rounded-[15px] border-[3px] border-white object-cover transition-transform duration-300 ease-out group-hover:scale-105 sm:h-[110px] sm:w-[240px] md:h-[220px] md:w-[540px] lg:h-[270px] lg:w-[690px] xl:h-[320px] xl:w-[790px]"
-                sizes="(max-width: 640px) 240px, (max-width: 768px) 540px, (max-width: 1024px) 690px, 790px"
+                width={400}
+                height={400}
+                className="pointer-events-none h-[160px] w-[160px] rounded-[15px] border-[3px] object-cover transition-transform duration-300 ease-out group-hover:scale-105 sm:h-[140px] sm:w-[140px] md:h-[240px] md:w-[240px] lg:h-[300px] lg:w-[300px] xl:h-[360px] xl:w-[360px]"
+                sizes="(max-width: 640px) 140px, (max-width: 768px) 240px, (max-width: 1024px) 300px, 360px"
               />
             </div>
           ))}
