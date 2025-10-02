@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 interface Vector2D {
   x: number;
@@ -215,7 +215,7 @@ export function ParticleTextEffect({
     };
   };
 
-  const nextWord = (word: string, canvas: HTMLCanvasElement) => {
+  const nextWord = useCallback((word: string, canvas: HTMLCanvasElement) => {
     // const ctx = canvas.getContext("2d")!
 
     // Create off-screen canvas for text rendering
@@ -325,9 +325,9 @@ export function ParticleTextEffect({
     for (let i = particleIndex; i < particles.length; i++) {
       particles[i].kill(canvas.width, canvas.height);
     }
-  };
+  }, []);
 
-  const animate = () => {
+  const animate = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -378,7 +378,7 @@ export function ParticleTextEffect({
     }
 
     animationRef.current = requestAnimationFrame(animate);
-  };
+  }, [nextWord, words, drawAsPoints]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

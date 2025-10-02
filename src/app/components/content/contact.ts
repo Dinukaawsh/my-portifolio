@@ -13,7 +13,7 @@ export const contactContent = {
   // Contact Information
   contactInfo: {
     email: "dinukaaw.sh@gmail.com",
-    emailDisplay: "dinukaaw.sh@gmail.com",
+    emailDisplay: "Hire me",
     location: "Colombo, Sri Lanka",
     availability: "Available for new opportunities",
   },

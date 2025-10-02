@@ -5,6 +5,9 @@ export interface DiscordNotification {
     visitor?: {
       ip?: string;
       userAgent?: string;
+      deviceType?: "mobile" | "tablet" | "desktop" | "unknown";
+      os?: string;
+      browser?: string;
       timestamp: string;
       page: string;
       sessionId?: string;
@@ -14,6 +17,7 @@ export interface DiscordNotification {
       name: string;
       email: string;
       message: string;
+      rating: number;
       timestamp: string;
     };
   };
@@ -79,6 +83,33 @@ function createDiscordEmbed(notification: DiscordNotification) {
             : `🔄 Returning (${data.visitor?.sessionId || "Unknown"})`,
           inline: true,
         },
+        ...(data.visitor?.deviceType
+          ? [
+              {
+                name: "🖥️ Device",
+                value: data.visitor.deviceType,
+                inline: true,
+              },
+            ]
+          : []),
+        ...(data.visitor?.os
+          ? [
+              {
+                name: "🧠 OS",
+                value: data.visitor.os,
+                inline: true,
+              },
+            ]
+          : []),
+        ...(data.visitor?.browser
+          ? [
+              {
+                name: "🌐 Browser",
+                value: data.visitor.browser,
+                inline: true,
+              },
+            ]
+          : []),
         {
           name: "🌍 User Agent",
           value: data.visitor?.userAgent
@@ -105,6 +136,15 @@ function createDiscordEmbed(notification: DiscordNotification) {
         {
           name: "📧 Email",
           value: data.comment?.email || "No email",
+          inline: true,
+        },
+        {
+          name: "⭐ Rating",
+          value: data.comment?.rating
+            ? `${data.comment.rating}/5 ${"★".repeat(
+                data.comment.rating
+              )}${"☆".repeat(5 - data.comment.rating)}`
+            : "No rating",
           inline: true,
         },
         {

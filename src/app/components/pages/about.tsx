@@ -8,11 +8,24 @@ import React, {
   useMemo,
 } from "react";
 import GlobeBackground from "@/app/components/backgrounds/globe/GlobeBackground";
+import { RollingGallery } from "@/app/components/backgrounds/rolling gallery/gallery";
 import Image from "next/image";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Code2, TrendingUp, Heart, Target } from "lucide-react";
+import {
+  Code2,
+  TrendingUp,
+  Heart,
+  Target,
+  FileText,
+  Camera,
+} from "lucide-react";
 import { aboutContent, getDynamicStats } from "@/app/components/content/about";
+import Footer from "@/app/components/layouts/footer/Footer";
+
+interface AboutProps {
+  setActiveSection?: (key: string) => void;
+}
 
 // Enhanced Loading Skeleton Component with animations
 function ProfileSkeleton() {
@@ -325,13 +338,15 @@ function useServiceWorker() {
   }, []);
 }
 
-export default function About() {
+export default function About({ setActiveSection }: AboutProps = {}) {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayed, setDisplayed] = useState("");
   const [typing, setTyping] = useState(true);
   const [showCard, setShowCard] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showCvPreview, setShowCvPreview] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -356,6 +371,12 @@ export default function About() {
 
   // Initialize service worker
   useServiceWorker();
+
+  // Detect mobile devices to tweak preview behavior (client-side only)
+  useEffect(() => {
+    const ua = navigator.userAgent || "";
+    setIsMobile(/Android|iPhone|iPad|iPod/i.test(ua));
+  }, []);
 
   // Typing animation for roles
   useEffect(() => {
@@ -448,10 +469,36 @@ export default function About() {
     return () => clearTimeout(timeout);
   }, [codeDisplayed, codeTyping, codeArrayIndex, codeDone]);
 
+  const openCvPreview = useCallback(async () => {
+    let ok = false;
+    try {
+      const res = await fetch("/api/cv-webhook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source: "about_cv_button" }),
+      });
+      ok = res.ok;
+      if (!res.ok) {
+        // Attempt to read details for debugging
+        const data = await res.json().catch(() => null);
+        console.warn("CV webhook failed", data || res.statusText);
+      }
+    } catch (e) {
+      console.warn("CV webhook error", e);
+    } finally {
+      if (!ok) {
+        // Optional UX: brief toast substitute
+        console.info("Could not reach Discord webhook. Check server env.");
+      }
+      // Always use in-app modal; mobile will render image instead of PDF
+      setShowCvPreview(true);
+    }
+  }, [isMobile]);
+
   return (
     <section
       ref={sectionRef}
-      className="w-full h-full relative flex flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
+      className="w-full min-h-full relative flex flex-col items-center justify-start overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
     >
       {/* Progress Bar */}
       <motion.div
@@ -830,10 +877,10 @@ export default function About() {
               </a>
             </div>
 
-            {/* Enhanced Download CV Button */}
-            <motion.a
-              href={aboutContent.personal.cvFile}
-              download={aboutContent.personal.cvFileName}
+            {/* CV Preview Button (no download) */}
+            <motion.button
+              type="button"
+              onClick={openCvPreview}
               className="inline-block px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold shadow-lg shadow-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 text-sm sm:text-base mb-4 sm:mb-6"
               tabIndex={0}
               whileHover={{
@@ -856,12 +903,14 @@ export default function About() {
               }}
             >
               <motion.span
+                className="flex items-center gap-2"
                 animate={{ x: [0, 5, 0] }}
                 transition={{ duration: 1, repeat: Infinity }}
               >
-                📄 Download CV
+                <FileText className="w-4 h-4" />
+                Preview CV
               </motion.span>
-            </motion.a>
+            </motion.button>
 
             {/* Enhanced Social Links */}
             <motion.div
@@ -1048,7 +1097,7 @@ export default function About() {
             className="hidden lg:block w-full max-w-md mx-auto lg:mx-0 mt-6"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
           >
             <motion.div
               className="bg-gradient-to-br from-gray-900/60 via-blue-900/20 to-gray-900/60 backdrop-blur-xl rounded-2xl p-4 border border-blue-500/30 shadow-lg shadow-blue-500/20"
@@ -1450,6 +1499,100 @@ export default function About() {
           </motion.div>
         </div>
       </Suspense>
+
+      {/* Photo Gallery Section - Full Width at Bottom */}
+      <motion.div
+        className="w-full max-w-7xl mx-auto mt-12 mb-8"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.6 }}
+      >
+        <motion.div
+          className="bg-transparent backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-blue-500/30 shadow-2xl shadow-blue-500/20"
+          whileHover={{
+            scale: 1.01,
+            boxShadow: "0 25px 50px rgba(59, 130, 246, 0.3)",
+          }}
+          transition={{ duration: 0.3 }}
+        >
+          <motion.h4
+            className="text-2xl sm:text-3xl font-bold text-white mb-6 flex items-center justify-center gap-3 relative z-10"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <Camera className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
+            Photo Gallery
+          </motion.h4>
+
+          <div className="relative h-96 sm:h-[28rem] md:h-[36rem] lg:h-[40rem] xl:h-[44rem] rounded-2xl overflow-hidden bg-transparent">
+            <RollingGallery autoplay={true} pauseOnHover={false} />
+          </div>
+        </motion.div>
+      </motion.div>
+
+      {/* Footer Section */}
+      <Footer setActiveSection={setActiveSection} />
+
+      {/* CV Preview Modal */}
+      {showCvPreview && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70"
+          onContextMenu={(e) => e.preventDefault()}
+          onDragStart={(e) => e.preventDefault()}
+        >
+          <div className="relative w-[100vw] h-[100vh] sm:w-[95vw] sm:max-w-5xl sm:h-[85vh] bg-gray-900 rounded-none sm:rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-2 bg-gray-800/80 border-b border-white/10">
+              <div className="text-sm text-gray-200 font-semibold">
+                CV Preview (view only)
+              </div>
+              <button
+                onClick={() => setShowCvPreview(false)}
+                className="px-3 py-1 text-xs rounded-md bg-white/10 text-white hover:bg-white/20"
+              >
+                Close
+              </button>
+            </div>
+            <div className="w-full h-full">
+              {isMobile ? (
+                <div className="w-full h-full bg-black flex items-center justify-center">
+                  <img
+                    src="/CV/cv.png"
+                    alt="CV Preview"
+                    className="max-w-full max-h-full object-contain select-none"
+                    onContextMenu={(e) => e.preventDefault()}
+                    draggable={false}
+                  />
+                </div>
+              ) : (
+                <object
+                  data={`${aboutContent.personal.cvFile}#toolbar=0&navpanes=0&scrollbar=0`}
+                  type="application/pdf"
+                  className="w-full h-full"
+                >
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-center p-4 text-gray-200">
+                    <div>
+                      Inline PDF preview is not supported on this device.
+                    </div>
+                    <button
+                      onClick={() =>
+                        window.open(
+                          `${aboutContent.personal.cvFile}#toolbar=0&navpanes=0`,
+                          "_blank",
+                          "noopener,noreferrer"
+                        )
+                      }
+                      className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-500"
+                    >
+                      Open Fullscreen Preview
+                    </button>
+                  </div>
+                </object>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

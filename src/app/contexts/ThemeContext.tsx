@@ -15,6 +15,7 @@ interface ThemeContextType {
   currentTheme: Theme;
   setTheme: (theme: Theme) => void;
   applyTheme: (theme: Theme) => void;
+  resetToDarkMode: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -197,23 +198,26 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     applyTheme(theme);
   };
 
+  const resetToDarkMode = () => {
+    setCurrentTheme("dark");
+    applyTheme("dark");
+    if (isClient) {
+      localStorage.setItem("portfolio-theme", "dark");
+    }
+  };
+
   // Set client flag to prevent hydration mismatches
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Load theme from localStorage on mount (only on client)
+  // Always start with dark mode on app load (ignore localStorage)
   useEffect(() => {
     if (!isClient) return;
 
-    const savedTheme = localStorage.getItem("portfolio-theme") as Theme;
-    if (
-      savedTheme &&
-      ["dark", "light", "water", "sunset", "forest"].includes(savedTheme)
-    ) {
-      setCurrentTheme(savedTheme);
-      applyTheme(savedTheme);
-    }
+    // Force dark mode as default for entire application
+    setCurrentTheme("dark");
+    applyTheme("dark");
   }, [isClient, applyTheme]);
 
   // Apply theme when currentTheme changes
@@ -239,6 +243,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     currentTheme,
     setTheme,
     applyTheme,
+    resetToDarkMode,
   };
 
   return (
