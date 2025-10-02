@@ -603,9 +603,36 @@ export default function About({ setActiveSection }: AboutProps = {}) {
             </motion.div>
 
             {/* Enhanced Name and Title */}
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold mb-2 tracking-tight text-white">
-              {aboutContent.personal.name}
-            </h2>
+            <div className="mb-2">
+              <motion.span
+                className="text-blue-300 italic font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl block"
+                animate={{
+                  color: ["#60a5fa", "#a855f7", "#60a5fa"],
+                  textShadow: [
+                    "0 0 5px rgba(59, 130, 246, 0.3)",
+                    "0 0 15px rgba(147, 51, 234, 0.5)",
+                    "0 0 5px rgba(59, 130, 246, 0.3)",
+                  ],
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                I am
+              </motion.span>
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-white drop-shadow-lg">
+                <motion.span
+                  animate={{
+                    textShadow: [
+                      "0 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 255, 255, 0.1)",
+                      "0 2px 8px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 255, 255, 0.2)",
+                      "0 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 255, 255, 0.1)",
+                    ],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  {aboutContent.personal.name}
+                </motion.span>
+              </h2>
+            </div>
             <h3 className="text-sm sm:text-base md:text-lg lg:text-xl text-blue-400 font-semibold mb-4 min-h-[1.5rem] sm:min-h-[2rem] md:min-h-[2.5rem] flex items-center justify-center">
               <motion.div
                 className="relative inline-flex items-center"
@@ -693,6 +720,136 @@ export default function About({ setActiveSection }: AboutProps = {}) {
             <p className="text-xs sm:text-sm md:text-base text-gray-200 mb-4 sm:mb-6 leading-relaxed max-w-md">
               {aboutContent.personal.description}
             </p>
+
+            {/* Unique Quote - Prominent Display */}
+            <motion.div
+              className="relative mb-6 sm:mb-8 p-6 sm:p-8 bg-gradient-to-br from-gray-900/80 via-blue-900/40 to-gray-900/80 rounded-2xl border border-blue-500/30 backdrop-blur-xl shadow-2xl shadow-blue-500/20"
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.4, type: "spring" }}
+              whileHover={{
+                scale: 1.02,
+                boxShadow: "0 25px 50px rgba(59, 130, 246, 0.4)",
+              }}
+            >
+              {/* Clean Background Pattern */}
+              <div className="absolute inset-0 rounded-2xl overflow-hidden">
+                {/* Subtle gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5" />
+
+                {/* Elegant border glow */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 via-transparent to-purple-500/10 p-[1px]">
+                  <div className="w-full h-full rounded-2xl bg-transparent" />
+                </div>
+
+                {/* Subtle corner accents */}
+                <div className="absolute top-0 left-0 w-20 h-20 bg-gradient-to-br from-blue-500/10 to-transparent rounded-tl-2xl" />
+                <div className="absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-tl from-purple-500/10 to-transparent rounded-br-2xl" />
+              </div>
+
+              {/* Quote Content */}
+              <div className="relative z-10">
+                {/* Top Quote Mark */}
+                <motion.div
+                  className="absolute -top-2 -left-2 text-4xl sm:text-5xl text-blue-400 font-serif"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                    rotate: [0, 5, -5, 0],
+                    opacity: [0.7, 1, 0.7],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                >
+                  "
+                </motion.div>
+
+                {/* Main Quote Text */}
+                <motion.p
+                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white font-bold text-center leading-relaxed px-4 sm:px-8 py-4 drop-shadow-2xl"
+                  animate={{
+                    textShadow: [
+                      "0 4px 8px rgba(0, 0, 0, 0.8), 0 0 15px rgba(59, 130, 246, 0.6)",
+                      "0 6px 12px rgba(0, 0, 0, 0.9), 0 0 25px rgba(147, 51, 234, 0.8)",
+                      "0 4px 8px rgba(0, 0, 0, 0.8), 0 0 15px rgba(59, 130, 246, 0.6)",
+                    ],
+                    color: ["#ffffff", "#f0f9ff", "#ffffff"],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  Growth comes from standing tall when challenges push you down.
+                </motion.p>
+
+                {/* Bottom Quote Mark */}
+                <motion.div
+                  className="absolute -bottom-2 -right-2 text-4xl sm:text-5xl text-blue-400 font-serif"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                    rotate: [0, -5, 5, 0],
+                    opacity: [0.7, 1, 0.7],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.5,
+                  }}
+                >
+                  "
+                </motion.div>
+
+                {/* Floating Particles around Quote */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-2 h-2 bg-blue-400/60 rounded-full"
+                      style={{
+                        left: `${10 + i * 20}%`,
+                        top: `${20 + (i % 2) * 60}%`,
+                      }}
+                      animate={{
+                        scale: [0, 1, 0],
+                        opacity: [0, 0.8, 0],
+                        y: [0, -20, 0],
+                        x: [0, Math.random() * 40 - 20, 0],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        delay: i * 0.5,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {/* Quote Attribution */}
+                <motion.div
+                  className="text-center mt-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 1, delay: 1 }}
+                >
+                  <motion.span
+                    className="text-sm sm:text-base text-blue-200 font-semibold drop-shadow-lg"
+                    animate={{
+                      color: ["#bfdbfe", "#c084fc", "#bfdbfe"],
+                      textShadow: [
+                        "0 2px 4px rgba(0, 0, 0, 0.6), 0 0 8px rgba(59, 130, 246, 0.4)",
+                        "0 3px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(147, 51, 234, 0.6)",
+                        "0 2px 4px rgba(0, 0, 0, 0.6), 0 0 8px rgba(59, 130, 246, 0.4)",
+                      ],
+                    }}
+                    transition={{ duration: 4, repeat: Infinity }}
+                  >
+                    — Dinuka Wickramarathna —
+                  </motion.span>
+                </motion.div>
+              </div>
+            </motion.div>
 
             {/* Enhanced Skills */}
             <div className="flex flex-wrap gap-2 justify-center lg:justify-start mb-4 sm:mb-6">
