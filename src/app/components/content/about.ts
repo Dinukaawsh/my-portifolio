@@ -93,7 +93,7 @@ export const aboutContent = {
   timeline: [
     {
       year: "2021 - Present",
-      place: "ESOFT Metro Campus",
+      place: "ESU colombo",
       color: "bg-blue-400",
       delay: 0.7,
     },

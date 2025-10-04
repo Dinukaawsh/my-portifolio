@@ -95,34 +95,28 @@ function Preloader({ onDone }: { onDone: () => void }) {
         />
       </div>
 
-      {/* Floating Background Particles */}
+      {/* Simplified Background - Reduced from 8 to 2 particles */}
       <div className="absolute inset-0 pointer-events-none z-10">
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
-          const colors = [
-            "bg-violet-400/40",
-            "bg-blue-400/40",
-            "bg-green-400/40",
-          ];
-          const colorClass = colors[i % colors.length];
+        {[0, 1].map((i) => {
+          const colors = ["bg-blue-400/20", "bg-violet-400/20"];
+          const colorClass = colors[i];
           return (
             <motion.div
               key={i}
               className={`absolute w-1 h-1 ${colorClass} rounded-full`}
               style={{
-                left: `${10 + i * 12}%`,
-                top: `${15 + i * 10}%`,
+                left: `${20 + i * 60}%`,
+                top: `${30 + i * 40}%`,
               }}
               animate={{
-                y: [0, -80, -160, -240],
-                x: [0, Math.random() * 40 - 20],
-                opacity: [0, 1, 0.8, 0],
-                scale: [0, 1, 1.3, 0],
+                y: [0, -40],
+                opacity: [0, 1, 0],
               }}
               transition={{
-                duration: 15 + i * 1.5,
-                delay: i * 1,
+                duration: 8,
+                delay: i * 2,
                 repeat: Infinity,
-                ease: "linear",
+                ease: "easeInOut",
               }}
             />
           );
@@ -194,15 +188,8 @@ function Preloader({ onDone }: { onDone: () => void }) {
                 >
                   {char}
                   {isLastChar && !isSpace && (
-                    <motion.span
-                      className="absolute inset-0 border-2 border-blue-400 rounded-sm"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1.1 }}
-                      transition={{
-                        duration: 0.2,
-                        repeat: Infinity,
-                        repeatType: "reverse",
-                      }}
+                    <span
+                      className="absolute inset-0 border-2 border-blue-400 rounded-sm opacity-80"
                       style={{
                         boxShadow: "0 0 10px rgba(59, 130, 246, 0.6)",
                       }}
@@ -223,46 +210,18 @@ function Preloader({ onDone }: { onDone: () => void }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <motion.div
-            className="flex items-center justify-center gap-2 text-blue-300 text-lg"
-            animate={{
-              scale: [1, 1.1, 1],
-              rotate: [0, 2, -2, 0],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
+          <div className="flex items-center justify-center gap-2 text-blue-300 text-lg">
             <Sparkles className="w-5 h-5" />
             <span>Ready to explore!</span>
             <Sparkles className="w-5 h-5" />
-          </motion.div>
+          </div>
         </motion.div>
       )}
 
-      {/* Enhanced Horse Animation */}
-      <motion.div
-        className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-      >
-        <motion.div
-          animate={{
-            rotate: [0, 0.5, -0.5, 0],
-            scale: [1, 1.01, 1],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
-          <Horse />
-        </motion.div>
-      </motion.div>
+      {/* Simplified Horse Animation */}
+      <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+        <Horse />
+      </div>
     </div>
   );
 }
@@ -270,13 +229,7 @@ function Preloader({ onDone }: { onDone: () => void }) {
 export default function Home() {
   const [active, setActive] = useState("about");
   const [loading, setLoading] = useState(true);
-  const [prevActive, setPrevActive] = useState(active);
   const ActiveSection = sections.find((s) => s.key === active)?.Component;
-
-  // Update prevActive when active changes
-  useEffect(() => {
-    setPrevActive(active);
-  }, [active]);
 
   return (
     <div className="w-full min-h-screen flex flex-col">
@@ -291,21 +244,15 @@ export default function Home() {
                 className="w-full h-full flex items-center justify-center"
                 initial={{
                   opacity: 0,
-                  x: prevActive < active ? 50 : -50,
-                  scale: 0.98,
                 }}
                 animate={{
                   opacity: 1,
-                  x: 0,
-                  scale: 1,
                 }}
                 exit={{
                   opacity: 0,
-                  x: prevActive < active ? -50 : 50,
-                  scale: 0.98,
                 }}
                 transition={{
-                  duration: 0.25,
+                  duration: 0.15,
                   ease: "easeOut",
                 }}
               >

@@ -5,13 +5,82 @@ import { Heart, Code, Coffee, Sparkles } from "lucide-react";
 import { aboutContent } from "@/app/components/content/about";
 import Image from "next/image";
 import Threads from "@/app/components/backgrounds/footer_backgound/footer_background";
+import { useTheme } from "@/app/contexts/ThemeContext";
 
 interface FooterProps {
   setActiveSection?: (key: string) => void;
 }
 
 const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
+  const { currentTheme } = useTheme();
   const currentYear = new Date().getFullYear();
+
+  // Theme-aware colors for lightning effects
+  const lightningColors = {
+    light: {
+      primary: "#3B82F6", // blue-500
+      secondary: "#1D4ED8", // blue-700
+      glow: "rgba(59, 130, 246, 0.1)", // blue-500 with opacity
+    },
+    dark: {
+      primary: "#00BFFF", // deep sky blue
+      secondary: "#1E90FF", // dodger blue
+      glow: "rgba(0, 191, 255, 0.1)", // deep sky blue with opacity
+    },
+    water: {
+      primary: "#00CED1", // dark turquoise
+      secondary: "#20B2AA", // light sea green
+      glow: "rgba(0, 206, 209, 0.1)", // dark turquoise with opacity
+    },
+    sunset: {
+      primary: "#FF6347", // tomato
+      secondary: "#FF4500", // orange red
+      glow: "rgba(255, 99, 71, 0.1)", // tomato with opacity
+    },
+    forest: {
+      primary: "#32CD32", // lime green
+      secondary: "#228B22", // forest green
+      glow: "rgba(50, 205, 50, 0.1)", // lime green with opacity
+    },
+  };
+
+  const currentColors = lightningColors[currentTheme];
+
+  // Theme-aware text colors
+  const textColors = {
+    light: {
+      primary: "text-gray-700",
+      secondary: "text-gray-600",
+      hover: "hover:text-blue-600",
+      link: "text-gray-600",
+    },
+    dark: {
+      primary: "text-white",
+      secondary: "text-gray-300",
+      hover: "hover:text-blue-400",
+      link: "text-gray-300",
+    },
+    water: {
+      primary: "text-white",
+      secondary: "text-cyan-200",
+      hover: "hover:text-cyan-300",
+      link: "text-cyan-200",
+    },
+    sunset: {
+      primary: "text-white",
+      secondary: "text-orange-200",
+      hover: "hover:text-orange-300",
+      link: "text-orange-200",
+    },
+    forest: {
+      primary: "text-white",
+      secondary: "text-green-200",
+      hover: "hover:text-green-300",
+      link: "text-green-200",
+    },
+  };
+
+  const currentTextColors = textColors[currentTheme];
 
   const sections = [
     { key: "about", label: "About" },
@@ -33,9 +102,95 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
 
   return (
     <footer
-      className="relative w-full bg-gradient-to-br from-gray-900/95 via-blue-900/40 to-gray-900/95 backdrop-blur-xl border-t border-blue-500/30 shadow-2xl shadow-blue-500/20 py-8 px-4 sm:px-6 overflow-hidden"
-      style={{ backgroundColor: "rgba(17, 24, 39, 0.95)" }}
+      className="relative w-full backdrop-blur-xl border-t border-blue-500/30 shadow-2xl shadow-blue-500/20 py-8 px-4 sm:px-6 overflow-hidden"
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.95)" }}
     >
+      {/* Lightning Effects */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {/* Lightning Bolts */}
+        {[0, 1, 2, 3].map((i) => (
+          <motion.div
+            key={`lightning-${i}`}
+            className="absolute"
+            style={{
+              left: `${20 + i * 20}%`,
+              top: `${10 + i * 15}%`,
+              width: "2px",
+              height: "200px",
+              background: `linear-gradient(to bottom, transparent, ${currentColors.primary}, ${currentColors.secondary}, transparent)`,
+              opacity: 0,
+            }}
+            animate={{
+              opacity: [0, 1, 0],
+              scaleY: [0, 1, 0],
+              boxShadow: [
+                `0 0 0px ${currentColors.primary}`,
+                `0 0 20px ${currentColors.primary}, 0 0 40px ${currentColors.secondary}`,
+                `0 0 0px ${currentColors.primary}`,
+              ],
+            }}
+            transition={{
+              duration: 0.8,
+              delay: i * 2,
+              repeat: Infinity,
+              repeatDelay: 3 + Math.random() * 2,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+
+        {/* Lightning Flashes */}
+        {[0, 1, 2].map((i) => (
+          <motion.div
+            key={`flash-${i}`}
+            className="absolute inset-0"
+            style={{
+              background: `radial-gradient(circle, ${currentColors.glow} 0%, transparent 70%)`,
+              opacity: 0,
+            }}
+            animate={{
+              opacity: [0, 0.3, 0],
+            }}
+            transition={{
+              duration: 0.3,
+              delay: i * 2.5,
+              repeat: Infinity,
+              repeatDelay: 4 + Math.random() * 3,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+
+        {/* Electric Sparks */}
+        {Array.from({ length: 15 }).map((_, i) => (
+          <motion.div
+            key={`spark-${i}`}
+            className="absolute w-1 h-1 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              backgroundColor: currentColors.primary,
+            }}
+            animate={{
+              opacity: [0, 1, 0],
+              scale: [0, 1.5, 0],
+              boxShadow: [
+                `0 0 0px ${currentColors.primary}`,
+                `0 0 10px ${currentColors.primary}, 0 0 20px ${currentColors.secondary}`,
+                `0 0 0px ${currentColors.primary}`,
+              ],
+            }}
+            transition={{
+              duration: 0.5,
+              delay: Math.random() * 3,
+              repeat: Infinity,
+              repeatDelay: 2 + Math.random() * 4,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </div>
+
       {/* Threads Background */}
       <div
         style={{
@@ -44,21 +199,22 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
           position: "absolute",
           top: 0,
           left: 0,
-          zIndex: 0,
+          zIndex: 1,
         }}
       >
         <Threads amplitude={1} distance={0} enableMouseInteraction={false} />
       </div>
 
       {/* Floating Background Particles */}
-      <div className="absolute inset-0 pointer-events-none z-1">
+      <div className="absolute inset-0 pointer-events-none z-2">
         {[0, 1, 2, 3, 4].map((i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 bg-blue-400/30 rounded-full"
+            className="absolute w-1 h-1 rounded-full"
             style={{
               left: `${15 + i * 20}%`,
               top: `${20 + i * 15}%`,
+              backgroundColor: `${currentColors.primary}30`,
             }}
             animate={{
               y: [0, -40, -80, -120],
@@ -126,7 +282,9 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
                 Dinuka Ashan
               </motion.h3>
             </motion.div>
-            <p className="text-gray-300 text-sm leading-relaxed">
+            <p
+              className={`${currentTextColors.secondary} text-sm leading-relaxed`}
+            >
               Passionate software engineer crafting digital experiences with
               modern technologies. Building the future, one line of code at a
               time.
@@ -141,7 +299,9 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <h4 className="text-lg font-semibold text-white mb-4">
+            <h4
+              className={`text-lg font-semibold ${currentTextColors.primary} mb-4`}
+            >
               Quick Links
             </h4>
             <div className="space-y-2">
@@ -149,7 +309,7 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
                 <motion.button
                   key={section.key}
                   onClick={() => handleSectionClick(section.key)}
-                  className="block text-gray-300 hover:text-blue-400 transition-colors duration-300 text-sm text-left w-full"
+                  className={`block ${currentTextColors.link} ${currentTextColors.hover} transition-colors duration-300 text-sm text-left w-full`}
                   whileHover={{ x: 5 }}
                   transition={{ duration: 0.2 }}
                   style={{ animationDelay: `${index * 0.1}s` }}
@@ -168,13 +328,15 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <h4 className="text-lg font-semibold text-white mb-4">
+            <h4
+              className={`text-lg font-semibold ${currentTextColors.primary} mb-4`}
+            >
               Get In Touch
             </h4>
             <div className="space-y-3">
               <motion.a
                 href={`mailto:${aboutContent.personal.email}`}
-                className="flex items-center justify-center md:justify-start gap-2 text-gray-300 hover:text-blue-400 transition-colors duration-300 text-sm"
+                className={`flex items-center justify-center md:justify-start gap-2 ${currentTextColors.link} ${currentTextColors.hover} transition-colors duration-300 text-sm`}
                 whileHover={{ x: 5 }}
                 transition={{ duration: 0.2 }}
               >
@@ -196,7 +358,7 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
                   .pop()}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center md:justify-start gap-2 text-gray-300 hover:text-blue-400 transition-colors duration-300 text-sm"
+                className={`flex items-center justify-center md:justify-start gap-2 ${currentTextColors.link} ${currentTextColors.hover} transition-colors duration-300 text-sm`}
                 whileHover={{ x: 5 }}
                 transition={{ duration: 0.2 }}
               >
@@ -218,7 +380,7 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
                 }
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center md:justify-start gap-2 text-gray-300 hover:text-blue-400 transition-colors duration-300 text-sm"
+                className={`flex items-center justify-center md:justify-start gap-2 ${currentTextColors.link} ${currentTextColors.hover} transition-colors duration-300 text-sm`}
                 whileHover={{ x: 5 }}
                 transition={{ duration: 0.2 }}
               >

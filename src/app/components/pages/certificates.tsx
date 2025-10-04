@@ -7,6 +7,7 @@ import {
   certificatesContent,
   getCertificatesByCategory,
 } from "@/app/components/content/certificates";
+import { Star, Trophy } from "lucide-react";
 import {
   Lightning,
   ElasticHueSlider,
@@ -324,9 +325,9 @@ export default function Certificates() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <span
-                        className={`w-8 h-8 ${certificate.color} rounded-full flex items-center justify-center text-white text-lg`}
+                        className={`w-8 h-8 ${certificate.color} rounded-full flex items-center justify-center text-white`}
                       >
-                        {certificate.issuerLogo}
+                        <certificate.issuerLogo className="w-5 h-5" />
                       </span>
                       <span className="text-gray-300 text-sm font-medium">
                         {certificate.issuer}
@@ -334,7 +335,11 @@ export default function Certificates() {
                     </div>
                     {certificate.featured && (
                       <span className="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold rounded-full">
-                        ⭐ Featured
+                        <Star
+                          className="w-4 h-4 text-yellow-400"
+                          fill="currentColor"
+                        />
+                        Featured
                       </span>
                     )}
                   </div>
@@ -405,7 +410,9 @@ export default function Certificates() {
         {/* Empty State */}
         {filteredCertificates.length === 0 && (
           <div className="text-center py-16">
-            <div className="text-gray-400 text-6xl mb-4">🏆</div>
+            <div className="text-gray-400 mb-4 flex justify-center">
+              <Trophy className="w-16 h-16" />
+            </div>
             <h3 className="text-xl font-semibold text-white mb-2">
               No certificates found
             </h3>

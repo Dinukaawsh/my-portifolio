@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { BackgroundPaths } from "@/app/components/backgrounds/line background/line-backgroung";
 import { educationContent } from "@/app/components/content/education";
+import { BookOpen } from "lucide-react";
 
 const educationData = educationContent.institutions;
 
@@ -34,7 +36,7 @@ export default function Education() {
     >
       {/* Line Background - Fixed */}
       <div className="fixed inset-0 z-0">
-        <BackgroundPaths  />
+        <BackgroundPaths />
       </div>
 
       {/* Main Content */}
@@ -150,7 +152,19 @@ export default function Education() {
               {/* Header Section */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-6">
                 <div className="text-4xl sm:text-5xl">
-                  {educationData[activeIndex].logo}
+                  {educationData[activeIndex].id === 1 ? (
+                    <Image
+                      src="/ESU.png"
+                      alt="ESU colombo Logo"
+                      width={64}
+                      height={64}
+                      className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
+                    />
+                  ) : (
+                    React.createElement(educationData[activeIndex].logo, {
+                      className: "w-12 h-12 sm:w-16 sm:h-16 text-blue-400",
+                    })
+                  )}
                 </div>
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
@@ -244,12 +258,12 @@ export default function Education() {
                 </div>
               </div>
 
-              {/* Core Modules - Only show for ESOFT Metro Campus (id: 1) */}
+              {/* Core Modules - Only show for ESU colombo (id: 1) */}
               {educationData[activeIndex].id === 1 &&
                 educationData[activeIndex].coreModules && (
                   <div className="mb-6">
                     <h5 className="text-white font-semibold mb-3 text-sm sm:text-base flex items-center gap-2">
-                      <span className="text-blue-400">📚</span>
+                      <BookOpen className="w-5 h-5 text-blue-400" />
                       Core Modules
                     </h5>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">

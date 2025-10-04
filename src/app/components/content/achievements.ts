@@ -1,6 +1,8 @@
 // Achievements Page Content Configuration
 // Edit this file to update your achievements, awards, and other accomplishments
 
+import { GraduationCap, Trophy, Star, Rocket, Users } from "lucide-react";
+
 export const achievementsContent = {
   // Page Header Information
   header: {
@@ -25,8 +27,8 @@ export const achievementsContent = {
     {
       id: 1,
       title: "Bachelor's Degree Graduation",
-      issuer: "ESOFT Metro Campus",
-      issuerLogo: "🎓",
+      issuer: "ESU colombo",
+      issuerLogo: GraduationCap,
       category: "Academic",
       date: "2025-08-10",
       description:
@@ -53,7 +55,7 @@ export const achievementsContent = {
     // {
     //   id: 2,
     //   title: "Dean's List - Academic Excellence",
-    //   issuer: "ESOFT Metro Campus",
+    //   issuer: "ESU colombo",
     //   issuerLogo: "🎓",
     //   category: "Academic",
     //   date: "2024-01-15",
@@ -79,7 +81,7 @@ export const achievementsContent = {
     // {
     //   id: 3,
     //   title: "Best Final Year Project Award",
-    //   issuer: "ESOFT Metro Campus",
+    //   issuer: "ESU colombo",
     //   issuerLogo: "🏆",
     //   category: "Academic",
     //   date: "2024-01-10",
@@ -105,7 +107,7 @@ export const achievementsContent = {
     // {
     //   id: 4,
     //   title: "Hackathon Winner - CodeFest 2023",
-    //   issuer: "University Tech Society",
+    //   issuer: "ESU colombo",
     //   issuerLogo: "💻",
     //   category: "Competitions",
     //   date: "2023-12-15",
@@ -236,7 +238,7 @@ export const achievementsContent = {
 
   // Empty State Configuration
   emptyState: {
-    icon: "🌟",
+    icon: Star,
     title: "No achievements found",
     message: "Try selecting a different category or check back later!",
   },
@@ -246,27 +248,27 @@ export const achievementsContent = {
     academic: {
       label: "Academic",
       color: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-      icon: "🎓",
+      icon: GraduationCap,
     },
     professional: {
       label: "Professional",
       color: "bg-purple-500/20 text-purple-300 border-purple-500/30",
-      icon: "⭐",
+      icon: Star,
     },
     competitions: {
       label: "Competitions",
       color: "bg-green-500/20 text-green-300 border-green-500/30",
-      icon: "🏆",
+      icon: Trophy,
     },
     community: {
       label: "Community",
       color: "bg-teal-500/20 text-teal-300 border-teal-500/30",
-      icon: "🤝",
+      icon: Users,
     },
     innovation: {
       label: "Innovation",
       color: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
-      icon: "🚀",
+      icon: Rocket,
     },
   },
 };

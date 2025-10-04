@@ -90,28 +90,18 @@ export default function Navbar({ active, setActiveSection }: NavbarProps) {
         <div className="hidden md:flex items-center justify-between w-full">
           {/* Left side - Navigation */}
           <div className="flex items-center gap-1 flex-1">
-            {sections.map((section, index) => (
+            {sections.map((section) => (
               <motion.button
                 key={section.key}
                 onClick={() => setActiveSection(section.key)}
-                className={`relative px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 ${
+                className={`relative px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 ${
                   active === section.key
-                    ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/50 transform scale-105"
-                    : "text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105"
+                    ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/50"
+                    : "text-gray-300 hover:text-white hover:bg-white/10"
                 }`}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.5,
-                  delay: index * 0.1,
-                  type: "spring",
-                }}
-                whileHover={{
-                  scale: 1.05,
-                  y: -2,
-                  transition: { duration: 0.2 },
-                }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2 }}
               >
                 {section.label}
                 {active === section.key && (
@@ -133,36 +123,17 @@ export default function Navbar({ active, setActiveSection }: NavbarProps) {
         </div>
 
         {/* Mobile Navigation */}
-        <motion.div
-          className="md:hidden flex items-center justify-between"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
+        <div className="md:hidden flex items-center justify-between">
           {/* Logo/Brand */}
           <motion.div
             className="flex items-center gap-3"
             whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.2 }}
           >
             <motion.div
               className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center"
               animate={{
-                rotate: [0, 2, -2, 0],
-                scale: [1, 1.05, 1],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
-              <span className="text-white font-bold text-sm">DA</span>
-            </motion.div>
-            <motion.div
-              className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
-              animate={{
-                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                rotate: [0, 1, -1, 0],
               }}
               transition={{
                 duration: 3,
@@ -170,8 +141,11 @@ export default function Navbar({ active, setActiveSection }: NavbarProps) {
                 ease: "easeInOut",
               }}
             >
-              Dinuka Ashan
+              <span className="text-white font-bold text-sm">DA</span>
             </motion.div>
+            <div className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              Dinuka Ashan
+            </div>
           </motion.div>
 
           {/* Theme Switcher - Mobile */}
@@ -179,19 +153,15 @@ export default function Navbar({ active, setActiveSection }: NavbarProps) {
             <ThemeSwitcher />
           </div>
 
-          {/* Enhanced Hamburger Button */}
+          {/* Hamburger Button */}
           <motion.button
             onClick={toggleMenu}
-            className="p-3 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="p-3 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
             aria-label="Toggle menu"
-            whileHover={{
-              scale: 1.1,
-              backgroundColor: "rgba(255, 255, 255, 0.2)",
-              boxShadow: "0 8px 25px rgba(59, 130, 246, 0.3)",
-            }}
+            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            animate={isMenuOpen ? { rotate: 180 } : { rotate: 0 }}
-            transition={{ duration: 0.3 }}
+            animate={isMenuOpen ? { rotate: 90 } : { rotate: 0 }}
+            transition={{ duration: 0.2 }}
           >
             <svg
               className="w-6 h-6"
@@ -216,7 +186,7 @@ export default function Navbar({ active, setActiveSection }: NavbarProps) {
               )}
             </svg>
           </motion.button>
-        </motion.div>
+        </div>
 
         {/* Enhanced Mobile Menu Overlay */}
         <AnimatePresence>
@@ -246,23 +216,18 @@ export default function Navbar({ active, setActiveSection }: NavbarProps) {
                       <motion.button
                         key={section.key}
                         onClick={() => handleSectionClick(section.key)}
-                        className={`relative px-6 py-4 text-left rounded-xl font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 flex-shrink-0 ${
+                        className={`relative px-6 py-4 text-left rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 flex-shrink-0 ${
                           active === section.key
-                            ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/50 transform scale-105"
-                            : "text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105"
+                            ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/50"
+                            : "text-gray-300 hover:text-white hover:bg-white/10"
                         }`}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{
-                          duration: 0.4,
-                          delay: index * 0.1,
-                          type: "spring",
+                          duration: 0.3,
+                          delay: index * 0.05,
                         }}
-                        whileHover={{
-                          scale: 1.02,
-                          x: 5,
-                          transition: { duration: 0.2 },
-                        }}
+                        whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
                         {section.label}
@@ -271,7 +236,7 @@ export default function Navbar({ active, setActiveSection }: NavbarProps) {
                             className="absolute right-4 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-blue-400 rounded-full"
                             initial={{ scale: 0, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
-                            transition={{ duration: 0.3, type: "spring" }}
+                            transition={{ duration: 0.2 }}
                           />
                         )}
                       </motion.button>

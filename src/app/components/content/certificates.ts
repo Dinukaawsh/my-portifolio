@@ -1,6 +1,15 @@
 // Certificates Page Content Configuration
 // Edit this file to update your certificates, certifications, and other content
 
+import {
+  Rocket,
+  GraduationCap,
+  BookOpen,
+  Cloud,
+  Award,
+  Trophy,
+} from "lucide-react";
+
 export const certificatesContent = {
   // Page Header Information
   header: {
@@ -27,7 +36,7 @@ export const certificatesContent = {
       title:
         "Jenkins Project: Building CI/CD Pipeline for Scalable Web Applications",
       issuer: "KodeKloud",
-      issuerLogo: "🚀",
+      issuerLogo: Rocket,
       category: "Cloud & DevOps",
       issueDate: "2025-09-14",
       expiryDate: null, // null for no expiry
@@ -54,7 +63,7 @@ export const certificatesContent = {
       id: 2,
       title: "Migrating Jenkins Pipelines to GitHub Actions",
       issuer: "KodeKloud",
-      issuerLogo: "🚀",
+      issuerLogo: Rocket,
       category: "Cloud & DevOps",
       issueDate: "2025-09-14",
       expiryDate: null,
@@ -81,7 +90,7 @@ export const certificatesContent = {
       id: 3,
       title: "Nginx For Beginners",
       issuer: "KodeKloud",
-      issuerLogo: "🚀",
+      issuerLogo: Rocket,
       category: "Cloud & DevOps",
       issueDate: "2025-09-17",
       expiryDate: null,
@@ -110,7 +119,7 @@ export const certificatesContent = {
       id: 4,
       title: "Master the java programming language",
       issuer: "Udemy",
-      issuerLogo: "🎓",
+      issuerLogo: GraduationCap,
       category: "Programming",
       issueDate: "2024-04-19",
       expiryDate: null,
@@ -138,7 +147,7 @@ export const certificatesContent = {
       id: 5,
       title: "Software Design: Developing Effective Requirements",
       issuer: "Great Learning",
-      issuerLogo: "📚",
+      issuerLogo: BookOpen,
       category: "Development",
       issueDate: "2024-05-04",
       expiryDate: null,
@@ -159,7 +168,7 @@ export const certificatesContent = {
       id: 6,
       title: "Foundations of User Experience (UX) Design",
       issuer: "Coursera",
-      issuerLogo: "🎓",
+      issuerLogo: GraduationCap,
       category: "Design",
       issueDate: "2024-05-04",
       expiryDate: null,
@@ -187,7 +196,7 @@ export const certificatesContent = {
       id: 7,
       title: "NLP Course for Beginners",
       issuer: "Udemy",
-      issuerLogo: "🎓",
+      issuerLogo: GraduationCap,
       category: "Other",
       issueDate: "2024-04-19",
       expiryDate: null,
@@ -238,7 +247,7 @@ export const certificatesContent = {
 
   // Empty State Configuration
   emptyState: {
-    icon: "🏆",
+    icon: Trophy,
     title: "No certificates found",
     message: "Try selecting a different category or check back later!",
   },
@@ -247,37 +256,37 @@ export const certificatesContent = {
   issuers: {
     kodekloud: {
       name: "KodeKloud",
-      logo: "🚀",
+      logo: Rocket,
       color: "bg-blue-500",
       verificationBase: "https://certificates.kodekloud.com/",
     },
     udemy: {
       name: "Udemy",
-      logo: "🎓",
+      logo: GraduationCap,
       color: "bg-purple-500",
       verificationBase: "https://udemy.com/verify/",
     },
     greatlearning: {
       name: "Great Learning",
-      logo: "📚",
+      logo: BookOpen,
       color: "bg-purple-500",
       verificationBase: "https://www.linkedin.com/learning/",
     },
     coursera: {
       name: "Coursera",
-      logo: "🎓",
+      logo: GraduationCap,
       color: "bg-blue-500",
       verificationBase: "https://coursera.org/verify/",
     },
     aws: {
       name: "Amazon Web Services",
-      logo: "☁️",
+      logo: Cloud,
       color: "bg-orange-500",
       verificationBase: "https://aws.amazon.com/verification",
     },
     pluralsight: {
       name: "Pluralsight",
-      logo: "🐳",
+      logo: Award,
       color: "bg-indigo-500",
       verificationBase: "https://pluralsight.com/verify/",
     },
