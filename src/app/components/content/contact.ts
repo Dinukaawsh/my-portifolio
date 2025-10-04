@@ -1,6 +1,8 @@
 // Contact Page Content Configuration
 // Edit this file to update your contact information, form settings, and other content
 
+import { Star } from "lucide-react";
+
 export const contactContent = {
   // Page Header Information
   header: {
@@ -54,17 +56,17 @@ export const contactContent = {
 
   // Direct Email Section
   directEmail: {
-    title: "📧 Direct Email Contact",
+    title: "Direct Email Contact",
     description: "Prefer to email directly? Feel free to reach out at:",
     buttonText: "dinukaaw.sh@gmail.com",
   },
 
   // Comments Section
   comments: {
-    title: "💬 Community Comments",
+    title: "Community Comments",
     subtitle: "See what others are saying about my work",
     emptyState: {
-      icon: "🌟",
+      icon: Star,
       message: "Be the first to leave a comment!",
     },
   },

@@ -1,6 +1,8 @@
 // Education Page Content Configuration
 // Edit this file to update your educational background, institutions, and other content
 
+import { GraduationCap, Microscope } from "lucide-react";
+
 export const educationContent = {
   // Page Header Information
   header: {
@@ -12,14 +14,14 @@ export const educationContent = {
   institutions: [
     {
       id: 1,
-      institution: "ESOFT Metro Campus",
+      institution: "ESU colombo",
       degree: "Bachelor of Information Technology (Honours)",
       specialization: "Computer Software Engineering",
       period: "2021 - 2025",
       status: "Completed",
       location: "Bambalapitiya, Sri Lanka",
       description:
-        "Completed a Bachelor of Information Technology (Hons) degree at ESOFT Metro Campus, Bambalapitiya. Passionate about technology and continuously developing skills in software development, problem-solving, and innovative IT solutions. Excited to contribute to impactful projects and grow as an IT professional.",
+        "Completed a Bachelor of Information Technology (Hons) degree at ESU, Bambalapitiya. Passionate about technology and continuously developing skills in software development, problem-solving, and innovative IT solutions. Excited to contribute to impactful projects and grow as an IT professional.",
       skills: [
         "PHP",
         "CSS",
@@ -87,7 +89,7 @@ export const educationContent = {
           description: "Data structures and algorithms",
         },
       ],
-      logo: "🎓",
+      logo: GraduationCap,
       achievements: [
         "Maintaining strong academic performance",
         "Active participation in technology projects",
@@ -115,7 +117,7 @@ export const educationContent = {
         "Critical Analysis",
         "Logical Reasoning",
       ],
-      logo: "🔬",
+      logo: Microscope,
       achievements: [
         "Strong foundation in mathematical concepts",
         "Developed analytical thinking skills",
@@ -223,7 +225,7 @@ export const getCoreModulesByInstitution = (institutionId: number) => {
   return institution?.coreModules || [];
 };
 
-// Helper function to get core modules for ESOFT Metro Campus specifically
+// Helper function to get core modules for ESU colombo specifically
 export const getESOFTCoreModules = () => {
   return getCoreModulesByInstitution(1);
 };

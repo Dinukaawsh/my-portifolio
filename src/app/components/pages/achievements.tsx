@@ -10,6 +10,7 @@ import {
 } from "@/app/components/content/achievements";
 //import { RollingGallery } from "../backgrounds/rolling gallery/gallery";
 import PixelBlast from "../backgrounds/Pixel_blast/pixel";
+import SkillsBackground from "../backgrounds/skills/SkillsBackground";
 
 export default function Achievements() {
   const [isVisible, setIsVisible] = useState(false);
@@ -68,8 +69,14 @@ export default function Achievements() {
         style={{ scaleX }}
       />
 
-      {/* PixelBlast Background - Fixed */}
-      <div className="fixed inset-0 z-0 bg-black">
+      {/* Responsive Backgrounds */}
+      {/* Mobile: Skills Background */}
+      <div className="fixed inset-0 z-0 bg-black md:hidden">
+        <SkillsBackground />
+      </div>
+
+      {/* Desktop: PixelBlast Background */}
+      <div className="hidden md:block fixed inset-0 z-0 bg-black">
         <PixelBlast
           variant="circle"
           pixelSize={6}
@@ -330,7 +337,7 @@ export default function Achievements() {
                       <span
                         className={`w-8 h-8 ${achievement.color} rounded-full flex items-center justify-center text-white text-lg`}
                       >
-                        {achievement.issuerLogo}
+                        <achievement.issuerLogo className="w-5 h-5" />
                       </span>
                       <span className="text-gray-300 text-sm font-medium">
                         {achievement.issuer}

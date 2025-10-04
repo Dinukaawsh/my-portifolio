@@ -715,7 +715,7 @@ export default function Contact() {
             {comments.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-gray-400 text-lg mb-2">
-                  {contactContent.comments.emptyState.icon}
+                  <contactContent.comments.emptyState.icon className="w-8 h-8 mx-auto" />
                 </div>
                 <p className="text-gray-400 text-sm sm:text-base">
                   {contactContent.comments.emptyState.message}
