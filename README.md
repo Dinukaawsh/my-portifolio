@@ -48,21 +48,28 @@ A modern, interactive portfolio website built with Next.js 15, featuring stunnin
 - **Blog**: Articles and thoughts
 - **Contact**: Contact information and form with interactive comment system
 
-### 💬 Interactive Comment System
+### 💬 Interactive Comment & Feedback System
 
 - **Real-time Comments**: Live comment updates using Firebase Firestore
-- **Community Engagement**: Visitors can leave comments and interact
-- **Moderation Ready**: Built-in comment management system
-- **Rich Comment Display**: Shows name, timestamp, and message content
+- **Social Authentication**: Google and GitHub login for feedback submission
+- **User Profiles**: Display user profile pictures and names with feedback
+- **Role-based Feedback**: Users can specify their role (Developer, Designer, etc.)
+- **Custom Role Input**: "Other" option with custom role specification
+- **Theme-aware UI**: Dropdown and form colors adapt to selected theme
+- **Community Engagement**: Visitors can leave comments and submit feedback
+- **Rich Display**: Shows user info, role, rating, timestamp, and provider
 - **Form Validation**: Proper input validation and error handling
 
 ### 🔔 Discord Integration & Analytics
 
 - **Visit Tracking**: Real-time notifications when someone visits your portfolio
+- **User Registration**: Notifications when users sign up via Google/GitHub
+- **Feedback Notifications**: Instant Discord alerts for new feedback submissions
 - **Comment Notifications**: Instant Discord alerts for new comments
 - **Session Analytics**: Track new vs returning visitors
-- **Rich Discord Embeds**: Beautiful notifications with visitor details
+- **Rich Discord Embeds**: Beautiful notifications with visitor details and user profiles
 - **Performance Monitoring**: Track page visits and user engagement
+- **Provider Tracking**: Know which OAuth provider users used
 
 ### 🎨 3D & Visual Effects
 
@@ -104,6 +111,7 @@ A modern, interactive portfolio website built with Next.js 15, featuring stunnin
 
 - **React Context API** - Theme and state management
 - **React Intersection Observer** - Scroll-based animations
+- **NextAuth.js** - Social authentication (Google, GitHub)
 - **Firebase** - Backend services integration (Firestore, Authentication)
 - **Discord Webhooks** - Real-time notifications and analytics
 
@@ -140,6 +148,18 @@ A modern, interactive portfolio website built with Next.js 15, featuring stunnin
    ```bash
    # Create .env.local file with the following variables:
 
+   # NextAuth.js Configuration
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your-nextauth-secret-here
+
+   # Google OAuth
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+   # GitHub OAuth
+   GITHUB_ID=your-github-client-id
+   GITHUB_SECRET=your-github-client-secret
+
    # Firebase Configuration
    NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
@@ -168,26 +188,150 @@ npm run build
 npm start
 ```
 
+## 🚀 Production Deployment
+
+### Environment Variables for Production
+
+Create `.env.production` or set environment variables in your deployment platform:
+
+```bash
+# NextAuth.js Configuration
+NEXTAUTH_URL=https://yourdomain.com
+NEXTAUTH_SECRET=your-production-nextauth-secret
+
+# Google OAuth (Production)
+GOOGLE_CLIENT_ID=your-production-google-client-id
+GOOGLE_CLIENT_SECRET=your-production-google-client-secret
+
+# GitHub OAuth (Production)
+GITHUB_ID=your-production-github-client-id
+GITHUB_SECRET=your-production-github-client-secret
+
+# Firebase Configuration
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
+# Discord Webhook URL
+NEXT_PUBLIC_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your_webhook_url
+```
+
+### OAuth Provider Updates for Production
+
+1. **Google OAuth**:
+
+   - Update redirect URI to: `https://yourdomain.com/api/auth/callback/google`
+   - Add JavaScript origin: `https://yourdomain.com`
+
+2. **GitHub OAuth**:
+   - Update callback URL to: `https://yourdomain.com/api/auth/callback/github`
+
+### Deployment Platforms
+
+#### Vercel (Recommended)
+
+1. Connect your GitHub repository
+2. Add environment variables in Vercel dashboard
+3. Deploy automatically on push
+
+#### Netlify
+
+1. Connect your repository
+2. Build command: `npm run build`
+3. Publish directory: `.next`
+4. Add environment variables
+
+#### Other Platforms
+
+- AWS Amplify
+- Railway
+- Render
+- DigitalOcean App Platform
+
 ## 📁 Project Structure
 
 ```
 src/
 ├── app/
+│   ├── api/                    # API routes
+│   │   ├── auth/
+│   │   │   └── [...nextauth]/  # NextAuth.js authentication routes
+│   │   │       └── route.ts    # OAuth provider configuration
+│   │   └── cv-webhook/         # Discord webhook for CV tracking
+│   │       └── route.ts
 │   ├── components/
-│   │   ├── backgrounds/     # 3D scenes and animations
-│   │   ├── common/          # Reusable components
-│   │   ├── content/         # Content components
-│   │   ├── icons/           # Custom icons
-│   │   ├── layouts/         # Layout components
-│   │   └── pages/           # Portfolio section pages
-│   ├── contexts/            # React contexts (Theme)
-│   ├── hooks/               # Custom React hooks
-│   ├── styles/              # Additional styles
-│   ├── globals.css          # Global styles
-│   ├── layout.tsx           # Root layout
-│   └── page.tsx             # Home page
-├── lib/                     # Utility functions
-└── types/                   # TypeScript type definitions
+│   │   ├── backgrounds/        # 3D scenes and animations
+│   │   │   ├── 3d-text/       # 3D text components
+│   │   │   ├── balls/         # Particle ball animations
+│   │   │   ├── dotted-text/   # Dotted text effects
+│   │   │   ├── flower/        # Flower animations
+│   │   │   ├── focus text/    # Focus text effects
+│   │   │   ├── footer_backgound/ # Footer animations
+│   │   │   ├── galaxy/        # Galaxy background
+│   │   │   ├── globe/         # Globe animations
+│   │   │   ├── horse/         # Horse animations
+│   │   │   ├── hyperspeed/    # Hyperspeed effects
+│   │   │   ├── letter-glich/  # Glitch text effects
+│   │   │   ├── line background/ # Line animations
+│   │   │   ├── perloader/     # Preloader animations
+│   │   │   ├── Pixel_blast/   # Pixel effects
+│   │   │   ├── robot/        # Robot animations
+│   │   │   ├── rolling gallery/ # Gallery animations
+│   │   │   ├── skills/       # Skills background
+│   │   │   └── thunderbolt/  # Thunderbolt effects
+│   │   ├── common/            # Reusable components
+│   │   │   ├── AuthProvider.tsx    # NextAuth.js session provider
+│   │   │   ├── ThemeSwitcher.tsx   # Theme switching component
+│   │   │   └── VisitTracker.tsx    # Visit tracking component
+│   │   ├── content/           # Content data files
+│   │   │   ├── about.ts       # About section content
+│   │   │   ├── achievements.ts # Achievements data
+│   │   │   ├── blog.ts        # Blog posts data
+│   │   │   ├── certificates.ts # Certificates data
+│   │   │   ├── contact.ts     # Contact information
+│   │   │   ├── education.ts   # Education data
+│   │   │   ├── experience.ts  # Experience data
+│   │   │   ├── projects.ts    # Projects data
+│   │   │   ├── references.ts  # References data
+│   │   │   └── skills.ts      # Skills data
+│   │   ├── icons/             # Custom icon components
+│   │   │   ├── projectsicons.tsx # Project icons
+│   │   │   └── skillsicons.tsx   # Skills icons
+│   │   ├── layouts/           # Layout components
+│   │   │   ├── footer/        # Footer component
+│   │   │   │   └── Footer.tsx
+│   │   │   └── navbar/        # Navigation component
+│   │   │       └── Navbar.tsx
+│   │   └── pages/             # Portfolio section pages
+│   │       ├── about.tsx      # About page component
+│   │       ├── achievements.tsx # Achievements page
+│   │       ├── blog.tsx       # Blog page
+│   │       ├── certificates.tsx # Certificates page
+│   │       ├── contact.tsx    # Contact page with auth & feedback
+│   │       ├── education.tsx  # Education page
+│   │       ├── experience.tsx # Experience page
+│   │       ├── projects.tsx   # Projects page
+│   │       ├── references.tsx # References page
+│   │       └── skills.tsx     # Skills page
+│   ├── contexts/              # React contexts
+│   │   ├── ThemeContext.tsx   # Theme management context
+│   │   └── THEME_SYSTEM_README.md # Theme system documentation
+│   ├── hooks/                 # Custom React hooks
+│   │   └── useThemeStyles.ts  # Theme-aware styling hook
+│   ├── styles/                # Additional styles
+│   │   ├── Flower.module.css  # Flower component styles
+│   │   └── Horse.module.css   # Horse component styles
+│   ├── globals.css            # Global styles and theme variables
+│   ├── layout.tsx             # Root layout with providers
+│   └── page.tsx               # Home page
+├── lib/                       # Utility functions and configurations
+    ├── discord.ts             # Discord webhook integration
+    ├── firebase.ts            # Firebase configuration
+    └── utils.ts               # General utility functions
+
 ```
 
 ## 🎨 Customization
@@ -204,7 +348,7 @@ src/
 2. Add it to the `sections` array in `page.tsx`
 3. Update navigation if needed
 
-### Setting Up Firebase & Discord
+### Setting Up Authentication & Backend Services
 
 1. **Firebase Setup**:
 
@@ -213,17 +357,34 @@ src/
    - Go to Project Settings → General → Your Apps
    - Add a web app and copy the config values
    - Enable Firestore Database in your project
+   - Create collections: `comments` and `feedback`
 
-2. **Discord Webhook Setup**:
+2. **Google OAuth Setup**:
+
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create/select your project
+   - Enable Google+ API
+   - Create OAuth 2.0 credentials
+   - Add authorized redirect URI: `http://localhost:3000/api/auth/callback/google`
+   - Add authorized JavaScript origin: `http://localhost:3000`
+
+3. **GitHub OAuth Setup**:
+
+   - Go to GitHub Settings → Developer settings → OAuth Apps
+   - Create new OAuth App
+   - Set Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
+
+4. **Discord Webhook Setup**:
 
    - Go to your Discord server
    - Server Settings → Integrations → Webhooks
    - Create a new webhook
    - Copy the webhook URL to your `.env.local` file
 
-3. **Environment Variables**:
+5. **Environment Variables**:
    - Copy the example variables above
    - Replace placeholder values with your actual credentials
+   - Generate NEXTAUTH_SECRET: `openssl rand -base64 32`
    - Restart your development server after adding the file
 
 ## 🔧 Configuration
@@ -291,27 +452,58 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔧 Advanced Features Setup
 
+### Social Authentication System
+
+The portfolio includes a complete social authentication system:
+
+- **Google OAuth**: Users can sign in with their Google account
+- **GitHub OAuth**: Users can sign in with their GitHub account
+- **NextAuth.js Integration**: Secure authentication handling
+- **User Profiles**: Display profile pictures and names
+- **Session Management**: Persistent login sessions
+
+### Feedback System
+
+A sophisticated feedback system where authenticated users can:
+
+- Submit detailed feedback with ratings
+- Specify their role (Developer, Designer, Product Manager, etc.)
+- Add custom roles when "Other" is selected
+- View all feedback with user profiles
+- See provider information (Google/GitHub)
+
 ### Comment System
 
 The portfolio includes a fully functional comment system where visitors can:
 
-- Leave comments on your contact page
+- Leave comments on your contact page (no authentication required)
 - See real-time updates of all comments
 - Engage with your portfolio content
+- View comment timestamps and user information
 
 ### Discord Notifications
 
 Get instant notifications when:
 
 - Someone visits your portfolio
+- New users register via Google/GitHub
+- New feedback is submitted
 - New comments are posted
 - Track visitor analytics and engagement
 
 ### Firebase Integration
 
-- **Firestore Database**: Stores all comments and user data
+- **Firestore Database**: Stores all comments, feedback, and user data
 - **Real-time Updates**: Instant synchronization across devices
 - **Scalable Backend**: Handles traffic and data efficiently
+- **Security Rules**: Proper access control for data
+
+### Theme System
+
+- **5 Beautiful Themes**: Dark, Light, Water, Sunset, Forest
+- **Theme-aware Components**: All UI elements adapt to selected theme
+- **Smooth Transitions**: Seamless theme switching
+- **Persistent Settings**: Theme choice saved across sessions
 
 ---
 

@@ -1,6 +1,6 @@
 // Discord Webhook Integration
 export interface DiscordNotification {
-  type: "visit" | "comment";
+  type: "visit" | "comment" | "registration" | "feedback";
   data: {
     visitor?: {
       ip?: string;
@@ -18,6 +18,23 @@ export interface DiscordNotification {
       email: string;
       message: string;
       rating: number;
+      timestamp: string;
+    };
+    registration?: {
+      name: string;
+      email: string;
+      provider: string;
+      image?: string;
+      timestamp: string;
+    };
+    feedback?: {
+      name: string;
+      email: string;
+      role: string;
+      message: string;
+      rating: number;
+      provider: string;
+      image?: string;
       timestamp: string;
     };
   };
@@ -165,6 +182,97 @@ function createDiscordEmbed(notification: DiscordNotification) {
       timestamp: new Date().toISOString(),
       footer: {
         text: "Portfolio Comments",
+      },
+    };
+  } else if (type === "registration") {
+    return {
+      title: "🎉 New User Registration!",
+      color: 0xff6b35, // Orange
+      thumbnail: {
+        url: data.registration?.image || undefined,
+      },
+      fields: [
+        {
+          name: "👤 Name",
+          value: data.registration?.name || "Unknown",
+          inline: true,
+        },
+        {
+          name: "📧 Email",
+          value: data.registration?.email || "No email",
+          inline: true,
+        },
+        {
+          name: "🔐 Provider",
+          value: data.registration?.provider || "Unknown",
+          inline: true,
+        },
+        {
+          name: "⏰ Registration Time",
+          value: data.registration?.timestamp || "Unknown",
+          inline: true,
+        },
+      ],
+      timestamp: new Date().toISOString(),
+      footer: {
+        text: "Portfolio User Registration",
+      },
+    };
+  } else if (type === "feedback") {
+    return {
+      title: "💡 New Feedback Received!",
+      color: 0x9b59b6, // Purple
+      thumbnail: {
+        url: data.feedback?.image || undefined,
+      },
+      fields: [
+        {
+          name: "👤 Name",
+          value: data.feedback?.name || "Anonymous",
+          inline: true,
+        },
+        {
+          name: "📧 Email",
+          value: data.feedback?.email || "No email",
+          inline: true,
+        },
+        {
+          name: "🎭 Role",
+          value: data.feedback?.role || "Unknown",
+          inline: true,
+        },
+        {
+          name: "🔐 Provider",
+          value: data.feedback?.provider || "Unknown",
+          inline: true,
+        },
+        {
+          name: "⭐ Rating",
+          value: data.feedback?.rating
+            ? `${data.feedback.rating}/5 ${"★".repeat(
+                data.feedback.rating
+              )}${"☆".repeat(5 - data.feedback.rating)}`
+            : "No rating",
+          inline: true,
+        },
+        {
+          name: "💭 Feedback",
+          value: data.feedback?.message
+            ? data.feedback.message.length > 200
+              ? data.feedback.message.substring(0, 200) + "..."
+              : data.feedback.message
+            : "No message",
+          inline: false,
+        },
+        {
+          name: "⏰ Time",
+          value: data.feedback?.timestamp || "Unknown",
+          inline: true,
+        },
+      ],
+      timestamp: new Date().toISOString(),
+      footer: {
+        text: "Portfolio Feedback",
       },
     };
   }
