@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { aboutContent, getDynamicStats } from "@/app/components/content/about";
 import Footer from "@/app/components/layouts/footer/Footer";
+import TrueFocus from "@/app/components/backgrounds/focus text/text";
 
 interface AboutProps {
   setActiveSection?: (key: string) => void;
@@ -602,7 +603,7 @@ export default function About({ setActiveSection }: AboutProps = {}) {
               </motion.div>
             </motion.div>
 
-            {/* Enhanced Name and Title */}
+            {/* Enhanced Name and Title with Focus Text */}
             <div className="mb-2">
               <motion.span
                 className="text-blue-300 italic font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl block"
@@ -618,7 +619,8 @@ export default function About({ setActiveSection }: AboutProps = {}) {
               >
                 I am
               </motion.span>
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-white drop-shadow-lg">
+
+              {/* <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-white drop-shadow-lg">
                 <motion.span
                   animate={{
                     textShadow: [
@@ -631,7 +633,18 @@ export default function About({ setActiveSection }: AboutProps = {}) {
                 >
                   {aboutContent.personal.name}
                 </motion.span>
-              </h2>
+              </h2> */}
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-white drop-shadow-lg">
+                <TrueFocus
+                  sentence={aboutContent.personal.name}
+                  manualMode={false}
+                  blurAmount={4}
+                  borderColor="#60a5fa"
+                  glowColor="rgba(59, 130, 246, 0.6)"
+                  animationDuration={0.4}
+                  pauseBetweenAnimations={0.8}
+                />
+              </div>
             </div>
             <h3 className="text-sm sm:text-base md:text-lg lg:text-xl text-blue-400 font-semibold mb-4 min-h-[1.5rem] sm:min-h-[2rem] md:min-h-[2.5rem] flex items-center justify-center">
               <motion.div
