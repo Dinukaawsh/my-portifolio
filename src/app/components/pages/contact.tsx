@@ -41,6 +41,7 @@ import {
 import { db } from "@/lib/firebase";
 import { sendDiscordNotification } from "@/lib/discord";
 import { motion, useScroll, useSpring } from "framer-motion";
+import { format, formatDistanceToNow, isToday, isYesterday } from "date-fns";
 import {
   contactContent,
   getContactSteps,
@@ -109,6 +110,40 @@ export default function Contact() {
   };
 
   const themeTextColors = getThemeTextColors();
+  const GOOGLE_FORM_URL = process.env.NEXT_PUBLIC_GOOGLE_FORM_URL;
+
+  // const formatFirestoreTimestamp = (ts?: Timestamp): string => {
+  //   try {
+  //     const date = ts?.toDate ? ts.toDate() : null;
+  //     if (!date) return "Just now";
+  //     const calendarDate = format(date, "PP");
+  //     const clockTime = format(date, "p");
+  //     const relative = formatDistanceToNow(date, { addSuffix: true });
+  //     return `${calendarDate} • ${clockTime} • ${relative}`;
+  //   } catch {
+  //     return "Just now";
+  //   }
+  // };
+
+  const formatTimeRelative = (ts?: Timestamp): string => {
+    try {
+      const date = ts?.toDate ? ts.toDate() : null;
+      if (!date) return "Just now";
+      const clockTime = format(date, "p");
+      const relative = formatDistanceToNow(date, { addSuffix: true });
+      return `${clockTime} • ${relative}`;
+    } catch {
+      return "Just now";
+    }
+  };
+
+  const getDateLabel = (ts?: Timestamp): string => {
+    const date = ts?.toDate ? ts.toDate() : null;
+    if (!date) return "Unknown date";
+    if (isToday(date)) return "Today";
+    if (isYesterday(date)) return "Yesterday";
+    return format(date, "PP");
+  };
   const [activeTab, setActiveTab] = useState<"comments" | "feedback">(
     "comments"
   );
@@ -151,6 +186,7 @@ export default function Contact() {
   });
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [showHireOptions, setShowHireOptions] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const loadingCommentsRef = useRef(false);
@@ -776,7 +812,7 @@ export default function Contact() {
               >
                 {contactContent.form.description}
               </motion.p>
-              {/* Direct Email Contact */}
+              {/* Hire Me - Choice Options */}
               <div className="mb-8 text-center">
                 <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl p-6 border border-blue-500/30">
                   <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">
@@ -785,67 +821,123 @@ export default function Contact() {
                   <p className="text-gray-300 text-sm sm:text-base mb-4">
                     {contactContent.directEmail.description}
                   </p>
-                  <motion.a
-                    href={`mailto:${contactContent.contactInfo.email}`}
-                    className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold text-sm sm:text-lg rounded-xl sm:rounded-2xl border-2 border-blue-400/50 hover:from-blue-600 hover:to-purple-700 hover:border-blue-300 transition-all duration-300 shadow-2xl shadow-blue-500/30 hover:shadow-3xl hover:shadow-blue-500/50 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-400/50 focus:scale-105 active:scale-95 w-full sm:w-auto justify-center"
-                    whileHover={{
-                      scale: 1.05,
-                      boxShadow: "0 25px 50px rgba(59, 130, 246, 0.4)",
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    whileFocus={{
-                      scale: 1.05,
-                      boxShadow: "0 25px 50px rgba(59, 130, 246, 0.4)",
-                    }}
-                  >
-                    <motion.div
-                      className="w-5 h-5 sm:w-6 sm:h-6 bg-white/20 rounded-full flex items-center justify-center"
-                      animate={{
-                        rotate: [0, 5, -5, 0],
-                        scale: [1, 1.1, 1],
+                  <div className="space-y-3">
+                    <motion.button
+                      type="button"
+                      onClick={() => setShowHireOptions((v) => !v)}
+                      className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold text-sm sm:text-lg rounded-xl sm:rounded-2xl border-2 border-blue-400/50 hover:from-blue-600 hover:to-purple-700 hover:border-blue-300 transition-all duration-300 shadow-2xl shadow-blue-500/30 hover:shadow-3xl hover:shadow-blue-500/50 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-400/50 focus:scale-105 active:scale-95 w-full sm:w-auto justify-center"
+                      whileHover={{
+                        scale: 1.05,
+                        boxShadow: "0 25px 50px rgba(59, 130, 246, 0.4)",
                       }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
+                      whileTap={{ scale: 0.95 }}
+                      whileFocus={{
+                        scale: 1.05,
+                        boxShadow: "0 25px 50px rgba(59, 130, 246, 0.4)",
                       }}
                     >
-                      <svg
-                        className="w-3 h-3 sm:w-4 sm:h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2.5}
-                          d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </motion.div>
-                    <span className="relative">
-                      {contactContent.contactInfo.emailDisplay}
                       <motion.div
-                        className="absolute -bottom-1 left-0 w-full h-0.5 bg-white/50 rounded-full"
-                        initial={{ scaleX: 0 }}
-                        whileHover={{ scaleX: 1 }}
-                        transition={{ duration: 0.3 }}
+                        className="w-5 h-5 sm:w-6 sm:h-6 bg-white/20 rounded-full flex items-center justify-center"
+                        animate={{
+                          rotate: [0, 5, -5, 0],
+                          scale: [1, 1.1, 1],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      >
+                        <svg
+                          className="w-3 h-3 sm:w-4 sm:h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2.5}
+                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </motion.div>
+                      <span>Hire Me</span>
+                      <motion.div
+                        className="w-2 h-2 bg-white/60 rounded-full"
+                        animate={{
+                          opacity: [0.6, 1, 0.6],
+                          scale: [1, 1.2, 1],
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
                       />
-                    </span>
+                    </motion.button>
+
                     <motion.div
-                      className="w-2 h-2 bg-white/60 rounded-full"
+                      initial={{ opacity: 0, height: 0 }}
                       animate={{
-                        opacity: [0.6, 1, 0.6],
-                        scale: [1, 1.2, 1],
+                        opacity: showHireOptions ? 1 : 0,
+                        height: showHireOptions ? "auto" : 0,
                       }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                    />
-                  </motion.a>
+                      transition={{ duration: 0.25 }}
+                      className={`overflow-hidden ${
+                        showHireOptions ? "mt-2" : ""
+                      }`}
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <motion.a
+                          href={`mailto:${contactContent.contactInfo.email}`}
+                          className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-white/10 text-white font-semibold rounded-xl border border-blue-400/40 hover:bg-white/15 transition"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            />
+                          </svg>
+                          <span>Email</span>
+                        </motion.a>
+
+                        <motion.a
+                          href={GOOGLE_FORM_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-white/10 text-white font-semibold rounded-xl border border-blue-400/40 hover:bg-white/15 transition"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill="currentColor"
+                              d="M19 2H10a2 2 0 00-2 2v2h2V4h9v16h-9v-2H8v2a2 2 0 002 2h9a2 2 0 002-2V4a2 2 0 00-2-2z"
+                            />
+                            <path
+                              fill="currentColor"
+                              d="M13 12l-4-4v3H3v2h6v3l4-4z"
+                            />
+                          </svg>
+                          <span>Google Form</span>
+                        </motion.a>
+                      </div>
+                    </motion.div>
+                  </div>
                 </div>
               </div>
 
@@ -1214,12 +1306,14 @@ export default function Contact() {
               {/* Feedback Section */}
               {activeTab === "feedback" && (
                 <div className="mb-8">
-                  <div className="mb-6 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl border border-blue-500/20">
-                    <p className="text-white/90 text-sm sm:text-base font-medium text-center">
-                      🔐 Login required to submit feedback. Your profile picture
-                      and name will be displayed with your feedback.
-                    </p>
-                  </div>
+                  {!session && (
+                    <div className="mb-6 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl border border-blue-500/20">
+                      <p className="text-white/90 text-sm sm:text-base font-medium text-center">
+                        🔐 Login required to submit feedback. Your profile
+                        picture and name will be displayed with your feedback.
+                      </p>
+                    </div>
+                  )}
 
                   {!session ? (
                     <div className="text-center py-8">
@@ -1902,62 +1996,87 @@ export default function Contact() {
                       </div>
                     ) : (
                       <div className="p-4 space-y-4">
-                        {containerComments.map((comment) => (
-                          <div
-                            key={comment.id}
-                            className="bg-gradient-to-br from-gray-800/40 via-blue-800/10 to-gray-800/40 backdrop-blur-sm rounded-xl p-4 border border-blue-500/10"
-                          >
-                            <div className="flex items-start gap-3">
-                              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                                {comment.name.charAt(0).toUpperCase()}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <h4 className="text-white font-semibold text-sm truncate">
-                                      {comment.name}
-                                    </h4>
-                                  </div>
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <div className="flex items-center gap-1">
-                                      {[1, 2, 3, 4, 5].map((star) => (
-                                        <svg
-                                          key={star}
-                                          className={`w-3 h-3 ${
-                                            star <= (comment.rating || 0)
-                                              ? "text-yellow-400"
-                                              : "text-gray-600"
-                                          }`}
-                                          fill="currentColor"
-                                          viewBox="0 0 24 24"
-                                        >
-                                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                        </svg>
-                                      ))}
-                                    </div>
-                                    <span className="text-gray-400 text-xs whitespace-nowrap">
-                                      {comment.timestamp?.toDate
-                                        ? comment.timestamp
-                                            .toDate()
-                                            .toLocaleDateString()
-                                        : "Just now"}
+                        {containerComments.reduce<React.ReactElement[]>(
+                          (acc, comment, idx, arr) => {
+                            const prev = idx > 0 ? arr[idx - 1] : null;
+                            const showHeader =
+                              !prev ||
+                              getDateLabel(prev.timestamp) !==
+                                getDateLabel(comment.timestamp);
+                            if (showHeader) {
+                              acc.push(
+                                <div
+                                  key={`comments-header-${comment.id}`}
+                                  className="py-2"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex-1 h-px bg-blue-500/20" />
+                                    <span className="text-blue-200 text-xs font-semibold uppercase tracking-wider">
+                                      {getDateLabel(comment.timestamp)}
                                     </span>
+                                    <div className="flex-1 h-px bg-blue-500/20" />
                                   </div>
                                 </div>
-                                <p
-                                  className="text-gray-300 text-sm leading-relaxed overflow-hidden"
-                                  style={{
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: "vertical",
-                                  }}
-                                >
-                                  {comment.message}
-                                </p>
+                              );
+                            }
+                            acc.push(
+                              <div
+                                key={comment.id}
+                                className="bg-gradient-to-br from-gray-800/40 via-blue-800/10 to-gray-800/40 backdrop-blur-sm rounded-xl p-4 border border-blue-500/10"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                                    {comment.name.charAt(0).toUpperCase()}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <h4 className="text-white font-semibold text-sm truncate">
+                                          {comment.name}
+                                        </h4>
+                                      </div>
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <div className="flex items-center gap-1">
+                                          {[1, 2, 3, 4, 5].map((star) => (
+                                            <svg
+                                              key={star}
+                                              className={`w-3 h-3 ${
+                                                star <= (comment.rating || 0)
+                                                  ? "text-yellow-400"
+                                                  : "text-gray-600"
+                                              }`}
+                                              fill="currentColor"
+                                              viewBox="0 0 24 24"
+                                            >
+                                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                            </svg>
+                                          ))}
+                                        </div>
+                                        <span className="text-gray-400 text-xs whitespace-nowrap">
+                                          {formatTimeRelative(
+                                            comment.timestamp
+                                          )}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <p
+                                      className="text-gray-300 text-sm leading-relaxed overflow-hidden"
+                                      style={{
+                                        display: "-webkit-box",
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: "vertical",
+                                      }}
+                                    >
+                                      {comment.message}
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                          </div>
-                        ))}
+                            );
+                            return acc;
+                          },
+                          []
+                        )}
                       </div>
                     )}
                   </div>
@@ -1994,55 +2113,78 @@ export default function Contact() {
               ) : (
                 /* Full View */
                 <div className="grid gap-4">
-                  {visibleComments.map((comment) => (
-                    <div
-                      key={comment.id}
-                      className="bg-gradient-to-br from-gray-900/60 via-blue-900/20 to-gray-900/60 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-blue-500/20 shadow-lg shadow-blue-500/10"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                          {comment.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <h4 className="text-white font-semibold text-sm sm:text-base truncate">
-                                {comment.name}
-                              </h4>
-                            </div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <div className="flex items-center gap-1">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <svg
-                                    key={star}
-                                    className={`w-3 h-3 sm:w-4 sm:h-4 ${
-                                      star <= (comment.rating || 0)
-                                        ? "text-yellow-400"
-                                        : "text-gray-600"
-                                    }`}
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                  </svg>
-                                ))}
-                              </div>
-                              <span className="text-gray-400 text-xs whitespace-nowrap">
-                                {comment.timestamp?.toDate
-                                  ? comment.timestamp
-                                      .toDate()
-                                      .toLocaleDateString()
-                                  : "Just now"}
+                  {visibleComments.reduce<React.ReactElement[]>(
+                    (acc, comment, idx, arr) => {
+                      const prev = idx > 0 ? arr[idx - 1] : null;
+                      const showHeader =
+                        !prev ||
+                        getDateLabel(prev.timestamp) !==
+                          getDateLabel(comment.timestamp);
+                      if (showHeader) {
+                        acc.push(
+                          <div
+                            key={`comments-full-header-${comment.id}`}
+                            className="pt-2"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="flex-1 h-px bg-blue-500/20" />
+                              <span className="text-blue-200 text-xs font-semibold uppercase tracking-wider">
+                                {getDateLabel(comment.timestamp)}
                               </span>
+                              <div className="flex-1 h-px bg-blue-500/20" />
                             </div>
                           </div>
-                          <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
-                            {comment.message}
-                          </p>
+                        );
+                      }
+                      acc.push(
+                        <div
+                          key={comment.id}
+                          className="bg-gradient-to-br from-gray-900/60 via-blue-900/20 to-gray-900/60 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-blue-500/20 shadow-lg shadow-blue-500/10"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                              {comment.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <h4 className="text-white font-semibold text-sm sm:text-base truncate">
+                                    {comment.name}
+                                  </h4>
+                                </div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <div className="flex items-center gap-1">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      <svg
+                                        key={star}
+                                        className={`w-3 h-3 sm:w-4 sm:h-4 ${
+                                          star <= (comment.rating || 0)
+                                            ? "text-yellow-400"
+                                            : "text-gray-600"
+                                        }`}
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                      </svg>
+                                    ))}
+                                  </div>
+                                  <span className="text-gray-400 text-xs whitespace-nowrap">
+                                    {formatTimeRelative(comment.timestamp)}
+                                  </span>
+                                </div>
+                              </div>
+                              <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
+                                {comment.message}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      );
+                      return acc;
+                    },
+                    []
+                  )}
 
                   {/* Load More Comments Button */}
                   {hasMoreComments && (
@@ -2191,82 +2333,105 @@ export default function Contact() {
                       </div>
                     ) : (
                       <div className="p-4 space-y-4">
-                        {containerFeedback.map((item) => (
-                          <div
-                            key={item.id}
-                            className="bg-gradient-to-br from-gray-800/40 via-blue-800/10 to-gray-800/40 backdrop-blur-sm rounded-xl p-4 border border-blue-500/10"
-                          >
-                            <div className="flex items-start gap-3">
-                              <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden">
-                                {item.userImage ? (
-                                  <Image
-                                    src={item.userImage}
-                                    alt={item.name}
-                                    width={32}
-                                    height={32}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                                    {item.name.charAt(0).toUpperCase()}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <h4 className="text-white font-semibold text-sm truncate">
-                                      {item.name}
-                                    </h4>
-                                    <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded-full whitespace-nowrap">
-                                      {item.role}
+                        {containerFeedback.reduce<React.ReactElement[]>(
+                          (acc, item, idx, arr) => {
+                            const prev = idx > 0 ? arr[idx - 1] : null;
+                            const showHeader =
+                              !prev ||
+                              getDateLabel(prev.timestamp) !==
+                                getDateLabel(item.timestamp);
+                            if (showHeader) {
+                              acc.push(
+                                <div
+                                  key={`feedback-header-${item.id}`}
+                                  className="py-2"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex-1 h-px bg-blue-500/20" />
+                                    <span className="text-blue-200 text-xs font-semibold uppercase tracking-wider">
+                                      {getDateLabel(item.timestamp)}
                                     </span>
-                                  </div>
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <div className="flex items-center gap-1">
-                                      {[1, 2, 3, 4, 5].map((star) => (
-                                        <svg
-                                          key={star}
-                                          className={`w-3 h-3 ${
-                                            star <= (item.rating || 0)
-                                              ? "text-yellow-400"
-                                              : "text-gray-600"
-                                          }`}
-                                          fill="currentColor"
-                                          viewBox="0 0 24 24"
-                                        >
-                                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                        </svg>
-                                      ))}
-                                    </div>
-                                    <span className="text-gray-400 text-xs whitespace-nowrap">
-                                      {item.timestamp?.toDate
-                                        ? item.timestamp
-                                            .toDate()
-                                            .toLocaleDateString()
-                                        : "Just now"}
-                                    </span>
-                                    {item.provider && (
-                                      <span className="text-xs px-2 py-1 bg-blue-500/20 text-white rounded-full whitespace-nowrap">
-                                        via {item.provider}
-                                      </span>
-                                    )}
+                                    <div className="flex-1 h-px bg-blue-500/20" />
                                   </div>
                                 </div>
-                                <p
-                                  className="text-gray-300 text-sm leading-relaxed overflow-hidden"
-                                  style={{
-                                    display: "-webkit-box",
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: "vertical",
-                                  }}
-                                >
-                                  {item.message}
-                                </p>
+                              );
+                            }
+                            acc.push(
+                              <div
+                                key={item.id}
+                                className="bg-gradient-to-br from-gray-800/40 via-blue-800/10 to-gray-800/40 backdrop-blur-sm rounded-xl p-4 border border-blue-500/10"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden">
+                                    {item.userImage ? (
+                                      <Image
+                                        src={item.userImage}
+                                        alt={item.name}
+                                        width={32}
+                                        height={32}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                                        {item.name.charAt(0).toUpperCase()}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <h4 className="text-white font-semibold text-sm truncate">
+                                          {item.name}
+                                        </h4>
+                                        <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded-full whitespace-nowrap">
+                                          {item.role}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <div className="flex items-center gap-1">
+                                          {[1, 2, 3, 4, 5].map((star) => (
+                                            <svg
+                                              key={star}
+                                              className={`w-3 h-3 ${
+                                                star <= (item.rating || 0)
+                                                  ? "text-yellow-400"
+                                                  : "text-gray-600"
+                                              }`}
+                                              fill="currentColor"
+                                              viewBox="0 0 24 24"
+                                            >
+                                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                            </svg>
+                                          ))}
+                                        </div>
+                                        <span className="text-gray-400 text-xs whitespace-nowrap">
+                                          {formatTimeRelative(item.timestamp)}
+                                        </span>
+                                        {item.provider && (
+                                          <span className="text-xs px-2 py-1 bg-blue-500/20 text-white rounded-full whitespace-nowrap">
+                                            via {item.provider}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <p
+                                      className="text-gray-300 text-sm leading-relaxed overflow-hidden"
+                                      style={{
+                                        display: "-webkit-box",
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: "vertical",
+                                      }}
+                                    >
+                                      {item.message}
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                          </div>
-                        ))}
+                            );
+                            return acc;
+                          },
+                          []
+                        )}
                       </div>
                     )}
                   </div>
@@ -2303,73 +2468,98 @@ export default function Contact() {
               ) : (
                 /* Full View */
                 <div className="grid gap-4">
-                  {visibleFeedback.map((item) => (
-                    <div
-                      key={item.id}
-                      className="bg-gradient-to-br from-gray-900/60 via-blue-900/20 to-gray-900/60 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-blue-500/20 shadow-lg shadow-blue-500/10"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 overflow-hidden">
-                          {item.userImage ? (
-                            <Image
-                              src={item.userImage}
-                              alt={item.name}
-                              width={40}
-                              height={40}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                              {item.name.charAt(0).toUpperCase()}
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <h4 className="text-white font-semibold text-sm sm:text-base truncate">
-                                {item.name}
-                              </h4>
-                              <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded-full whitespace-nowrap">
-                                {item.role}
+                  {visibleFeedback.reduce<React.ReactElement[]>(
+                    (acc, item, idx, arr) => {
+                      const prev = idx > 0 ? arr[idx - 1] : null;
+                      const showHeader =
+                        !prev ||
+                        getDateLabel(prev.timestamp) !==
+                          getDateLabel(item.timestamp);
+                      if (showHeader) {
+                        acc.push(
+                          <div
+                            key={`feedback-full-header-${item.id}`}
+                            className="pt-2"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="flex-1 h-px bg-blue-500/20" />
+                              <span className="text-blue-200 text-xs font-semibold uppercase tracking-wider">
+                                {getDateLabel(item.timestamp)}
                               </span>
-                            </div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <div className="flex items-center gap-1">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <svg
-                                    key={star}
-                                    className={`w-3 h-3 sm:w-4 sm:h-4 ${
-                                      star <= (item.rating || 0)
-                                        ? "text-yellow-400"
-                                        : "text-gray-600"
-                                    }`}
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                  </svg>
-                                ))}
-                              </div>
-                              <span className="text-gray-400 text-xs whitespace-nowrap">
-                                {item.timestamp?.toDate
-                                  ? item.timestamp.toDate().toLocaleDateString()
-                                  : "Just now"}
-                              </span>
-                              {item.provider && (
-                                <span className="text-xs px-2 py-1 bg-blue-500/20 text-white rounded-full whitespace-nowrap">
-                                  via {item.provider}
-                                </span>
-                              )}
+                              <div className="flex-1 h-px bg-blue-500/20" />
                             </div>
                           </div>
-                          <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
-                            {item.message}
-                          </p>
+                        );
+                      }
+                      acc.push(
+                        <div
+                          key={item.id}
+                          className="bg-gradient-to-br from-gray-900/60 via-blue-900/20 to-gray-900/60 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-blue-500/20 shadow-lg shadow-blue-500/10"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 overflow-hidden">
+                              {item.userImage ? (
+                                <Image
+                                  src={item.userImage}
+                                  alt={item.name}
+                                  width={40}
+                                  height={40}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                                  {item.name.charAt(0).toUpperCase()}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <h4 className="text-white font-semibold text-sm sm:text-base truncate">
+                                    {item.name}
+                                  </h4>
+                                  <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-300 rounded-full whitespace-nowrap">
+                                    {item.role}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <div className="flex items-center gap-1">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      <svg
+                                        key={star}
+                                        className={`w-3 h-3 sm:w-4 sm:h-4 ${
+                                          star <= (item.rating || 0)
+                                            ? "text-yellow-400"
+                                            : "text-gray-600"
+                                        }`}
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                      </svg>
+                                    ))}
+                                  </div>
+                                  <span className="text-gray-400 text-xs whitespace-nowrap">
+                                    {formatTimeRelative(item.timestamp)}
+                                  </span>
+                                  {item.provider && (
+                                    <span className="text-xs px-2 py-1 bg-blue-500/20 text-white rounded-full whitespace-nowrap">
+                                      via {item.provider}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
+                                {item.message}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      );
+                      return acc;
+                    },
+                    []
+                  )}
 
                   {/* Load More Feedback Button */}
                   {hasMoreFeedback && (
