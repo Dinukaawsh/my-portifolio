@@ -152,18 +152,21 @@ export default function Education() {
               {/* Header Section */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-6">
                 <div className="text-4xl sm:text-5xl">
-                  {educationData[activeIndex].id === 1 ? (
+                  {typeof educationData[activeIndex].logo === "string" ? (
                     <Image
-                      src="/ESU.png"
-                      alt="ESU colombo Logo"
+                      src={educationData[activeIndex].logo as string}
+                      alt={`${educationData[activeIndex].institution} Logo`}
                       width={64}
                       height={64}
                       className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
                     />
                   ) : (
-                    React.createElement(educationData[activeIndex].logo, {
-                      className: "w-12 h-12 sm:w-16 sm:h-16 text-blue-400",
-                    })
+                    React.createElement(
+                      educationData[activeIndex].logo as React.ElementType,
+                      {
+                        className: "w-12 h-12 sm:w-16 sm:h-16 text-blue-400",
+                      }
+                    )
                   )}
                 </div>
                 <div className="flex-1">

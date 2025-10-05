@@ -45,7 +45,7 @@ export const experienceContent = {
         "Webhooks",
         "WebSockets",
       ],
-      logo: "/twist.png",
+      logo: "/experince-images/twist.png",
       logoAlt: "Twist Digital Logo",
       color: "bg-blue-500",
       delay: 0.7,

@@ -8,7 +8,7 @@ export const aboutContent = {
     title: "Full Stack Developer",
     location: "Colombo, Sri Lanka",
     email: "dinukaaw.sh@gmail.com",
-    cvFile: "/dinuka wickramarathna.pdf",
+    cvFile: "CV/cv.pdf",
     cvFileName: "Dinuka_Wickramarathna_CV.pdf",
     description:
       "I'm a passionate Full Stack Developer and Information Technology student pursuing a Bachelor of Information Technology (Hons), specializing in modern web technologies. With expertise across the entire software development lifecycle, I build robust, scalable applications using cutting-edge technologies. My technical proficiency includes frontend development with React.js and Next.js, backend architecture using Node.js and Express.js, and proficiency in JavaScript, TypeScript, and Python. I have extensive experience with both SQL and NoSQL databases including MongoDB and MySQL. I excel in designing RESTful APIs and GraphQL endpoints, implementing secure authentication with JWT, and creating responsive user interfaces with Tailwind CSS. My cloud infrastructure knowledge covers AWS services, CI/CD pipelines with GitHub Actions, and containerization using Docker and Kubernetes. Beyond technical skills, I bring strong problem-solving abilities, effective communication, and collaborative teamwork to every project. I'm committed to writing clean, maintainable code following industry best practices and delivering high-quality solutions that meet both business requirements and user needs.",
@@ -152,7 +152,11 @@ export const aboutContent = {
   ],
 
   // Profile Images
-  profileImages: ["/my.jpg", "/my2.jpg", "/my3.jpg"],
+  profileImages: [
+    "/about-images/my.jpg",
+    "/about-images/my2.jpg",
+    "/about-images/my3.jpg",
+  ],
 
   // Animation Settings
   animation: {
