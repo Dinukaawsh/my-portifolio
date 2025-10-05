@@ -1,7 +1,7 @@
 // Education Page Content Configuration
 // Edit this file to update your educational background, institutions, and other content
 
-import { GraduationCap, Microscope } from "lucide-react";
+import { Microscope } from "lucide-react";
 
 export const educationContent = {
   // Page Header Information
@@ -89,7 +89,7 @@ export const educationContent = {
           description: "Data structures and algorithms",
         },
       ],
-      logo: GraduationCap,
+      logo: "/education-images/ESU.png",
       achievements: [
         "Maintaining strong academic performance",
         "Active participation in technology projects",

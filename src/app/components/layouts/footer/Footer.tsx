@@ -260,7 +260,7 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
                 }}
               >
                 <Image
-                  src="/my.jpg"
+                  src="/about-images/my.jpg"
                   alt="Dinuka Wickramarathna"
                   width={40}
                   height={40}
