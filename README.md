@@ -51,7 +51,7 @@ A modern, interactive portfolio website built with Next.js 15, featuring stunnin
 ### 💬 Interactive Comment & Feedback System
 
 - **Real-time Comments**: Live comment updates using Firebase Firestore
-- **Social Authentication**: Google and GitHub login for feedback submission
+- **Social Authentication**: Google, GitHub and Linkedin login for feedback submission
 - **User Profiles**: Display user profile pictures and names with feedback
 - **Role-based Feedback**: Users can specify their role (Developer, Designer, etc.)
 - **Custom Role Input**: "Other" option with custom role specification
@@ -70,6 +70,11 @@ A modern, interactive portfolio website built with Next.js 15, featuring stunnin
 - **Rich Discord Embeds**: Beautiful notifications with visitor details and user profiles
 - **Performance Monitoring**: Track page visits and user engagement
 - **Provider Tracking**: Know which OAuth provider users used
+
+### 🧭 Hiring Flow
+
+- "Hire Me" CTA with external Google Form
+- Configurable via `NEXT_PUBLIC_GOOGLE_FORM_URL`
 
 ### 🎨 3D & Visual Effects
 
@@ -170,6 +175,9 @@ A modern, interactive portfolio website built with Next.js 15, featuring stunnin
 
    # Discord Webhook URL
    NEXT_PUBLIC_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your_webhook_url
+
+   # Google Form (Hire Me)
+   NEXT_PUBLIC_GOOGLE_FORM_URL=https://forms.gle/your_form_id
    ```
 
 4. **Run the development server**
@@ -217,6 +225,9 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
 # Discord Webhook URL
 NEXT_PUBLIC_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your_webhook_url
+
+# Google Form (Hire Me)
+NEXT_PUBLIC_GOOGLE_FORM_URL=https://forms.gle/your_form_id
 ```
 
 ### OAuth Provider Updates for Production
@@ -227,6 +238,7 @@ NEXT_PUBLIC_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your_webhook_ur
    - Add JavaScript origin: `https://yourdomain.com`
 
 2. **GitHub OAuth**:
+
    - Update callback URL to: `https://yourdomain.com/api/auth/callback/github`
 
 ### Deployment Platforms
@@ -445,10 +457,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-- **Portfolio**: [Your Portfolio URL]
-- **LinkedIn**: [Your LinkedIn]
-- **GitHub**: [Your GitHub]
-- **Email**: [Your Email]
+- **Email**: dinukaaw.sh@gmail.com
+- **LinkedIn**: https://www.linkedin.com/in/dinuka-wickramarathna-88468b214/
+- **GitHub**: https://github.com/Dinukaawsh
+- **X (Twitter)**: https://x.com/DinukaAshan14
+- **Medium**: https://medium.com/@dinukaaw.sh
+- **Facebook**: https://web.facebook.com/dinuka.wickramarathna
+- **WhatsApp**: https://wa.me/94767326845
 
 ## 🔧 Advanced Features Setup
 
@@ -471,6 +486,43 @@ A sophisticated feedback system where authenticated users can:
 - Add custom roles when "Other" is selected
 - View all feedback with user profiles
 - See provider information (Google/GitHub)
+
+### Comment System
+
+The portfolio includes a fully functional comment system where visitors can:
+
+- Leave comments on your contact page (no authentication required)
+- See real-time updates of all comments
+- Engage with your portfolio content
+- View comment timestamps and user information
+
+### Discord Notifications
+
+Get instant notifications when:
+
+- Someone visits your portfolio
+- New users register via Google/GitHub
+- New feedback is submitted
+- New comments are posted
+- Track visitor analytics and engagement
+
+### Firebase Integration
+
+- **Firestore Database**: Stores all comments, feedback, and user data
+- **Real-time Updates**: Instant synchronization across devices
+- **Scalable Backend**: Handles traffic and data efficiently
+- **Security Rules**: Proper access control for data
+
+### Theme System
+
+- **5 Beautiful Themes**: Dark, Light, Water, Sunset, Forest
+- **Theme-aware Components**: All UI elements adapt to selected theme
+- **Smooth Transitions**: Seamless theme switching
+- **Persistent Settings**: Theme choice saved across sessions
+
+---
+
+⭐ **Star this repository if you found it helpful!**
 
 ### Comment System
 
