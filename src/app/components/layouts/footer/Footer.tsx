@@ -452,7 +452,7 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
           viewport={{ once: true }}
         />
 
-        {/* Copyright and Tagline */}
+        {/* Copyright, Policy Links and Tagline */}
         <motion.div
           className="text-center"
           initial={{ opacity: 0, y: 20 }}
@@ -460,6 +460,16 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
           transition={{ duration: 0.6, delay: 1.2 }}
           viewport={{ once: true }}
         >
+          {/* Policy Links */}
+          <div className="mb-3">
+            <a
+              href="/privacy"
+              className={`text-xs ${currentTextColors.link} ${currentTextColors.hover}`}
+            >
+              Privacy Policy
+            </a>
+          </div>
+
           <div className="flex items-center justify-center gap-2 mb-2">
             <motion.div
               className="flex items-center gap-2 text-gray-300"

@@ -141,6 +141,8 @@ export default function Skills() {
         }, skillsContent.autoSlide.progressAnimationTime + 1000); // Added extra delay for smooth transition
       };
 
+      
+
       // Start the first cycle
       startAutoSlide();
 
