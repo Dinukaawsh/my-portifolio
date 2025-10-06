@@ -27,6 +27,31 @@ const handler = NextAuth({
     LinkedInProvider({
       clientId: process.env.LINKEDIN_CLIENT_ID!,
       clientSecret: process.env.LINKEDIN_CLIENT_SECRET!,
+      // OIDC configuration to align with "Sign In with LinkedIn using OpenID Connect"
+      issuer: "https://www.linkedin.com/oauth",
+      wellKnown:
+        "https://www.linkedin.com/oauth/.well-known/openid-configuration",
+      authorization: { params: { scope: "openid profile email" } },
+      profile(profile) {
+        const p = profile as {
+          sub?: string;
+          id?: string;
+          name?: string;
+          given_name?: string;
+          family_name?: string;
+          picture?: string;
+          email?: string;
+        };
+        return {
+          id: p.sub || p.id || "",
+          name:
+            p.name ||
+            [p.given_name, p.family_name].filter(Boolean).join(" ") ||
+            "LinkedIn User",
+          email: p.email,
+          image: p.picture,
+        };
+      },
     }),
   ],
   callbacks: {
@@ -70,7 +95,7 @@ const handler = NextAuth({
     },
   },
   pages: {
-    signIn: "/contact", // Redirect to contact page after login
+    signIn: "/", // Redirect to home page after login
   },
   session: {
     strategy: "jwt",
