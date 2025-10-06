@@ -7,7 +7,7 @@ export const skillsContent = {
     title: "Skills & Expertise",
     subtitle:
       "A comprehensive showcase of my technical skills and professional competencies",
-    indicators: ["Technical", "Creative", "Analytical", "Innovative"],
+    indicators: ["Technical", "Creative", "Analytical"],
   },
 
   // Skills Data organized by categories
@@ -158,6 +158,8 @@ export const skillsContent = {
     backendFrameworks: "Backend Frameworks",
     databases: "Databases",
     cloudServices: "Cloud Services",
+    apis: "APIs",
+    cicd: "CI/CD",
     tools: "Development Tools",
     softSkills: "Soft Skills",
   },
@@ -169,8 +171,23 @@ export const skillsContent = {
     backendFrameworks: "from-purple-500 to-purple-600",
     databases: "from-orange-500 to-orange-600",
     cloudServices: "from-indigo-500 to-indigo-600",
+    apis: "from-yellow-500 to-yellow-600",
+    cicd: "from-red-500 to-red-600",
     tools: "from-pink-500 to-pink-600",
     softSkills: "from-teal-500 to-teal-600",
+  },
+
+  // Category representative icons (for overview grid)
+  categoryIcons: {
+    languages: "custom:js",
+    frontendFrameworks: "custom:react",
+    backendFrameworks: "custom:nodejs",
+    databases: "custom:mongodb",
+    cloudServices: "custom:aws",
+    apis: "custom:swagger",
+    cicd: "custom:github",
+    tools: "custom:vscode",
+    softSkills: "Users",
   },
 
   // Animation Settings
@@ -200,8 +217,8 @@ export const skillsContent = {
   // Auto-slide Configuration
   autoSlide: {
     enabled: true,
-    interval: 8000, // Total cycle time in milliseconds
-    progressAnimationTime: 5000, // Time for progress bars to animate
+    interval: 3000, // Total cycle time in milliseconds
+    progressAnimationTime: 2000, // Time for progress bars to animate
     transitionDelay: 3000, // Delay before transitioning to next category
   },
 
@@ -231,6 +248,11 @@ export const getCategoryColor = (key: string) => {
       key as keyof typeof skillsContent.categoryNames
     ] || "from-gray-500 to-gray-600"
   );
+};
+
+export const getCategoryIconName = (category: string) => {
+  const map = skillsContent.categoryIcons as Record<string, string>;
+  return map[category] || "Star";
 };
 
 export const getSkillsByCategory = (category: string) => {

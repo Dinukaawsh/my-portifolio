@@ -16,10 +16,10 @@ export const achievementsContent = {
   categories: [
     "All",
     "Academic",
-    "Professional",
-    "Competitions",
-    "Community",
-    "Innovation",
+    // "Professional",
+    // "Competitions",
+    // "Community",
+    // "Innovation",
   ],
 
   // Achievements Data

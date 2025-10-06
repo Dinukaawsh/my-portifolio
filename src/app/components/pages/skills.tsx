@@ -4,12 +4,16 @@ import LetterGlitch from "@/app/components/backgrounds/letter-glich/glich";
 import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 import CustomIcon from "@/app/components/icons/skillsicons";
+import styles from "@/app/styles/Skills.module.css";
 import {
   skillsContent,
   getSkillsByCategory,
   getAllCategories,
   getParticleConfig,
   getSkillsCount,
+  getCategoryName,
+  getCategoryColor,
+  getCategoryIconName,
 } from "@/app/components/content/skills";
 
 // Skills data organized by categories
@@ -50,10 +54,10 @@ export default function Skills() {
   const [isVisible, setIsVisible] = useState(false);
   const [slideDirection, setSlideDirection] = useState("right");
   const [currentSkill, setCurrentSkill] = useState(0);
-  const [isAutoSliding, setIsAutoSliding] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const autoSlideRef = useRef<NodeJS.Timeout | null>(null);
+  const activeCategoryRef = useRef<string>("languages");
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -80,29 +84,32 @@ export default function Skills() {
     setProgress(initialProgress);
   }, []);
 
-  // Animate progress bars for current category
+  // Keep ref in sync with current activeCategory
+  useEffect(() => {
+    activeCategoryRef.current = activeCategory;
+  }, [activeCategory]);
+
+  // Animate progress bars for current category (stable function using ref)
   const animateProgress = useCallback(() => {
-    // Reset progress for current category first
-    const currentCategorySkills = getSkillsByCategory(activeCategory);
+    const categoryKey = activeCategoryRef.current;
+    const currentCategorySkills = getSkillsByCategory(categoryKey);
     if (
-      activeCategory !== "softSkills" &&
+      categoryKey !== "softSkills" &&
       Array.isArray(currentCategorySkills) &&
       currentCategorySkills.length > 0
     ) {
       const skillItems = currentCategorySkills as SkillItem[];
-      // Reset to 0 first
       setProgress((prev) => ({
         ...prev,
-        [activeCategory]: skillItems.map(() => 0),
+        [categoryKey]: skillItems.map(() => 0),
       }));
 
-      // Then animate to full values
       setTimeout(() => {
         skillItems.forEach((skill: SkillItem, index) => {
           setTimeout(() => {
             setProgress((prev) => ({
               ...prev,
-              [activeCategory]: prev[activeCategory].map((val, i) =>
+              [categoryKey]: prev[categoryKey].map((val, i) =>
                 i === index ? skill.level : val
               ),
             }));
@@ -110,7 +117,7 @@ export default function Skills() {
         });
       }, 100);
     }
-  }, [activeCategory]);
+  }, []);
 
   // Simplified auto-sliding functionality with manual control
   useEffect(() => {
@@ -137,31 +144,22 @@ export default function Skills() {
       // Start the first cycle
       startAutoSlide();
 
-      // Set up recurring cycle - much slower for better user experience
-      autoSlideRef.current = setInterval(
-        startAutoSlide,
-        skillsContent.autoSlide.interval
-      );
-      setIsAutoSliding(true);
+      // Set up recurring cycle based on animation time with a small buffer
+      const cycleDuration =
+        skillsContent.autoSlide.progressAnimationTime + 1200;
+      autoSlideRef.current = setInterval(startAutoSlide, cycleDuration);
+      // auto-sliding active
     }
 
     return () => {
       if (autoSlideRef.current) {
         clearInterval(autoSlideRef.current);
-        setIsAutoSliding(false);
       }
     };
   }, [isVisible, animateProgress]);
 
   // Manual navigation functions
   const goToNextCategory = useCallback(() => {
-    // Stop auto-sliding
-    if (autoSlideRef.current) {
-      clearInterval(autoSlideRef.current);
-      autoSlideRef.current = null;
-      setIsAutoSliding(false);
-    }
-
     setSlideDirection("right");
     setIsTransitioning(true);
     // Add a small delay to ensure smooth transition
@@ -178,13 +176,6 @@ export default function Skills() {
   }, []);
 
   const goToPreviousCategory = useCallback(() => {
-    // Stop auto-sliding
-    if (autoSlideRef.current) {
-      clearInterval(autoSlideRef.current);
-      autoSlideRef.current = null;
-      setIsAutoSliding(false);
-    }
-
     setSlideDirection("left");
     setIsTransitioning(true);
     // Add a small delay to ensure smooth transition
@@ -200,44 +191,6 @@ export default function Skills() {
       setTimeout(() => setIsTransitioning(false), 800);
     }, 100);
   }, []);
-
-  const pauseAutoSlide = useCallback(() => {
-    if (autoSlideRef.current) {
-      clearInterval(autoSlideRef.current);
-      autoSlideRef.current = null;
-      setIsAutoSliding(false);
-    }
-  }, []);
-
-  const resumeAutoSlide = useCallback(() => {
-    if (!autoSlideRef.current && isVisible) {
-      const startAutoSlide = () => {
-        animateProgress();
-        setTimeout(() => {
-          setIsTransitioning(true);
-          setSlideDirection("right");
-          setActiveCategory((prev) => {
-            const categories = getAllCategories();
-            const currentIndex = categories.indexOf(prev);
-            const nextIndex = (currentIndex + 1) % categories.length;
-            return categories[nextIndex];
-          });
-          // Reset transition state after animation completes
-          setTimeout(() => setIsTransitioning(false), 800);
-        }, skillsContent.autoSlide.progressAnimationTime + 1000); // Added extra delay for smooth transition
-      };
-
-      // Start immediately
-      startAutoSlide();
-
-      // Then set up recurring cycle
-      autoSlideRef.current = setInterval(
-        startAutoSlide,
-        skillsContent.autoSlide.interval
-      );
-      setIsAutoSliding(true);
-    }
-  }, [isVisible, animateProgress]);
 
   // Intersection Observer for animations
   useEffect(() => {
@@ -257,38 +210,6 @@ export default function Skills() {
 
     return () => observer.disconnect();
   }, [animateProgress]);
-
-  // Get category display name
-  const getCategoryName = (key: string) => {
-    const names: Record<string, string> = {
-      languages: "Programming Languages",
-      frontendFrameworks: "Frontend Frameworks",
-      backendFrameworks: "Backend Frameworks",
-      databases: "Databases",
-      cloudServices: "Cloud Services",
-      cicd: "CI/CD",
-      apis: "APIs",
-      tools: "Development Tools",
-      softSkills: "Soft Skills",
-    };
-    return names[key] || key;
-  };
-
-  // Get category color
-  const getCategoryColor = (key: string) => {
-    const colors: Record<string, string> = {
-      languages: "from-blue-500 to-blue-600",
-      frontendFrameworks: "from-green-500 to-green-600",
-      backendFrameworks: "from-purple-500 to-purple-600",
-      databases: "from-orange-500 to-orange-600",
-      cloudServices: "from-indigo-500 to-indigo-600",
-      cicd: "from-red-500 to-red-600",
-      apis: "from-yellow-500 to-yellow-600",
-      tools: "from-pink-500 to-pink-600",
-      softSkills: "from-teal-500 to-teal-600",
-    };
-    return colors[key] || "from-gray-500 to-gray-600";
-  };
 
   return (
     <section
@@ -519,12 +440,6 @@ export default function Skills() {
                 }
                 transition={{ duration: 2, repeat: Infinity }}
                 onClick={() => {
-                  // Stop auto-sliding when manually selecting
-                  if (autoSlideRef.current) {
-                    clearInterval(autoSlideRef.current);
-                    autoSlideRef.current = null;
-                    setIsAutoSliding(false);
-                  }
                   setActiveCategory(category);
                 }}
               />
@@ -566,51 +481,7 @@ export default function Skills() {
               </svg>
             </motion.button>
 
-            {/* Play/Pause Button */}
-            <motion.button
-              onClick={isAutoSliding ? pauseAutoSlide : resumeAutoSlide}
-              disabled={isTransitioning}
-              className={`p-3 rounded-full transition-all duration-200 text-white shadow-lg ${
-                isTransitioning
-                  ? "bg-gradient-to-r from-gray-500 to-gray-600 cursor-not-allowed opacity-50"
-                  : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-              }`}
-              whileHover={isTransitioning ? {} : { scale: 1.1 }}
-              whileTap={isTransitioning ? {} : { scale: 0.95 }}
-              aria-label={
-                isAutoSliding ? "Pause auto-slide" : "Resume auto-slide"
-              }
-            >
-              {isAutoSliding ? (
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              )}
-            </motion.button>
+            {/* Play/Pause Button removed */}
 
             {/* Next Button */}
             <motion.button
@@ -641,21 +512,7 @@ export default function Skills() {
             </motion.button>
           </motion.div>
 
-          {/* Auto-slide Status */}
-          <motion.div
-            className="text-center mt-3"
-            initial={{ opacity: 0 }}
-            animate={isVisible ? { opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.8 }}
-          >
-            <span className="text-xs text-gray-400">
-              {isAutoSliding
-                ? `🔄 Auto-sliding every ${
-                    skillsContent.autoSlide.interval / 1000
-                  } seconds`
-                : "⏸️ Auto-slide paused"}
-            </span>
-          </motion.div>
+          {/* Auto-slide Status removed */}
         </motion.div>
 
         {/* Enhanced Skills Content */}
@@ -678,7 +535,7 @@ export default function Skills() {
                     return (
                       <div
                         key={skill.name}
-                        className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-blue-500/30 text-center transform hover:scale-105 transition-all duration-300 animate-fade-in-up hover:shadow-lg hover:shadow-blue-500/25"
+                        className={`${styles["animate-fade-in-up"]} bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-blue-500/30 text-center transform hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25`}
                         style={{ animationDelay: `${index * 0.1}s` }}
                       >
                         <div className="flex flex-col items-center gap-2">
@@ -756,18 +613,8 @@ export default function Skills() {
           transition={{ duration: 0.8, delay: 0.9 }}
         >
           {getAllCategories().map((category, index) => {
-            // Get a representative icon for each category
-            const categoryIconMap: Record<string, string> = {
-              languages: "custom:js",
-              frontendFrameworks: "custom:react",
-              backendFrameworks: "custom:nodejs",
-              databases: "custom:mongodb",
-              cloudServices: "custom:aws",
-              tools: "custom:vscode",
-              softSkills: "Users",
-            };
             const IconComponent = getIconComponent(
-              categoryIconMap[category] || "Star"
+              getCategoryIconName(category)
             );
 
             return (
@@ -775,12 +622,6 @@ export default function Skills() {
                 key={category}
                 className="bg-gradient-to-br from-gray-900/60 via-blue-900/20 to-gray-900/60 backdrop-blur-xl rounded-2xl p-3 sm:p-4 border border-blue-500/30 hover:bg-gradient-to-br hover:from-gray-900/80 hover:via-blue-900/40 hover:to-gray-900/80 transition-all duration-300 transform hover:scale-105 cursor-pointer hover:shadow-lg hover:shadow-blue-500/25"
                 onClick={() => {
-                  // Stop auto-sliding when manually selecting
-                  if (autoSlideRef.current) {
-                    clearInterval(autoSlideRef.current);
-                    autoSlideRef.current = null;
-                    setIsAutoSliding(false);
-                  }
                   setActiveCategory(category);
                 }}
                 initial={{ opacity: 0, y: 30, scale: 0.8 }}
@@ -827,53 +668,7 @@ export default function Skills() {
         </motion.div>
       </div>
 
-      {/* Custom Animations */}
-      <style jsx>{`
-        .animate-fade-in-up {
-          animation: fadeInUp 0.6s ease-out forwards;
-        }
-
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-slide-in-right {
-          animation: slideInRight 0.7s ease-out forwards;
-        }
-
-        @keyframes slideInRight {
-          from {
-            opacity: 0;
-            transform: translateX(50px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        .animate-slide-in-left {
-          animation: slideInLeft 0.7s ease-out forwards;
-        }
-
-        @keyframes slideInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-50px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
+      {/* Custom Animations moved to CSS module */}
     </section>
   );
 }

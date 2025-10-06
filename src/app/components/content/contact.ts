@@ -48,7 +48,7 @@ export const contactContent = {
       loadingText: "Adding Comment...",
     },
     successMessage: {
-      title: "✨ Thank you for your feedback!",
+      title: "✨ Thank you for your comment!",
       description: "Your comment has been added to the comments section below.",
       actionButton: "Add Another Comment",
     },

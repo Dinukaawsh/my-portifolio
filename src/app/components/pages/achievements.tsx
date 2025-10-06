@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-
 import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import {
   achievementsContent,
