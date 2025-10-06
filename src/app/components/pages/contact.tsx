@@ -1,17 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useTheme } from "@/app/contexts/ThemeContext";
-
-// Extend the Session type to include provider
-interface ExtendedSession {
-  user?: {
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-  };
-  provider?: string;
-}
-
 import {
   collection,
   addDoc,
@@ -41,6 +30,16 @@ import CommentsList from "@/app/components/pages/data/contact/components/Comment
 import FeedbackForm from "@/app/components/pages/data/contact/components/FeedbackForm";
 import FeedbackList from "@/app/components/pages/data/contact/components/FeedbackList";
 
+// Extend the Session type to include provider
+interface ExtendedSession {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
+  provider?: string;
+}
+
 interface Comment {
   id: string;
   name: string;
@@ -64,6 +63,59 @@ interface Feedback {
 export default function Contact() {
   const { data: session } = useSession();
   const { currentTheme } = useTheme();
+  const [activeTab, setActiveTab] = useState<"comments" | "feedback">(
+    "comments"
+  );
+  const [submitted, setSubmitted] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [feedbackItems, setFeedbackItems] = useState<Feedback[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+
+  // Infinite scroll states
+  const [hasMoreComments, setHasMoreComments] = useState(true);
+  const [hasMoreFeedback, setHasMoreFeedback] = useState(true);
+  const [isLoadingMoreComments, setIsLoadingMoreComments] = useState(false);
+  const [isLoadingMoreFeedback, setIsLoadingMoreFeedback] = useState(false);
+
+  // Scroll and visibility states
+  const [visibleComments, setVisibleComments] = useState<Comment[]>([]);
+  const [visibleFeedback, setVisibleFeedback] = useState<Feedback[]>([]);
+  const [lastCommentId, setLastCommentId] = useState<string | null>(null);
+  const [lastFeedbackId, setLastFeedbackId] = useState<string | null>(null);
+
+  // Container view states
+  const [showCommentsContainer, setShowCommentsContainer] = useState(true);
+  const [showFeedbackContainer, setShowFeedbackContainer] = useState(true);
+  const [containerComments, setContainerComments] = useState<Comment[]>([]);
+  const [containerFeedback, setContainerFeedback] = useState<Feedback[]>([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+    rating: 0,
+  });
+  const [feedbackData, setFeedbackData] = useState({
+    role: "",
+    customRole: "",
+    message: "",
+    rating: 0,
+  });
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [showHireOptions, setShowHireOptions] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const loadingCommentsRef = useRef(false);
+  const loadingFeedbackRef = useRef(false);
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
 
   // Theme-aware text colors only
   const getThemeTextColors = () => {
@@ -136,59 +188,6 @@ export default function Contact() {
     if (isYesterday(date)) return "Yesterday";
     return format(date, "PP");
   };
-  const [activeTab, setActiveTab] = useState<"comments" | "feedback">(
-    "comments"
-  );
-  const [submitted, setSubmitted] = useState(false);
-  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [feedbackItems, setFeedbackItems] = useState<Feedback[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [feedbackLoading, setFeedbackLoading] = useState(false);
-
-  // Infinite scroll states
-  const [hasMoreComments, setHasMoreComments] = useState(true);
-  const [hasMoreFeedback, setHasMoreFeedback] = useState(true);
-  const [isLoadingMoreComments, setIsLoadingMoreComments] = useState(false);
-  const [isLoadingMoreFeedback, setIsLoadingMoreFeedback] = useState(false);
-
-  // Scroll and visibility states
-  const [visibleComments, setVisibleComments] = useState<Comment[]>([]);
-  const [visibleFeedback, setVisibleFeedback] = useState<Feedback[]>([]);
-  const [lastCommentId, setLastCommentId] = useState<string | null>(null);
-  const [lastFeedbackId, setLastFeedbackId] = useState<string | null>(null);
-
-  // Container view states
-  const [showCommentsContainer, setShowCommentsContainer] = useState(true);
-  const [showFeedbackContainer, setShowFeedbackContainer] = useState(true);
-  const [containerComments, setContainerComments] = useState<Comment[]>([]);
-  const [containerFeedback, setContainerFeedback] = useState<Feedback[]>([]);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-    rating: 0,
-  });
-  const [feedbackData, setFeedbackData] = useState({
-    role: "",
-    customRole: "",
-    message: "",
-    rating: 0,
-  });
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const [showHireOptions, setShowHireOptions] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const sectionRef = useRef<HTMLElement>(null);
-  const loadingCommentsRef = useRef(false);
-  const loadingFeedbackRef = useRef(false);
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-  });
 
   // Contact form steps animation
   useEffect(() => {

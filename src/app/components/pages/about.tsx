@@ -11,333 +11,23 @@ import GlobeBackground from "@/app/components/backgrounds/globe/GlobeBackground"
 import { RollingGallery } from "@/app/components/backgrounds/rolling gallery/gallery";
 import Image from "next/image";
 import { motion, useScroll, useSpring } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import {
-  Code2,
-  TrendingUp,
-  Heart,
-  Target,
-  FileText,
-  Camera,
-} from "lucide-react";
-import { aboutContent, getDynamicStats } from "@/app/components/content/about";
+import { Code2, Camera } from "lucide-react";
+import { aboutContent } from "@/app/components/content/about";
 import Footer from "@/app/components/layouts/footer/Footer";
-//import TrueFocus from "@/app/components/backgrounds/focus text/text";
+import ProfileSkeleton from "@/app/components/pages/data/about/components/ProfileSkeleton";
+import FloatingParticles from "@/app/components/pages/data/about/components/FloatingParticles";
+import AnimatedStats from "@/app/components/pages/data/about/components/AnimatedStats";
+import PerformanceMonitor from "@/app/components/pages/data/about/components/PerformanceMonitor";
+//import AnimatedJets from "@/app/components/pages/data/about/components/AnimatedJets";
+import { useServiceWorker } from "@/app/components/pages/data/about/hooks/useServiceWorker";
+import MainProfileCard from "@/app/components/pages/data/about/components/MainProfileCard";
 
 interface AboutProps {
   setActiveSection?: (key: string) => void;
 }
 
-// Enhanced Loading Skeleton Component with animations
-function ProfileSkeleton() {
-  return (
-    <motion.div
-      className="animate-pulse"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <motion.div
-        className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 rounded-full mx-auto mb-4 sm:mb-6"
-        animate={{
-          scale: [1, 1.05, 1],
-          rotate: [0, 5, -5, 0],
-        }}
-        transition={{
-          duration: 2,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      <motion.div
-        className="h-6 sm:h-8 md:h-10 bg-gradient-to-r from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 rounded w-48 mx-auto mb-2"
-        animate={{ width: ["12rem", "14rem", "12rem"] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
-      />
-      <motion.div
-        className="h-4 sm:h-5 md:h-6 bg-gradient-to-r from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 rounded w-32 mx-auto mb-4"
-        animate={{ width: ["8rem", "10rem", "8rem"] }}
-        transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
-      />
-      <motion.div
-        className="h-3 sm:h-4 bg-gradient-to-r from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 rounded w-64 mx-auto mb-4 sm:mb-6"
-        animate={{ width: ["16rem", "18rem", "16rem"] }}
-        transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
-      />
-      <div className="flex flex-wrap gap-2 justify-center mb-4 sm:mb-6">
-        {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-          <motion.div
-            key={i}
-            className="w-16 h-6 bg-gradient-to-r from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 rounded-full"
-            animate={{
-              scale: [1, 1.1, 1],
-              opacity: [0.5, 1, 0.5],
-            }}
-            transition={{
-              duration: 1,
-              repeat: Infinity,
-              delay: i * 0.1,
-            }}
-          />
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
-// Floating Particles Component
-function FloatingParticles() {
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 20 }, (_, i) => ({
-        id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: Math.random() * 4 + 2,
-        duration: Math.random() * 20 + 10,
-        delay: Math.random() * 5,
-      })),
-    []
-  );
-
-  return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      {particles.map((particle) => (
-        <motion.div
-          key={particle.id}
-          className="absolute w-2 h-2 bg-blue-400/30 rounded-full"
-          style={{
-            left: `${particle.x}%`,
-            top: `${particle.y}%`,
-            width: particle.size,
-            height: particle.size,
-          }}
-          animate={{
-            y: [0, -100, -200, -300],
-            x: [0, Math.random() * 100 - 50],
-            opacity: [0, 1, 0.8, 0],
-            scale: [0, 1, 1.2, 0],
-          }}
-          transition={{
-            duration: particle.duration,
-            delay: particle.delay,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// Enhanced Animated Stats Component
-function AnimatedStats() {
-  const [ref, inView] = useInView({ triggerOnce: true });
-
-  const stats = getDynamicStats().map((stat) => ({
-    ...stat,
-    icon:
-      stat.icon === "TrendingUp"
-        ? TrendingUp
-        : stat.icon === "Target"
-        ? Target
-        : stat.icon === "Code2"
-        ? Code2
-        : stat.icon === "Heart"
-        ? Heart
-        : TrendingUp,
-  }));
-
-  return (
-    <motion.div
-      ref={ref}
-      className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
-      initial={{ opacity: 0, y: 50 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, staggerChildren: 0.1 }}
-    >
-      {stats.map((stat, index) => (
-        <motion.div
-          key={stat.label}
-          className="bg-gradient-to-br from-gray-900/60 via-gray-800/40 to-gray-900/60 backdrop-blur-xl rounded-xl p-4 border border-gray-600/30 text-center"
-          whileHover={{
-            scale: 1.05,
-            y: -5,
-            boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
-          }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: index * 0.1 }}
-        >
-          <motion.div
-            className={`w-12 h-12 bg-gradient-to-r ${stat.color} rounded-full flex items-center justify-center mx-auto mb-3`}
-            whileHover={{ rotate: 360 }}
-            transition={{ duration: 0.6 }}
-          >
-            <stat.icon className="w-6 h-6 text-white" />
-          </motion.div>
-          <motion.div
-            className="text-2xl font-bold text-white mb-1"
-            initial={{ scale: 0 }}
-            animate={inView ? { scale: 1 } : {}}
-            transition={{
-              duration: 0.5,
-              delay: index * 0.1 + 0.3,
-              type: "spring",
-            }}
-          >
-            {stat.value}+
-          </motion.div>
-          <div className="text-xs text-gray-400">{stat.label}</div>
-        </motion.div>
-      ))}
-    </motion.div>
-  );
-}
-
 const roles = aboutContent.roles;
 const skills = aboutContent.skills;
-
-// function AnimatedJets() {
-//   const [positions, setPositions] = useState([
-//     { x: 0, y: 0 },
-//     { x: 0, y: 0 },
-//     { x: 0, y: 0 },
-//   ]);
-//   const requestRef = useRef<number | undefined>(undefined);
-//   const startTimeRef = useRef<number | undefined>(undefined);
-
-//   // Memoize animation function to prevent recreation
-//   const animate = useCallback((time: number) => {
-//     if (startTimeRef.current === undefined) startTimeRef.current = time;
-//     const t = (time - startTimeRef.current) / 1000;
-
-//     // Three different parametric paths
-//     const r = 180;
-//     const cx = window.innerWidth / 2;
-//     const cy = window.innerHeight / 2;
-
-//     setPositions([
-//       {
-//         x: cx + r * Math.cos(t),
-//         y: cy + r * Math.sin(t),
-//       },
-//       {
-//         x: cx + r * 0.7 * Math.cos(t * 0.8 + 2),
-//         y: cy + r * 0.5 * Math.sin(t * 0.8 + 2.5),
-//       },
-//       {
-//         x: cx + r * 0.9 * Math.cos(t * 1.2 - 1),
-//         y: cy + r * 0.8 * Math.sin(t * 1.1 - 1.5),
-//       },
-//     ]);
-
-//     requestRef.current = requestAnimationFrame(animate);
-//   }, []);
-
-//   useEffect(() => {
-//     requestRef.current = requestAnimationFrame(animate);
-//     return () => {
-//       if (requestRef.current) cancelAnimationFrame(requestRef.current);
-//     };
-//   }, [animate]);
-
-//   return (
-//     <>
-//       {positions.map((pos, i) => (
-//         <span
-//           key={i}
-//           className="pointer-events-none z-10"
-//           style={{
-//             position: "fixed",
-//             left: pos.x - 50,
-//             top: pos.y - 50,
-//             width: 100,
-//             height: 100,
-//             transition: "none",
-//           }}
-//         >
-//           <svg
-//             fill="#000000"
-//             width="100"
-//             height="100"
-//             viewBox="-7.2 -7.2 38.40 38.40"
-//             xmlns="http://www.w3.org/2000/svg"
-//           >
-//             <g>
-//               <path
-//                 d="M14,4H11.89a1,1,0,0,0-.81.42L7.16,10H5a2,2,0,0,0-2,2H3a2,2,0,0,0,2,2H7.16l3.92,5.58a1,1,0,0,0,.81.42H14l-1-6h3l1.71,1.71a1,1,0,0,0,.7.29H21l-2-4,2-4H18.41a1,1,0,0,0-.7.29L16,10H13Z"
-//                 style={{ fill: "#2ca9bc" }}
-//               ></path>
-//               <path
-//                 d="M14,4H11.89a1,1,0,0,0-.81.42L7.16,10H5a2,2,0,0,0-2,2H3a2,2,0,0,0,2,2H7.16l3.92,5.58a1,1,0,0,0,.81.42H14l-1-6h3l1.71,1.71a1,1,0,0,0,.7.29H21l-2-4,2-4H18.41a1,1,0,0,0-.7.29L16,10H13Z"
-//                 style={{
-//                   fill: "none",
-//                   stroke: "#000",
-//                   strokeLinecap: "round",
-//                   strokeLinejoin: "round",
-//                 }}
-//               ></path>
-//             </g>
-//           </svg>
-//         </span>
-//       ))}
-//     </>
-//   );
-// }
-
-// Performance monitoring component
-function PerformanceMonitor() {
-  const [fps, setFps] = useState(0);
-  const frameCount = useRef(0);
-  const lastTime = useRef(performance.now());
-
-  useEffect(() => {
-    const measureFPS = () => {
-      frameCount.current++;
-      const currentTime = performance.now();
-
-      if (currentTime - lastTime.current >= 1000) {
-        setFps(
-          Math.round(
-            (frameCount.current * 1000) / (currentTime - lastTime.current)
-          )
-        );
-        frameCount.current = 0;
-        lastTime.current = currentTime;
-      }
-
-      requestAnimationFrame(measureFPS);
-    };
-
-    requestAnimationFrame(measureFPS);
-  }, []);
-
-  // Only show in development
-  if (process.env.NODE_ENV !== "development") return null;
-
-  return (
-    <div className="fixed top-24 right-4 z-50 bg-black/80 text-white px-2 py-1 rounded text-xs font-mono">
-      FPS: {fps}
-    </div>
-  );
-}
-
-// Service Worker registration hook
-function useServiceWorker() {
-  useEffect(() => {
-    if ("serviceWorker" in navigator && process.env.NODE_ENV === "production") {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then((registration) => {
-          console.log("SW registered: ", registration);
-        })
-        .catch((registrationError) => {
-          console.log("SW registration failed: ", registrationError);
-        });
-    }
-  }, []);
-}
 
 export default function About({ setActiveSection }: AboutProps = {}) {
   const [roleIndex, setRoleIndex] = useState(0);
@@ -434,12 +124,10 @@ export default function About({ setActiveSection }: AboutProps = {}) {
   }, [isVisible]);
 
   // Typing animation for code block
-  const codePrefix = aboutContent.codeBlock.prefix;
-  const codeSuffix = aboutContent.codeBlock.suffix;
   const [codeDisplayed, setCodeDisplayed] = useState("");
   const [codeTyping, setCodeTyping] = useState(true);
   const [codeArrayIndex, setCodeArrayIndex] = useState(0);
-  const [codeDone, setCodeDone] = useState(false);
+  const [codeDone] = useState(false);
 
   useEffect(() => {
     if (codeDone) return;
@@ -464,7 +152,12 @@ export default function About({ setActiveSection }: AboutProps = {}) {
           setCodeTyping(true);
         }, aboutContent.animation.codeChangeDelay);
       } else {
-        setCodeDone(true);
+        // Loop the animation: clear and restart from first role
+        timeout = setTimeout(() => {
+          setCodeArrayIndex(0);
+          setCodeDisplayed("");
+          setCodeTyping(true);
+        }, aboutContent.animation.codeChangeDelay);
       }
     }
     return () => clearTimeout(timeout);
@@ -522,608 +215,17 @@ export default function About({ setActiveSection }: AboutProps = {}) {
       <Suspense fallback={<ProfileSkeleton />}>
         <div className="relative z-10 w-full max-w-7xl mx-auto pb-16 flex flex-col lg:flex-row items-center lg:items-start gap-6 sm:gap-8 lg:gap-12">
           {/* Enhanced Glassmorphism Card - Left Side on Desktop */}
-          <motion.div
-            className="relative z-10 w-full max-w-lg sm:max-w-xl lg:max-w-md xl:max-w-lg mx-auto lg:mx-0 p-4 sm:p-6 lg:p-6 xl:p-8 rounded-3xl shadow-2xl border border-blue-500/30 bg-gradient-to-br from-gray-900/80 via-blue-900/40 to-gray-900/80 backdrop-blur-xl flex flex-col items-center lg:items-start text-center lg:text-left"
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={showCard ? { opacity: 1, y: 0, scale: 1 } : {}}
-            transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
-            whileHover={{
-              scale: 1.02,
-              boxShadow: "0 25px 50px rgba(0,0,0,0.4)",
-            }}
-            tabIndex={0}
-            aria-label="About Dinuka Ashan"
-          >
-            {/* Enhanced Profile Image */}
-            <motion.div
-              className="relative mb-4 sm:mb-6"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
-            >
-              <motion.div
-                className="relative"
-                animate={{
-                  rotate: [0, 5, -5, 0],
-                  scale: [1, 1.02, 1],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                <motion.div
-                  key={currentImageIndex}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-full shadow-lg border-4 border-blue-500 overflow-hidden"
-                >
-                  <Image
-                    src={profileImages[currentImageIndex]}
-                    alt={`Dinuka Ashan profile ${currentImageIndex + 1}`}
-                    width={120}
-                    height={120}
-                    priority
-                    className="w-full h-full object-cover"
-                  />
-                </motion.div>
-                {/* Animated border glow */}
-                <motion.div
-                  className="absolute inset-0 rounded-full border-4 border-transparent"
-                  animate={{
-                    borderColor: [
-                      "rgba(59, 130, 246, 0.5)",
-                      "rgba(147, 51, 234, 0.8)",
-                      "rgba(59, 130, 246, 0.5)",
-                    ],
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              </motion.div>
-              {/* Enhanced Floating Achievement Badge - Mobile Responsive */}
-              <motion.div
-                className="absolute -top-8 -right-8 sm:-top-2 sm:-right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-1 py-0.5 sm:px-2 sm:py-1 rounded-full shadow-lg z-10"
-                animate={{
-                  y: [0, -3, 0],
-                  scale: [1, 1.05, 1],
-                  rotate: [0, 3, -3, 0],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-                whileHover={{ scale: 1.1, rotate: 180 }}
-              >
-                <span className="text-xs sm:text-sm">
-                  {aboutContent.achievement.text}
-                </span>
-              </motion.div>
-            </motion.div>
-
-            {/* Enhanced Name and Title with Focus Text */}
-            <div className="mb-2">
-              <motion.span
-                className="text-blue-300 italic font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl block"
-                animate={{
-                  color: ["#60a5fa", "#a855f7", "#60a5fa"],
-                  textShadow: [
-                    "0 0 5px rgba(59, 130, 246, 0.3)",
-                    "0 0 15px rgba(147, 51, 234, 0.5)",
-                    "0 0 5px rgba(59, 130, 246, 0.3)",
-                  ],
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                I am
-              </motion.span>
-
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-white drop-shadow-lg">
-                <motion.span
-                  animate={{
-                    textShadow: [
-                      "0 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 255, 255, 0.1)",
-                      "0 2px 8px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 255, 255, 0.2)",
-                      "0 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 255, 255, 0.1)",
-                    ],
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  {aboutContent.personal.name}
-                </motion.span>
-              </h2>
-              {/* <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-white drop-shadow-lg">
-                <TrueFocus
-                  sentence={aboutContent.personal.name}
-                  manualMode={false}
-                  blurAmount={4}
-                  borderColor="#60a5fa"
-                  glowColor="rgba(59, 130, 246, 0.6)"
-                  animationDuration={0.4}
-                  pauseBetweenAnimations={0.8}
-                />
-              </div> */}
-            </div>
-            <h3 className="text-sm sm:text-base md:text-lg lg:text-xl text-blue-400 font-semibold mb-4 min-h-[1.5rem] sm:min-h-[2rem] md:min-h-[2.5rem] flex items-center justify-center">
-              <motion.div
-                className="relative inline-flex items-center"
-                animate={{
-                  scale: [1, 1.02, 1],
-                  filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                <span className="relative">
-                  <motion.span
-                    className="inline-block"
-                    animate={{
-                      textShadow: [
-                        "0 0 5px rgba(59, 130, 246, 0.5)",
-                        "0 0 20px rgba(59, 130, 246, 0.8)",
-                        "0 0 5px rgba(59, 130, 246, 0.5)",
-                      ],
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    {displayed}
-                  </motion.span>
-
-                  {/* Enhanced Blinking Cursor */}
-                  <motion.span
-                    className="inline-block w-0.5 h-full bg-gradient-to-b from-blue-400 via-purple-400 to-blue-400 ml-1"
-                    animate={{
-                      opacity: [1, 0, 1],
-                      scaleY: [1, 0.3, 1],
-                      boxShadow: [
-                        "0 0 5px rgba(59, 130, 246, 0.5)",
-                        "0 0 15px rgba(147, 51, 234, 0.8)",
-                        "0 0 5px rgba(59, 130, 246, 0.5)",
-                      ],
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  />
-                </span>
-
-                {/* Floating Particles around the text */}
-                <motion.div
-                  className="absolute inset-0 pointer-events-none"
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                >
-                  {[0, 1, 2].map((i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute w-1 h-1 bg-blue-400 rounded-full"
-                      style={{
-                        left: `${20 + i * 30}%`,
-                        top: `${-20 + i * 10}%`,
-                      }}
-                      animate={{
-                        scale: [0, 1, 0],
-                        opacity: [0, 0.8, 0],
-                        y: [0, -10, 0],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: i * 0.5,
-                        ease: "easeInOut",
-                      }}
-                    />
-                  ))}
-                </motion.div>
-              </motion.div>
-            </h3>
-
-            {/* Description */}
-            <p className="text-xs sm:text-sm md:text-base text-gray-200 mb-4 sm:mb-6 leading-relaxed max-w-md">
-              {aboutContent.personal.description}
-            </p>
-
-            {/* Unique Quote - Prominent Display */}
-            <motion.div
-              className="relative mb-6 sm:mb-8 p-6 sm:p-8 bg-gradient-to-br from-gray-900/80 via-blue-900/40 to-gray-900/80 rounded-2xl border border-blue-500/30 backdrop-blur-xl shadow-2xl shadow-blue-500/20"
-              initial={{ opacity: 0, y: 30, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.4, type: "spring" }}
-              whileHover={{
-                scale: 1.02,
-                boxShadow: "0 25px 50px rgba(59, 130, 246, 0.4)",
-              }}
-            >
-              {/* Clean Background Pattern */}
-              <div className="absolute inset-0 rounded-2xl overflow-hidden">
-                {/* Subtle gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5" />
-
-                {/* Elegant border glow */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 via-transparent to-purple-500/10 p-[1px]">
-                  <div className="w-full h-full rounded-2xl bg-transparent" />
-                </div>
-
-                {/* Subtle corner accents */}
-                <div className="absolute top-0 left-0 w-20 h-20 bg-gradient-to-br from-blue-500/10 to-transparent rounded-tl-2xl" />
-                <div className="absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-tl from-purple-500/10 to-transparent rounded-br-2xl" />
-              </div>
-
-              {/* Quote Content */}
-              <div className="relative z-10">
-                {/* Top Quote Mark */}
-                <motion.div
-                  className="absolute -top-2 -left-2 text-4xl sm:text-5xl text-blue-400 font-serif"
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0],
-                    opacity: [0.7, 1, 0.7],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                >
-                  &ldquo;
-                </motion.div>
-
-                {/* Main Quote Text */}
-                <motion.p
-                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white font-bold text-center leading-relaxed px-4 sm:px-8 py-4 drop-shadow-2xl"
-                  animate={{
-                    textShadow: [
-                      "0 4px 8px rgba(0, 0, 0, 0.8), 0 0 15px rgba(59, 130, 246, 0.6)",
-                      "0 6px 12px rgba(0, 0, 0, 0.9), 0 0 25px rgba(147, 51, 234, 0.8)",
-                      "0 4px 8px rgba(0, 0, 0, 0.8), 0 0 15px rgba(59, 130, 246, 0.6)",
-                    ],
-                    color: ["#ffffff", "#f0f9ff", "#ffffff"],
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  Growth comes from standing tall when challenges push you down.
-                </motion.p>
-
-                {/* Bottom Quote Mark */}
-                <motion.div
-                  className="absolute -bottom-2 -right-2 text-4xl sm:text-5xl text-blue-400 font-serif"
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    rotate: [0, -5, 5, 0],
-                    opacity: [0.7, 1, 0.7],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 0.5,
-                  }}
-                >
-                  &rdquo;
-                </motion.div>
-
-                {/* Floating Particles around Quote */}
-                <div className="absolute inset-0 pointer-events-none">
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute w-2 h-2 bg-blue-400/60 rounded-full"
-                      style={{
-                        left: `${10 + i * 20}%`,
-                        top: `${20 + (i % 2) * 60}%`,
-                      }}
-                      animate={{
-                        scale: [0, 1, 0],
-                        opacity: [0, 0.8, 0],
-                        y: [0, -20, 0],
-                        x: [0, Math.random() * 40 - 20, 0],
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        delay: i * 0.5,
-                        ease: "easeInOut",
-                      }}
-                    />
-                  ))}
-                </div>
-
-                {/* Quote Attribution */}
-                <motion.div
-                  className="text-center mt-4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 1, delay: 1 }}
-                >
-                  <motion.span
-                    className="text-sm sm:text-base text-blue-200 font-semibold drop-shadow-lg"
-                    animate={{
-                      color: ["#bfdbfe", "#c084fc", "#bfdbfe"],
-                      textShadow: [
-                        "0 2px 4px rgba(0, 0, 0, 0.6), 0 0 8px rgba(59, 130, 246, 0.4)",
-                        "0 3px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(147, 51, 234, 0.6)",
-                        "0 2px 4px rgba(0, 0, 0, 0.6), 0 0 8px rgba(59, 130, 246, 0.4)",
-                      ],
-                    }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                  >
-                    — Dinuka Wickramarathna —
-                  </motion.span>
-                </motion.div>
-              </div>
-            </motion.div>
-
-            {/* Enhanced Skills */}
-            <div className="flex flex-wrap gap-2 justify-center lg:justify-start mb-4 sm:mb-6">
-              {useMemo(
-                () =>
-                  skills.map((skill, index) => (
-                    <motion.span
-                      key={skill}
-                      className="px-2 sm:px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-semibold shadow-sm border border-blue-500/30 cursor-pointer"
-                      initial={{ opacity: 0, scale: 0, y: 20 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      transition={{
-                        duration: 0.5,
-                        delay: index * 0.1,
-                        type: "spring",
-                        stiffness: 200,
-                      }}
-                      whileHover={{
-                        scale: 1.1,
-                        y: -5,
-                        backgroundColor: "rgba(59, 130, 246, 0.3)",
-                        boxShadow: "0 10px 25px rgba(59, 130, 246, 0.3)",
-                      }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {skill}
-                    </motion.span>
-                  )),
-                []
-              )}
-            </div>
-
-            {/* Enhanced Typing Progress Indicator */}
-            <motion.div
-              className="w-full mb-4 sm:mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-            >
-              <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
-                <motion.span
-                  animate={{
-                    color: ["#9ca3af", "#60a5fa", "#9ca3af"],
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  ✨ Typing Progress
-                </motion.span>
-                <motion.span
-                  className="font-bold"
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    color: ["#60a5fa", "#a855f7", "#60a5fa"],
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  {Math.round(
-                    (displayed.length / roles[roleIndex].length) * 100
-                  )}
-                  %
-                </motion.span>
-              </div>
-
-              {/* Enhanced Progress Bar */}
-              <div className="relative w-full bg-white/10 rounded-full h-2 overflow-hidden">
-                {/* Animated Background */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20"
-                  animate={{
-                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                />
-
-                {/* Main Progress Bar */}
-                <motion.div
-                  className="relative h-2 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 rounded-full"
-                  style={{
-                    width: `${
-                      (displayed.length / roles[roleIndex].length) * 100
-                    }%`,
-                  }}
-                  animate={{
-                    boxShadow: [
-                      "0 0 5px rgba(59, 130, 246, 0.5)",
-                      "0 0 20px rgba(147, 51, 234, 0.8)",
-                      "0 0 5px rgba(59, 130, 246, 0.5)",
-                    ],
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-
-                {/* Shimmer Effect */}
-                <motion.div
-                  className="absolute top-0 right-0 w-8 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                  animate={{
-                    x: ["-100%", "100%"],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                />
-
-                {/* Floating Particles on Progress */}
-                <motion.div
-                  className="absolute inset-0 pointer-events-none"
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 30,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                >
-                  {[0, 1, 2].map((i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute w-1 h-1 bg-white rounded-full"
-                      style={{
-                        left: `${10 + i * 40}%`,
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                      }}
-                      animate={{
-                        scale: [0, 1, 0],
-                        opacity: [0, 0.6, 0],
-                        y: [0, -5, 0],
-                      }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        delay: i * 0.3,
-                        ease: "easeInOut",
-                      }}
-                    />
-                  ))}
-                </motion.div>
-              </div>
-            </motion.div>
-
-            {/* Contact Info */}
-            <div className="flex flex-col gap-3 justify-center lg:justify-start items-center lg:items-start mb-4 sm:mb-6 w-full">
-              <span className="flex items-center gap-2 text-gray-300 text-xs sm:text-sm">
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"
-                  />
-                </svg>
-                <span className="truncate">
-                  {aboutContent.personal.location}
-                </span>
-              </span>
-              <a
-                href="mailto:dinukaaw.sh2@gmail.com"
-                className="flex items-center gap-2 text-gray-300 text-xs sm:text-sm hover:text-blue-400 transition-colors duration-200 group"
-              >
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 flex-shrink-0 group-hover:text-blue-300 transition-colors duration-200"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-                <span className="truncate group-hover:text-blue-300 transition-colors duration-200">
-                  {aboutContent.personal.email}
-                </span>
-              </a>
-            </div>
-
-            {/* CV Preview Button (no download) */}
-            <motion.button
-              type="button"
-              onClick={openCvPreview}
-              className="inline-block px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold shadow-lg shadow-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 text-sm sm:text-base mb-4 sm:mb-6"
-              tabIndex={0}
-              whileHover={{
-                scale: 1.05,
-                y: -3,
-                boxShadow: "0 20px 40px rgba(59, 130, 246, 0.4)",
-              }}
-              whileTap={{ scale: 0.95 }}
-              animate={{
-                boxShadow: [
-                  "0 10px 25px rgba(59, 130, 246, 0.3)",
-                  "0 15px 35px rgba(147, 51, 234, 0.4)",
-                  "0 10px 25px rgba(59, 130, 246, 0.3)",
-                ],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
-              <motion.span
-                className="flex items-center gap-2"
-                animate={{ x: [0, 5, 0] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              >
-                <FileText className="w-4 h-4" />
-                Preview CV
-              </motion.span>
-            </motion.button>
-
-            {/* Enhanced Social Links */}
-            <motion.div
-              className="flex gap-4 sm:gap-6 justify-center lg:justify-start items-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-            >
-              {aboutContent.socialLinks.map((social, index) => (
-                <motion.a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group p-3 rounded-full bg-white/10 border border-white/20"
-                  aria-label={social.label}
-                  initial={{ opacity: 0, scale: 0, rotate: -180 }}
-                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                  transition={{
-                    duration: 0.6,
-                    delay: 0.8 + index * 0.1,
-                    type: "spring",
-                    stiffness: 200,
-                  }}
-                  whileHover={{
-                    scale: 1.2,
-                    rotate: 360,
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
-                  }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <svg
-                    className={`w-5 h-5 sm:w-6 sm:h-6 text-gray-300 ${social.color} transition-colors duration-200`}
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d={social.icon} />
-                  </svg>
-                </motion.a>
-              ))}
-            </motion.div>
-          </motion.div>
+          <MainProfileCard
+            showCard={showCard}
+            profileImages={profileImages}
+            currentImageIndex={currentImageIndex}
+            aboutContent={aboutContent}
+            displayed={displayed}
+            roles={roles}
+            roleIndex={roleIndex}
+            skills={skills}
+            openCvPreview={openCvPreview}
+          />
 
           {/* Enhanced Tech Stack Section - Better Desktop Layout */}
           <motion.div
@@ -1451,14 +553,28 @@ export default function About({ setActiveSection }: AboutProps = {}) {
 
                 {/* Code Content */}
                 <div className="relative z-10">
-                  <span className="text-green-400 font-semibold">
-                    {codePrefix}
-                  </span>
+                  <span className="text-green-400 font-semibold">{`const developer = {`}</span>
                   <br />
+                  {/* name field */}
+                  <span className="block pl-4 sm:pl-6">
+                    <span className="text-white">name</span>
+                    <span className="text-white">: </span>
+                    <span className="text-yellow-400">&quot;</span>
+                    <span className="text-blue-400 font-medium">
+                      {aboutContent.personal.name}
+                    </span>
+                    <span className="text-yellow-400">&quot;</span>
+                    <span className="text-white">,</span>
+                  </span>
+
+                  {/* roles array */}
+                  <span className="block pl-4 sm:pl-6 text-white">
+                    roles: [
+                  </span>
                   {useMemo(
                     () =>
                       roles.map((role, i) => (
-                        <span key={role} className="block pl-4 sm:pl-6">
+                        <span key={role} className="block pl-8 sm:pl-10">
                           <span className="text-yellow-400">&quot;</span>
                           <span className="text-blue-400 font-medium">
                             {i < codeArrayIndex
@@ -1493,9 +609,9 @@ export default function About({ setActiveSection }: AboutProps = {}) {
                       )),
                     [codeArrayIndex, codeDisplayed]
                   )}
-                  <span className="text-green-400 font-semibold">
-                    {codeSuffix}
-                  </span>
+                  <span className="block pl-4 sm:pl-6 text-white">]</span>
+                  <br />
+                  <span className="text-green-400 font-semibold">{`};`}</span>
                 </div>
 
                 {/* Floating Code Particles */}
@@ -1727,7 +843,7 @@ export default function About({ setActiveSection }: AboutProps = {}) {
               {isMobile ? (
                 <div className="w-full h-full bg-black flex items-center justify-center">
                   <Image
-                    src="/CV/cv.png"
+                    src={aboutContent.personal.cvImage}
                     alt="CV Preview"
                     width={800}
                     height={1000}
@@ -1740,7 +856,7 @@ export default function About({ setActiveSection }: AboutProps = {}) {
                 <object
                   data={`${aboutContent.personal.cvFile}#toolbar=0&navpanes=0&scrollbar=0`}
                   type="application/pdf"
-                  className="w-full h-full"
+                  className="w-full h-full overflow-auto custom-scrollbar"
                 >
                   <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-center p-4 text-gray-200">
                     <div>
@@ -1754,7 +870,7 @@ export default function About({ setActiveSection }: AboutProps = {}) {
                           "noopener,noreferrer"
                         )
                       }
-                      className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-500"
+                      className="px-4 py-2 rounded-md bg-blue-950 text-white hover:bg-blue-900"
                     >
                       Open Fullscreen Preview
                     </button>

@@ -267,7 +267,7 @@ export default function Education() {
                   <div className="mb-6">
                     <h5 className="text-white font-semibold mb-3 text-sm sm:text-base flex items-center gap-2">
                       <BookOpen className="w-5 h-5 text-blue-400" />
-                      Core Modules
+                      Required some Modules
                     </h5>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                       {educationData[activeIndex].coreModules.map(
