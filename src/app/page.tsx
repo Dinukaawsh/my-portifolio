@@ -1,16 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
 import Navbar from "./components/layouts/navbar/Navbar";
-import About from "./components/pages/about";
-import Projects from "./components/pages/projects";
-import Contact from "./components/pages/contact";
-import Blog from "./components/pages/blog";
-import Experience from "./components/pages/experience";
-import Skills from "./components/pages/skills";
-import Education from "./components/pages/education";
-import Certificates from "./components/pages/certificates";
-import Achievements from "./components/pages/achievements";
-import References from "./components/pages/references";
+import About from "./components/pages/about/about";
+import Projects from "./components/pages/projects/projects";
+import Contact from "./components/pages/contacts/contact";
+import Blog from "./components/pages/blogs/blog";
+import Experience from "./components/pages/experience/experience";
+import Skills from "./components/pages/skills/skills";
+import Education from "./components/pages/education/education";
+import Certificates from "./components/pages/certificates/certificates";
+import Achievements from "./components/pages/achivements/achievements";
+import References from "./components/pages/references/references";
+import Publications from "./components/pages/publications/publications";
 import Horse from "./components/backgrounds/horse/Horse";
 //import TrueFocus from "./components/backgrounds/focus text/text";
 import LightRays from "./components/backgrounds/perloader/preloader";
@@ -28,6 +29,7 @@ const sections = [
   { key: "references", label: "References", Component: References },
   { key: "blog", label: "Blog", Component: Blog },
   { key: "contact", label: "Contact", Component: Contact },
+  { key: "publications", label: "Publications", Component: Publications },
 ];
 
 function Preloader({ onDone }: { onDone: () => void }) {

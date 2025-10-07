@@ -8,8 +8,8 @@ import {
   getAchievementsByCategory,
 } from "@/app/components/content/achievements";
 //import { RollingGallery } from "../backgrounds/rolling gallery/gallery";
-import PixelBlast from "../backgrounds/Pixel_blast/pixel";
-import SkillsBackground from "../backgrounds/skills/SkillsBackground";
+import PixelBlast from "../../backgrounds/Pixel_blast/pixel";
+import SkillsBackground from "../../backgrounds/skills/SkillsBackground";
 
 export default function Achievements() {
   const [isVisible, setIsVisible] = useState(false);

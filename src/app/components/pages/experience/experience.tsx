@@ -7,7 +7,7 @@ import {
 } from "@/app/components/content/experience";
 import Hyperspeed, {
   hyperspeedPresets,
-} from "../backgrounds/hyperspeed/hyperspeed";
+} from "../../backgrounds/hyperspeed/hyperspeed";
 
 export default function Experience() {
   const [isVisible, setIsVisible] = useState(false);

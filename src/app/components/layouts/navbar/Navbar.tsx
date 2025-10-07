@@ -23,6 +23,7 @@ const sections = [
   { key: "achievements", label: "Achievements" },
   // { key: "references", label: "References" },
   { key: "blog", label: "Blog" },
+  // { key: "publications", label: "Publications" },
   { key: "contact", label: "Contact" },
 ];
 

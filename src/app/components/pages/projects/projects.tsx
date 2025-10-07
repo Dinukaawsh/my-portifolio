@@ -7,7 +7,7 @@ import {
   getParticleConfig,
 } from "@/app/components/content/projects";
 
-import Flower from "../backgrounds/flower/Flower";
+import Flower from "@/app/components/backgrounds/flower/Flower";
 
 export default function Projects() {
   const [isVisible, setIsVisible] = useState(false);
