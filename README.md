@@ -46,6 +46,7 @@ A modern, interactive portfolio website built with Next.js 15, featuring stunnin
 - **Achievements**: Notable accomplishments
 - **References**: Professional references
 - **Blog**: Articles and thoughts
+- **Publications**: Research papers and formal articles (optional)
 - **Contact**: Contact information and form with interactive comment system
 
 ### 💬 Interactive Comment & Feedback System
@@ -116,7 +117,7 @@ A modern, interactive portfolio website built with Next.js 15, featuring stunnin
 
 - **React Context API** - Theme and state management
 - **React Intersection Observer** - Scroll-based animations
-- **NextAuth.js** - Social authentication (Google, GitHub)
+- **NextAuth.js** - Social authentication (Google, GitHub, LinkedIn)
 - **Firebase** - Backend services integration (Firestore, Authentication)
 - **Discord Webhooks** - Real-time notifications and analytics
 
@@ -164,6 +165,10 @@ A modern, interactive portfolio website built with Next.js 15, featuring stunnin
    # GitHub OAuth
    GITHUB_ID=your-github-client-id
    GITHUB_SECRET=your-github-client-secret
+
+   # LinkedIn OAuth
+   LINKEDIN_CLIENT_ID=your-linkedin-client-id
+   LINKEDIN_CLIENT_SECRET=your-linkedin-client-secret
 
    # Firebase Configuration
    NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
@@ -215,6 +220,10 @@ GOOGLE_CLIENT_SECRET=your-production-google-client-secret
 GITHUB_ID=your-production-github-client-id
 GITHUB_SECRET=your-production-github-client-secret
 
+# LinkedIn OAuth (Production)
+LINKEDIN_CLIENT_ID=your-production-linkedin-client-id
+LINKEDIN_CLIENT_SECRET=your-production-linkedin-client-secret
+
 # Firebase Configuration
 NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
@@ -240,6 +249,12 @@ NEXT_PUBLIC_GOOGLE_FORM_URL=https://forms.gle/your_form_id
 2. **GitHub OAuth**:
 
    - Update callback URL to: `https://yourdomain.com/api/auth/callback/github`
+
+3. **LinkedIn (OpenID Connect)**:
+
+   - Enable OpenID Connect on LinkedIn Developer Portal
+   - Add redirect URI: `https://yourdomain.com/api/auth/callback/linkedin`
+   - Recommended scopes: `openid profile email`
 
 ### Deployment Platforms
 
@@ -268,81 +283,135 @@ NEXT_PUBLIC_GOOGLE_FORM_URL=https://forms.gle/your_form_id
 ```
 src/
 ├── app/
-│   ├── api/                    # API routes
+│   ├── api/                         # API routes
 │   │   ├── auth/
-│   │   │   └── [...nextauth]/  # NextAuth.js authentication routes
-│   │   │       └── route.ts    # OAuth provider configuration
-│   │   └── cv-webhook/         # Discord webhook for CV tracking
+│   │   │   └── [...nextauth]/       # NextAuth.js authentication routes
+│   │   │       └── route.ts         # OAuth provider configuration
+│   │   └── cv-webhook/              # Discord webhook for CV tracking
 │   │       └── route.ts
 │   ├── components/
-│   │   ├── backgrounds/        # 3D scenes and animations
-│   │   │   ├── 3d-text/       # 3D text components
-│   │   │   ├── balls/         # Particle ball animations
-│   │   │   ├── dotted-text/   # Dotted text effects
-│   │   │   ├── flower/        # Flower animations
-│   │   │   ├── focus text/    # Focus text effects
-│   │   │   ├── footer_backgound/ # Footer animations
-│   │   │   ├── galaxy/        # Galaxy background
-│   │   │   ├── globe/         # Globe animations
-│   │   │   ├── horse/         # Horse animations
-│   │   │   ├── hyperspeed/    # Hyperspeed effects
-│   │   │   ├── letter-glich/  # Glitch text effects
-│   │   │   ├── line background/ # Line animations
-│   │   │   ├── perloader/     # Preloader animations
-│   │   │   ├── Pixel_blast/   # Pixel effects
-│   │   │   ├── robot/        # Robot animations
-│   │   │   ├── rolling gallery/ # Gallery animations
-│   │   │   ├── skills/       # Skills background
-│   │   │   └── thunderbolt/  # Thunderbolt effects
-│   │   ├── common/            # Reusable components
-│   │   │   ├── AuthProvider.tsx    # NextAuth.js session provider
-│   │   │   ├── ThemeSwitcher.tsx   # Theme switching component
-│   │   │   └── VisitTracker.tsx    # Visit tracking component
-│   │   ├── content/           # Content data files
-│   │   │   ├── about.ts       # About section content
-│   │   │   ├── achievements.ts # Achievements data
-│   │   │   ├── blog.ts        # Blog posts data
-│   │   │   ├── certificates.ts # Certificates data
-│   │   │   ├── contact.ts     # Contact information
-│   │   │   ├── education.ts   # Education data
-│   │   │   ├── experience.ts  # Experience data
-│   │   │   ├── projects.ts    # Projects data
-│   │   │   ├── references.ts  # References data
-│   │   │   └── skills.ts      # Skills data
-│   │   ├── icons/             # Custom icon components
-│   │   │   ├── projectsicons.tsx # Project icons
-│   │   │   └── skillsicons.tsx   # Skills icons
-│   │   ├── layouts/           # Layout components
-│   │   │   ├── footer/        # Footer component
+│   │   ├── backgrounds/             # 3D scenes and animations
+│   │   │   ├── 3d-text/
+│   │   │   │   ├── 3DScene.tsx
+│   │   │   │   └── 3DText.tsx
+│   │   │   ├── balls/
+│   │   │   │   └── balls.tsx
+│   │   │   ├── dotted-text/
+│   │   │   │   └── dottedtext.tsx
+│   │   │   ├── flower/
+│   │   │   │   └── Flower.tsx
+│   │   │   ├── focus text/
+│   │   │   │   └── text.tsx
+│   │   │   ├── footer_backgound/
+│   │   │   │   └── footer_background.tsx
+│   │   │   ├── galaxy/
+│   │   │   │   └── galaxy.tsx
+│   │   │   ├── globe/
+│   │   │   │   └── GlobeBackground.tsx
+│   │   │   ├── horse/
+│   │   │   │   └── Horse.tsx
+│   │   │   ├── hyperspeed/
+│   │   │   │   └── hyperspeed.tsx
+│   │   │   ├── letter-glich/
+│   │   │   │   └── glich.tsx
+│   │   │   ├── line background/
+│   │   │   │   └── line-backgroung.tsx
+│   │   │   ├── perloader/
+│   │   │   │   └── preloader.tsx
+│   │   │   ├── Pixel_blast/
+│   │   │   │   └── pixel.tsx
+│   │   │   ├── robot/
+│   │   │   │   ├── card.tsx
+│   │   │   │   ├── splite.tsx
+│   │   │   │   └── spotlight.tsx
+│   │   │   ├── rolling gallery/
+│   │   │   │   └── gallery.tsx
+│   │   │   ├── skills/
+│   │   │   │   ├── README.md
+│   │   │   │   └── SkillsBackground.tsx
+│   │   │   └── thunderbolt/
+│   │   │       └── thunderbolt.tsx
+│   │   ├── common/                 # Reusable components
+│   │   │   ├── AuthProvider.tsx
+│   │   │   ├── ThemeSwitcher.tsx
+│   │   │   └── VisitTracker.tsx
+│   │   ├── content/                # Content data files
+│   │   │   ├── about.ts
+│   │   │   ├── achievements.ts
+│   │   │   ├── blog.ts
+│   │   │   ├── certificates.ts
+│   │   │   ├── contact.ts
+│   │   │   ├── education.ts
+│   │   │   ├── experience.ts
+│   │   │   ├── projects.ts
+│   │   │   ├── references.ts       # (optional, future)
+│   │   │   ├── publications.ts     # (optional, future)
+│   │   │   └── skills.ts
+│   │   ├── icons/
+│   │   │   ├── projectsicons.tsx
+│   │   │   └── skillsicons.tsx
+│   │   ├── layouts/
+│   │   │   ├── footer/
 │   │   │   │   └── Footer.tsx
-│   │   │   └── navbar/        # Navigation component
+│   │   │   └── navbar/
 │   │   │       └── Navbar.tsx
-│   │   └── pages/             # Portfolio section pages
-│   │       ├── about.tsx      # About page component
-│   │       ├── achievements.tsx # Achievements page
-│   │       ├── blog.tsx       # Blog page
-│   │       ├── certificates.tsx # Certificates page
-│   │       ├── contact.tsx    # Contact page with auth & feedback
-│   │       ├── education.tsx  # Education page
-│   │       ├── experience.tsx # Experience page
-│   │       ├── projects.tsx   # Projects page
-│   │       ├── references.tsx # References page
-│   │       └── skills.tsx     # Skills page
-│   ├── contexts/              # React contexts
-│   │   ├── ThemeContext.tsx   # Theme management context
-│   │   └── THEME_SYSTEM_README.md # Theme system documentation
-│   ├── hooks/                 # Custom React hooks
-│   │   └── useThemeStyles.ts  # Theme-aware styling hook
-│   ├── styles/                # Additional styles
-│   │   ├── Flower.module.css  # Flower component styles
-│   │   └── Horse.module.css   # Horse component styles
-│   ├── globals.css            # Global styles and theme variables
-│   ├── layout.tsx             # Root layout with providers
-│   └── page.tsx               # Home page
-├── lib/                       # Utility functions and configurations
-    ├── discord.ts             # Discord webhook integration
-    ├── firebase.ts            # Firebase configuration
-    └── utils.ts               # General utility functions
+│   │   └── pages/                  # Portfolio section pages
+│   │       ├── about/
+│   │       │   └── about.tsx
+│   │       ├── achivements/
+│   │       │   └── achievements.tsx
+│   │       ├── blogs/
+│   │       │   └── blog.tsx
+│   │       ├── certificates/
+│   │       │   └── certificates.tsx
+│   │       ├── contacts/
+│   │       │   └── contact.tsx
+│   │       ├── data/
+│   │       │   ├── about/
+│   │       │   │   ├── components/
+│   │       │   │   │   ├── AnimatedJets.tsx
+│   │       │   │   │   ├── AnimatedStats.tsx
+│   │       │   │   │   ├── FloatingParticles.tsx
+│   │       │   │   │   ├── MainProfileCard.tsx
+│   │       │   │   │   ├── PerformanceMonitor.tsx
+│   │       │   │   │   └── ProfileSkeleton.tsx
+│   │       │   │   └── hooks/
+│   │       │   │       └── useServiceWorker.ts
+│   │       │   └── contact/
+│   │       │       └── components/
+│   │       │           ├── CommentsForm.tsx
+│   │       │           ├── CommentsList.tsx
+│   │       │           ├── FeedbackForm.tsx
+│   │       │           ├── FeedbackList.tsx
+│   │       │           └── HireMeSection.tsx
+│   │       ├── education/
+│   │       │   └── education.tsx
+│   │       ├── experience/
+│   │       │   └── experience.tsx
+│   │       ├── projects/
+│   │       │   └── projects.tsx
+│   │       ├── references/         # (optional, future)
+│   │       │   └── references.tsx
+│   │       ├── publications/       # (optional, future)
+│   │       │   └── publications.tsx
+│   │       └── skills/
+│   │           └── skills.tsx
+│   ├── contexts/
+│   │   ├── THEME_SYSTEM_README.md
+│   │   └── ThemeContext.tsx
+│   ├── favicon.ico
+│   ├── globals.css                # Global styles and theme variables
+│   ├── hooks/
+│   │   └── useThemeStyles.ts
+│   ├── layout.tsx                 # Root layout with providers
+│   ├── not-found.tsx              # Custom 404 page
+│   ├── page.tsx                   # Home page
+│   └── privacy/
+│       └── page.tsx               # Privacy page
+├── lib/                            # Utility functions and configurations
+│   ├── discord.ts                  # Discord webhook integration
+│   ├── firebase.ts                 # Firebase configuration
+│   └── utils.ts                    # General utility functions
 
 ```
 
@@ -359,6 +428,7 @@ src/
 1. Create a new component in `components/pages/`
 2. Add it to the `sections` array in `page.tsx`
 3. Update navigation if needed
+4. (Optional) Publications: when you add it, create `components/pages/publications/publications.tsx` and include its data in `components/content` if needed
 
 ### Setting Up Authentication & Backend Services
 
@@ -386,14 +456,21 @@ src/
    - Create new OAuth App
    - Set Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
 
-4. **Discord Webhook Setup**:
+4. **LinkedIn (OpenID Connect) Setup**:
+
+   - Go to LinkedIn Developer Portal → Your App → Products → Add "Sign In with LinkedIn using OpenID Connect"
+   - Copy Client ID and Client Secret into `.env.local`
+   - Add redirect URI: `http://localhost:3000/api/auth/callback/linkedin`
+   - Set scopes: `openid profile email`
+
+5. **Discord Webhook Setup**:
 
    - Go to your Discord server
    - Server Settings → Integrations → Webhooks
    - Create a new webhook
    - Copy the webhook URL to your `.env.local` file
 
-5. **Environment Variables**:
+6. **Environment Variables**:
    - Copy the example variables above
    - Replace placeholder values with your actual credentials
    - Generate NEXTAUTH_SECRET: `openssl rand -base64 32`
@@ -455,6 +532,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Tailwind CSS Team** for the utility-first approach
 - **Next.js Team** for the amazing React framework
 
+### Component References
+
+- CodePen: https://codepen.io/
+- 21st.dev: https://21st.dev/
+- ReactBits: https://reactbits.dev/
+
 ## 📞 Contact
 
 - **Email**: dinukaaw.sh@gmail.com
@@ -473,6 +556,7 @@ The portfolio includes a complete social authentication system:
 
 - **Google OAuth**: Users can sign in with their Google account
 - **GitHub OAuth**: Users can sign in with their GitHub account
+- **LinkedIn OIDC**: Users can sign in with their LinkedIn account
 - **NextAuth.js Integration**: Secure authentication handling
 - **User Profiles**: Display profile pictures and names
 - **Session Management**: Persistent login sessions
@@ -485,7 +569,7 @@ A sophisticated feedback system where authenticated users can:
 - Specify their role (Developer, Designer, Product Manager, etc.)
 - Add custom roles when "Other" is selected
 - View all feedback with user profiles
-- See provider information (Google/GitHub)
+- See provider information (Google/GitHub/LinkedIn)
 
 ### Comment System
 
@@ -501,7 +585,7 @@ The portfolio includes a fully functional comment system where visitors can:
 Get instant notifications when:
 
 - Someone visits your portfolio
-- New users register via Google/GitHub
+- New users register via Google/GitHub/LinkedIn
 - New feedback is submitted
 - New comments are posted
 - Track visitor analytics and engagement
@@ -538,7 +622,7 @@ The portfolio includes a fully functional comment system where visitors can:
 Get instant notifications when:
 
 - Someone visits your portfolio
-- New users register via Google/GitHub
+- New users register via Google/GitHub/LinkedIn
 - New feedback is submitted
 - New comments are posted
 - Track visitor analytics and engagement
