@@ -33,8 +33,12 @@ import {
   SiXml,
   SiFramer,
   SiStripe,
+  SiGraphql,
+  SiHeroku,
+  SiGithubactions,
 } from "react-icons/si";
 import { VscVscode } from "react-icons/vsc";
+import { TbKey, TbPlug } from "react-icons/tb";
 
 interface ProjectIconProps {
   technologyName: string;
@@ -68,6 +72,7 @@ const ProjectIcon: React.FC<ProjectIconProps> = ({
       react: SiReact,
       "next.js": SiNextdotjs,
       nextjs: SiNextdotjs,
+      "next js": SiNextdotjs,
       vue: SiVuedotjs,
       "vue.js": SiVuedotjs,
       "tailwind css": SiTailwindcss,
@@ -77,11 +82,14 @@ const ProjectIcon: React.FC<ProjectIconProps> = ({
       // Backend Frameworks
       "node.js": SiNodedotjs,
       nodejs: SiNodedotjs,
+      "node js": SiNodedotjs,
       laravel: SiLaravel,
       django: SiDjango,
       express: SiExpress,
       "express.js": SiExpress,
+      "express js": SiExpress,
       nestjs: SiNestjs,
+      "nest js": SiNestjs,
 
       // Databases
       mongodb: SiMongodb,
@@ -93,6 +101,7 @@ const ProjectIcon: React.FC<ProjectIconProps> = ({
       aws: SiAmazon,
       vercel: SiVercel,
       railway: SiRailway,
+      heroku: SiHeroku,
 
       // Development Tools
       postman: SiPostman,
@@ -101,6 +110,8 @@ const ProjectIcon: React.FC<ProjectIconProps> = ({
       vscode: VscVscode,
       git: SiGit,
       docker: SiDocker,
+      "ci/cd": SiGithubactions,
+      "github actions": SiGithubactions,
 
       // Web Technologies
       html: SiHtml5,
@@ -115,6 +126,9 @@ const ProjectIcon: React.FC<ProjectIconProps> = ({
       "google translate api": SiGoogle,
       "deepl api": SiGoogle,
       stripe: SiStripe,
+      graphql: SiGraphql,
+      jwt: TbKey,
+      websocket: TbPlug,
 
       // Other
       xml: SiXml,
