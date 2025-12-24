@@ -1,6 +1,6 @@
 // Discord Webhook Integration
 export interface DiscordNotification {
-  type: "visit" | "comment" | "registration" | "feedback";
+  type: "visit" | "comment" | "registration" | "feedback" | "contact";
   data: {
     visitor?: {
       ip?: string;
@@ -35,6 +35,13 @@ export interface DiscordNotification {
       rating: number;
       provider: string;
       image?: string;
+      timestamp: string;
+    };
+    contact?: {
+      name: string;
+      email: string;
+      subject: string;
+      message: string;
       timestamp: string;
     };
   };
@@ -273,6 +280,46 @@ function createDiscordEmbed(notification: DiscordNotification) {
       timestamp: new Date().toISOString(),
       footer: {
         text: "Portfolio Feedback",
+      },
+    };
+  } else if (type === "contact") {
+    return {
+      title: "📧 New Contact Form Submission!",
+      color: 0x00d4ff, // Cyan
+      fields: [
+        {
+          name: "👤 Name",
+          value: data.contact?.name || "Anonymous",
+          inline: true,
+        },
+        {
+          name: "📧 Email",
+          value: data.contact?.email || "No email",
+          inline: true,
+        },
+        {
+          name: "📌 Subject",
+          value: data.contact?.subject || "No subject",
+          inline: false,
+        },
+        {
+          name: "💬 Message",
+          value: data.contact?.message
+            ? data.contact.message.length > 500
+              ? data.contact.message.substring(0, 500) + "..."
+              : data.contact.message
+            : "No message",
+          inline: false,
+        },
+        {
+          name: "⏰ Time",
+          value: data.contact?.timestamp || "Unknown",
+          inline: true,
+        },
+      ],
+      timestamp: new Date().toISOString(),
+      footer: {
+        text: "Portfolio Contact Form",
       },
     };
   }

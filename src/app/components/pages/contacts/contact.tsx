@@ -29,6 +29,7 @@ import CommentsForm from "@/app/components/pages/data/contact/components/Comment
 import CommentsList from "@/app/components/pages/data/contact/components/CommentsList";
 import FeedbackForm from "@/app/components/pages/data/contact/components/FeedbackForm";
 import FeedbackList from "@/app/components/pages/data/contact/components/FeedbackList";
+import ContactFormModal from "@/app/components/pages/data/contact/components/ContactFormModal";
 
 // Extend the Session type to include provider
 interface ExtendedSession {
@@ -106,6 +107,8 @@ export default function Contact() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [showHireOptions, setShowHireOptions] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [contactFormLoading, setContactFormLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const loadingCommentsRef = useRef(false);
@@ -155,6 +158,39 @@ export default function Contact() {
 
   const themeTextColors = getThemeTextColors();
   const GOOGLE_FORM_URL = process.env.NEXT_PUBLIC_GOOGLE_FORM_URL;
+  const WHATSAPP_NUMBER =
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "94767326845";
+
+  // Handle contact form submission
+  const handleContactFormSubmit = async (data: {
+    name: string;
+    email: string;
+    subject: string;
+    body: string;
+  }) => {
+    try {
+      setContactFormLoading(true);
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to send message");
+      }
+
+      // Success - modal will handle the success state
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      throw error; // Re-throw to let modal handle it
+    } finally {
+      setContactFormLoading(false);
+    }
+  };
 
   // const formatFirestoreTimestamp = (ts?: Timestamp): string => {
   //   try {
@@ -809,6 +845,8 @@ export default function Contact() {
                 GOOGLE_FORM_URL={GOOGLE_FORM_URL}
                 showHireOptions={showHireOptions}
                 setShowHireOptions={setShowHireOptions}
+                onContactMeClick={() => setShowContactModal(true)}
+                whatsappNumber={WHATSAPP_NUMBER}
               />
 
               {/* Tabs */}
@@ -902,6 +940,15 @@ export default function Contact() {
           )}
         </div>
       </section>
+
+      {/* Contact Form Modal */}
+      <ContactFormModal
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+        themeTextColors={themeTextColors}
+        onSubmit={handleContactFormSubmit}
+        loading={contactFormLoading}
+      />
     </>
   );
 }
