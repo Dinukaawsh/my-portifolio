@@ -8,6 +8,7 @@ import {
   Cloud,
   Award,
   Trophy,
+  Database,
 } from "lucide-react";
 
 export const certificatesContent = {
@@ -212,6 +213,54 @@ export const certificatesContent = {
       delay: 1.0,
       verificationUrl:
         "https://www.udemy.com/certificate/UC-31d4b2a9-9f65-4fdd-8803-4658f85e6a1d/",
+    },
+    {
+      id: 8,
+      title: "SQL, MYSQL, POSTGRESQL & MONGODB: All-in-One Database Course",
+      issuer: "Udemy",
+      issuerLogo: GraduationCap,
+      category: "Development",
+      issueDate: "2025-12-24",
+      expiryDate: null,
+      credentialId: null,
+      credentialUrl:
+        "https://www.udemy.com/certificate/UC-7fb3e97f-00e9-4e5d-99bc-4e849f325ea8/",
+      certificateImage: "/certificates-images/9.png",
+      description:
+        "SQL, MYSQL, POSTGRESQL & MONGODB: All-in-One Database Course covering the basics of SQL, MYSQL, POSTGRESQL & MONGODB and how to use it in real-world applications.",
+      skills: ["SQL", "MYSQL", "POSTGRESQL", "MONGODB"],
+      featured: true,
+      color: "bg-blue-600",
+      delay: 1.0,
+      verificationUrl:
+        "https://www.udemy.com/certificate/UC-7fb3e97f-00e9-4e5d-99bc-4e849f325ea8/",
+    },
+    {
+      id: 9,
+      title:
+        "Master Full-Stack Web Development with JavaScript, jQuery & TypeScript through Hands-On Projects and Real-World Example.  ",
+      issuer: "Udemy",
+      issuerLogo: GraduationCap,
+      category: "Programming",
+      issueDate: "2025-08-08",
+      expiryDate: null,
+      credentialId: null,
+      credentialUrl:
+        "https://www.udemy.com/certificate/UC-6f0853a2-230b-467b-8a14-00b7ba7fc25a/",
+      certificateImage: "/certificates-images/8.png",
+      description:
+        "Master Full-Stack Web Development with JavaScript, jQuery & TypeScript through Hands-On Projects and Real-World Example. course covering the basics of Full-Stack Web Development and how to use it in real-world applications.",
+      skills: [
+        "Full-Stack Web Development",
+        "JavaScript",
+        "jQuery",
+        "TypeScript",
+      ],
+      featured: true,
+      color: "bg-blue-600",
+      delay: 1.1,
+      verificationUrl:
+        "https://www.udemy.com/certificate/UC-6f0853a2-230b-467b-8a14-00b7ba7fc25a/",
     },
   ],
 
