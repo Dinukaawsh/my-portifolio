@@ -588,42 +588,20 @@ A sophisticated feedback system where authenticated users can:
 - View all feedback with user profiles
 - See provider information (Google/GitHub/LinkedIn)
 
-### Comment System
+### Contact Form System
 
-The portfolio includes a fully functional comment system where visitors can:
+A comprehensive contact system with multiple communication channels:
 
-- Leave comments on your contact page (no authentication required)
-- See real-time updates of all comments
-- Engage with your portfolio content
-- View comment timestamps and user information
-
-### Discord Notifications
-
-Get instant notifications when:
-
-- Someone visits your portfolio
-- New users register via Google/GitHub/LinkedIn
-- New feedback is submitted
-- New comments are posted
-- Track visitor analytics and engagement
-
-### Firebase Integration
-
-- **Firestore Database**: Stores all comments, feedback, and user data
-- **Real-time Updates**: Instant synchronization across devices
-- **Scalable Backend**: Handles traffic and data efficiently
-- **Security Rules**: Proper access control for data
-
-### Theme System
-
-- **5 Beautiful Themes**: Dark, Light, Water, Sunset, Forest
-- **Theme-aware Components**: All UI elements adapt to selected theme
-- **Smooth Transitions**: Seamless theme switching
-- **Persistent Settings**: Theme choice saved across sessions
-
----
-
-⭐ **Star this repository if you found it helpful!**
+- **WhatsApp Integration**: Direct "Let's Talk" button that opens WhatsApp chat with your number
+- **Contact Me Modal**: Professional popup form with:
+  - Name, email, subject, and message fields
+  - Real-time form validation with error messages
+  - Beautiful animations and transitions
+  - Success confirmation with animated feedback
+  - Responsive design for all devices
+- **Email Notifications**: Receive contact form submissions via email (requires email service setup like Resend, SendGrid, etc.)
+- **Discord Integration**: Instant notifications with full form details (name, email, subject, message)
+- **Multiple Contact Options**: Hire Me (Google Form), Contact Me (Modal), WhatsApp, and direct email
 
 ### Comment System
 
@@ -642,6 +620,7 @@ Get instant notifications when:
 - New users register via Google/GitHub/LinkedIn
 - New feedback is submitted
 - New comments are posted
+- **Contact form submissions are received** (with name, email, subject, and message)
 - Track visitor analytics and engagement
 
 ### Firebase Integration
