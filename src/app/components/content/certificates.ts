@@ -8,7 +8,6 @@ import {
   Cloud,
   Award,
   Trophy,
-  Database,
 } from "lucide-react";
 
 export const certificatesContent = {
