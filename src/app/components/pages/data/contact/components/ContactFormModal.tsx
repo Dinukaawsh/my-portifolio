@@ -5,11 +5,6 @@ import { X } from "lucide-react";
 interface ContactFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  themeTextColors: {
-    textColor: string;
-    placeholderColor: string;
-    iconColor: string;
-  };
   onSubmit: (data: {
     name: string;
     email: string;
@@ -22,7 +17,6 @@ interface ContactFormModalProps {
 export default function ContactFormModal({
   isOpen,
   onClose,
-  themeTextColors,
   onSubmit,
   loading = false,
 }: ContactFormModalProps) {
@@ -165,7 +159,7 @@ export default function ContactFormModal({
                     Message Sent! ✨
                   </h3>
                   <p className="text-gray-300">
-                    I'll get back to you as soon as possible.
+                    I&apos;ll get back to you as soon as possible.
                   </p>
                 </motion.div>
               ) : (

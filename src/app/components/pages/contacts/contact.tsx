@@ -945,7 +945,6 @@ export default function Contact() {
       <ContactFormModal
         isOpen={showContactModal}
         onClose={() => setShowContactModal(false)}
-        themeTextColors={themeTextColors}
         onSubmit={handleContactFormSubmit}
         loading={contactFormLoading}
       />
