@@ -1,6 +1,6 @@
 # 🚀 Dinuka Wickramarathna - Portfolio Website
 
-A modern, interactive portfolio website built with Next.js 15, featuring stunning 3D animations, smooth transitions, and a dynamic theme system.
+A modern, interactive portfolio website built with Next.js 16, featuring stunning 3D animations, smooth transitions, and a dynamic theme system.
 
 ## ✨ Features
 
@@ -89,7 +89,7 @@ A modern, interactive portfolio website built with Next.js 15, featuring stunnin
 
 ### Frontend Framework
 
-- **Next.js 15** - React framework with App Router
+- **Next.js 16** - React framework with App Router
 - **React 19** - Latest React with concurrent features
 - **TypeScript 5** - Type-safe development
 
@@ -131,7 +131,7 @@ A modern, interactive portfolio website built with Next.js 15, featuring stunnin
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20.9.0+ (required for Next.js 16)
 - npm or yarn package manager
 
 ### Installation

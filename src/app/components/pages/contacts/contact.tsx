@@ -64,7 +64,7 @@ export default function Contact() {
   const { data: session } = useSession();
   const { currentTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<"comments" | "feedback">(
-    "comments"
+    "feedback"
   );
   const [submitted, setSubmitted] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
@@ -816,16 +816,6 @@ export default function Contact() {
                 <div className="inline-flex rounded-2xl overflow-hidden border border-blue-500/30 bg-white/5">
                   <button
                     className={`px-4 sm:px-6 py-2 text-sm sm:text-base font-semibold transition-all ${
-                      activeTab === "comments"
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                        : "text-blue-200 hover:bg-white/10"
-                    }`}
-                    onClick={() => setActiveTab("comments")}
-                  >
-                    Comments
-                  </button>
-                  <button
-                    className={`px-4 sm:px-6 py-2 text-sm sm:text-base font-semibold transition-all ${
                       activeTab === "feedback"
                         ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                         : "text-blue-200 hover:bg-white/10"
@@ -833,6 +823,16 @@ export default function Contact() {
                     onClick={() => setActiveTab("feedback")}
                   >
                     Feedback
+                  </button>
+                  <button
+                    className={`px-4 sm:px-6 py-2 text-sm sm:text-base font-semibold transition-all ${
+                      activeTab === "comments"
+                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                        : "text-blue-200 hover:bg-white/10"
+                    }`}
+                    onClick={() => setActiveTab("comments")}
+                  >
+                    Comments
                   </button>
                 </div>
               </div>
