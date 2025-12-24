@@ -1,6 +1,6 @@
 # 🚀 Dinuka Wickramarathna - Portfolio Website
 
-A modern, interactive portfolio website built with Next.js 16, featuring stunning 3D animations, smooth transitions, and a dynamic theme system.
+A modern, interactive portfolio website built with Next.js 15, featuring stunning 3D animations, smooth transitions, and a dynamic theme system.
 
 ## ✨ Features
 
@@ -47,7 +47,7 @@ A modern, interactive portfolio website built with Next.js 16, featuring stunnin
 - **References**: Professional references
 - **Blog**: Articles and thoughts
 - **Publications**: Research papers and formal articles (optional)
-- **Contact**: Contact information and form with interactive comment system
+- **Contact**: Multiple contact options including WhatsApp, contact form modal, and interactive comment system
 
 ### 💬 Interactive Comment & Feedback System
 
@@ -64,18 +64,23 @@ A modern, interactive portfolio website built with Next.js 16, featuring stunnin
 ### 🔔 Discord Integration & Analytics
 
 - **Visit Tracking**: Real-time notifications when someone visits your portfolio
-- **User Registration**: Notifications when users sign up via Google/GitHub
+- **User Registration**: Notifications when users sign up via Google/GitHub/LinkedIn
 - **Feedback Notifications**: Instant Discord alerts for new feedback submissions
 - **Comment Notifications**: Instant Discord alerts for new comments
+- **Contact Form Notifications**: Instant Discord alerts for contact form submissions with full details
 - **Session Analytics**: Track new vs returning visitors
 - **Rich Discord Embeds**: Beautiful notifications with visitor details and user profiles
 - **Performance Monitoring**: Track page visits and user engagement
 - **Provider Tracking**: Know which OAuth provider users used
 
-### 🧭 Hiring Flow
+### 🧭 Contact & Hiring Flow
 
-- "Hire Me" CTA with external Google Form
-- Configurable via `NEXT_PUBLIC_GOOGLE_FORM_URL`
+- **Hire Me Button**: CTA with external Google Form integration
+- **Contact Me Button**: Opens a beautiful modal form for direct inquiries
+- **WhatsApp Integration**: "Let's Talk" button that opens direct WhatsApp chat
+- **Contact Form Modal**: Professional form with name, email, subject, and message fields
+- **Email Notifications**: Receive contact form submissions via email
+- **Configurable Options**: All contact methods configurable via environment variables
 
 ### 🎨 3D & Visual Effects
 
@@ -89,7 +94,7 @@ A modern, interactive portfolio website built with Next.js 16, featuring stunnin
 
 ### Frontend Framework
 
-- **Next.js 16** - React framework with App Router
+- **Next.js 15** - React framework with App Router
 - **React 19** - Latest React with concurrent features
 - **TypeScript 5** - Type-safe development
 
@@ -131,7 +136,7 @@ A modern, interactive portfolio website built with Next.js 16, featuring stunnin
 
 ### Prerequisites
 
-- Node.js 20.9.0+ (required for Next.js 16)
+- Node.js 18+ (20.9.0+ recommended)
 - npm or yarn package manager
 
 ### Installation
@@ -183,6 +188,12 @@ A modern, interactive portfolio website built with Next.js 16, featuring stunnin
 
    # Google Form (Hire Me)
    NEXT_PUBLIC_GOOGLE_FORM_URL=https://forms.gle/your_form_id
+
+   # WhatsApp Contact
+   NEXT_PUBLIC_WHATSAPP_NUMBER=94767326845
+
+   # Contact Form Email (optional, for email notifications)
+   CONTACT_EMAIL=your-email@example.com
    ```
 
 4. **Run the development server**
@@ -237,6 +248,12 @@ NEXT_PUBLIC_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your_webhook_ur
 
 # Google Form (Hire Me)
 NEXT_PUBLIC_GOOGLE_FORM_URL=https://forms.gle/your_form_id
+
+# WhatsApp Contact
+NEXT_PUBLIC_WHATSAPP_NUMBER=94767326845
+
+# Contact Form Email (optional, for email notifications)
+CONTACT_EMAIL=your-email@example.com
 ```
 
 ### OAuth Provider Updates for Production
