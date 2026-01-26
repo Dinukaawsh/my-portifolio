@@ -1,6 +1,135 @@
 // About Page Content Configuration
 // Edit this file to update your personal information, skills, and other content
 
+// Import projects and experience data for dynamic calculations
+import { projectsContent } from "./projects";
+import { experienceContent } from "./experience";
+
+// Type for single role experience (backward compatibility)
+interface SingleRoleExperience {
+  period: string;
+  type?: string;
+  skills?: string[];
+  responsibilities?: string[];
+  title?: string;
+  duration?: string;
+}
+
+// Helper function to calculate total experience and return formatted string
+// Note: This function is used internally by getTotalExperienceMonths and getFormattedExperience
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const calculateTotalExperience = (): string | number => {
+  const experiences = experienceContent.experiences;
+  let totalMonths = 0;
+  const currentDate = new Date();
+
+  experiences.forEach((exp) => {
+    // Check if experience has multiple roles (new structure)
+    if (exp.roles && Array.isArray(exp.roles)) {
+      // Calculate from all roles in the company
+      exp.roles.forEach((role) => {
+        const period = role.period;
+        const parts = period.split(" - ");
+        if (parts.length === 2) {
+          const startStr = parts[0].trim();
+          const endStr = parts[1].trim();
+          const startDate = parseDate(startStr);
+          let endDate: Date | null = null;
+          if (endStr.toLowerCase() === "present" || endStr.toLowerCase() === "current") {
+            endDate = currentDate;
+          } else {
+            endDate = parseDate(endStr);
+          }
+          if (startDate && endDate) {
+            const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                              (endDate.getMonth() - startDate.getMonth());
+            totalMonths += monthsDiff;
+          }
+        }
+      });
+    } else {
+      // Single role (backward compatibility)
+      const singleExp = exp as unknown as SingleRoleExperience;
+      const period = singleExp.period;
+      if (period) {
+        const parts = period.split(" - ");
+        if (parts.length === 2) {
+          const startStr = parts[0].trim();
+          const endStr = parts[1].trim();
+          const startDate = parseDate(startStr);
+          let endDate: Date | null = null;
+          if (endStr.toLowerCase() === "present" || endStr.toLowerCase() === "current") {
+            endDate = currentDate;
+          } else {
+            endDate = parseDate(endStr);
+          }
+          if (startDate && endDate) {
+            const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                              (endDate.getMonth() - startDate.getMonth());
+            totalMonths += monthsDiff;
+          }
+        }
+      }
+    }
+  });
+
+  // If less than 12 months, return months, otherwise return years
+  if (totalMonths < 12) {
+    return `${totalMonths} month${totalMonths !== 1 ? 's' : ''}`;
+  } else {
+    const totalYears = totalMonths / 12;
+    const years = Math.floor(totalYears);
+    const remainingMonths = totalMonths % 12;
+
+    if (remainingMonths === 0) {
+      return years; // Return as number for clean display (e.g., "2+")
+    } else {
+      // Return formatted string with years and months
+      const yearsText = years > 0 ? `${years} year${years !== 1 ? 's' : ''}` : '';
+      const monthsText = remainingMonths > 0 ? `${remainingMonths} month${remainingMonths !== 1 ? 's' : ''}` : '';
+      return yearsText && monthsText ? `${yearsText} ${monthsText}` : yearsText || monthsText;
+    }
+  }
+};
+
+// Helper function to parse date strings like "Mar 2025" or "January 2023"
+const parseDate = (dateStr: string): Date | null => {
+  const months: Record<string, number> = {
+    jan: 0, january: 0,
+    feb: 1, february: 1,
+    mar: 2, march: 2,
+    apr: 3, april: 3,
+    may: 4,
+    jun: 5, june: 5,
+    jul: 6, july: 6,
+    aug: 7, august: 7,
+    sep: 8, september: 8,
+    oct: 9, october: 9,
+    nov: 10, november: 10,
+    dec: 11, december: 11,
+  };
+
+  const parts = dateStr.trim().split(" ");
+  if (parts.length >= 2) {
+    const monthStr = parts[0].toLowerCase();
+    const yearStr = parts[1];
+
+    const month = months[monthStr];
+    const year = parseInt(yearStr, 10);
+
+    if (month !== undefined && !isNaN(year)) {
+      return new Date(year, month, 1);
+    }
+  }
+
+  return null;
+};
+
+// Helper function to get projects count
+export const getProjectsCount = (): number => {
+  return projectsContent.projects.length;
+};
+
 export const aboutContent = {
   // Personal Information
   personal: {
@@ -43,17 +172,17 @@ export const aboutContent = {
     "AWS",
   ],
 
-  // Statistics
+  // Statistics - Dynamically calculated
   stats: [
     {
       label: "Years Experience",
-      value: 1,
+      value: "dynamic", // Will be calculated from experience data
       icon: "TrendingUp",
       color: "from-blue-500 to-cyan-500",
     },
     {
       label: "Projects Completed",
-      value: 12,
+      value: "dynamic", // Will be calculated from projects data
       icon: "Target",
       color: "from-green-500 to-emerald-500",
     },
@@ -190,12 +319,117 @@ export const aboutContent = {
   },
 };
 
+// Helper function to get total experience in months (for numeric calculations)
+export const getTotalExperienceMonths = (): number => {
+  const experiences = experienceContent.experiences;
+  let totalMonths = 0;
+  const currentDate = new Date();
+
+  experiences.forEach((exp) => {
+    // Check if experience has multiple roles (new structure)
+    if (exp.roles && Array.isArray(exp.roles)) {
+      // Calculate from all roles in the company
+      exp.roles.forEach((role) => {
+        const period = role.period;
+        const parts = period.split(" - ");
+        if (parts.length === 2) {
+          const startStr = parts[0].trim();
+          const endStr = parts[1].trim();
+          const startDate = parseDate(startStr);
+          let endDate: Date | null = null;
+          if (endStr.toLowerCase() === "present" || endStr.toLowerCase() === "current") {
+            endDate = currentDate;
+          } else {
+            endDate = parseDate(endStr);
+          }
+          if (startDate && endDate) {
+            const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                              (endDate.getMonth() - startDate.getMonth());
+            totalMonths += monthsDiff;
+          }
+        }
+      });
+    } else {
+      // Single role (backward compatibility)
+      const singleExp = exp as unknown as SingleRoleExperience;
+      const period = singleExp.period;
+      if (period) {
+        const parts = period.split(" - ");
+        if (parts.length === 2) {
+          const startStr = parts[0].trim();
+          const endStr = parts[1].trim();
+          const startDate = parseDate(startStr);
+          let endDate: Date | null = null;
+          if (endStr.toLowerCase() === "present" || endStr.toLowerCase() === "current") {
+            endDate = currentDate;
+          } else {
+            endDate = parseDate(endStr);
+          }
+          if (startDate && endDate) {
+            const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                              (endDate.getMonth() - startDate.getMonth());
+            totalMonths += monthsDiff;
+          }
+        }
+      }
+    }
+  });
+  return totalMonths;
+};
+
+// Helper function to get formatted experience string
+export const getFormattedExperience = (): string => {
+  const totalMonths = getTotalExperienceMonths();
+  if (totalMonths < 12) {
+    return `${totalMonths} month${totalMonths !== 1 ? 's' : ''}`;
+  } else {
+    const years = Math.floor(totalMonths / 12);
+    const remainingMonths = totalMonths % 12;
+    if (remainingMonths === 0) {
+      return `${years} year${years !== 1 ? 's' : ''}`;
+    } else {
+      const yearsText = `${years} year${years !== 1 ? 's' : ''}`;
+      const monthsText = `${remainingMonths} month${remainingMonths !== 1 ? 's' : ''}`;
+      return `${yearsText} ${monthsText}`;
+    }
+  }
+};
+
 // Helper function to get dynamic stats
 export const getDynamicStats = () => {
-  return aboutContent.stats.map((stat) => ({
-    ...stat,
-    value: stat.value === "dynamic" ? aboutContent.skills.length : stat.value,
-  }));
+  return aboutContent.stats.map((stat) => {
+    if (stat.value === "dynamic") {
+      // Calculate dynamic values based on label
+      if (stat.label === "Years Experience") {
+        const totalMonths = getTotalExperienceMonths();
+        // For stats display, show years if >= 1 year, otherwise show as number for "+" format
+        if (totalMonths >= 12) {
+          const years = Math.floor(totalMonths / 12);
+          return {
+            ...stat,
+            value: years,
+          };
+        } else {
+          return {
+            ...stat,
+            value: totalMonths,
+            label: "Months Experience", // Update label for months
+          };
+        }
+      } else if (stat.label === "Projects Completed") {
+        return {
+          ...stat,
+          value: getProjectsCount(),
+        };
+      } else if (stat.label === "Technologies") {
+        return {
+          ...stat,
+          value: aboutContent.skills.length,
+        };
+      }
+    }
+    return stat;
+  });
 };
 
 // Export individual sections for easier access

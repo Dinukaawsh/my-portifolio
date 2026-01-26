@@ -261,6 +261,44 @@ export const certificatesContent = {
       verificationUrl:
         "https://www.udemy.com/certificate/UC-6f0853a2-230b-467b-8a14-00b7ba7fc25a/",
     },
+    {
+      id: 10,
+      title:
+        " JavaScript Mastery From Basics to Advanced 2025",
+      issuer: "Udemy",
+      issuerLogo: GraduationCap,
+      category: "Programming",
+      issueDate: "2026-01-16",
+      expiryDate: null,
+      credentialId: null,
+      credentialUrl:
+        "https://www.udemy.com/certificate/UC-d04cf232-b0c2-455c-91a2-264c5b99f9fc/",
+      certificateImage: "/certificates-images/10.png",
+      description:
+        "JavaScript Mastery From Basics to Advanced 2025 course covering the basics of JavaScript and how to use it in real-world applications.",
+      skills: [
+        "JavaScript Mastery",
+        "JavaScript Basics",
+        "JavaScript Advanced",
+        "JavaScript Projects",
+        "JavaScript Real-World Examples",
+        "JavaScript Hands-On Projects",
+        "JavaScript Types",
+        "JavaScript Functions",
+        "JavaScript Objects",
+        "JavaScript Arrays",
+        "JavaScript Loops",
+        "JavaScript Conditionals",
+        "JavaScript Error Handling",
+        "JavaScript Debugging",
+        "JavaScript Performance Optimization",
+      ],
+      featured: true,
+      color: "bg-blue-600",
+      delay: 1.1,
+      verificationUrl:
+        "https://www.udemy.com/certificate/UC-d04cf232-b0c2-455c-91a2-264c5b99f9fc/",
+    },
   ],
 
   // Animation Settings

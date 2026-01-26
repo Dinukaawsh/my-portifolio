@@ -6,21 +6,22 @@ import React, {
   Suspense,
   useCallback,
   useMemo,
+  lazy,
 } from "react";
-import GlobeBackground from "@/app/components/backgrounds/globe/GlobeBackground";
-import { RollingGallery } from "@/app/components/backgrounds/rolling gallery/gallery";
 import Image from "next/image";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { Code2, Camera } from "lucide-react";
-import { aboutContent } from "@/app/components/content/about";
+import { aboutContent, getFormattedExperience, getProjectsCount } from "@/app/components/content/about";
 import Footer from "@/app/components/layouts/footer/Footer";
 import ProfileSkeleton from "@/app/components/pages/data/about/components/ProfileSkeleton";
-import FloatingParticles from "@/app/components/pages/data/about/components/FloatingParticles";
-import AnimatedStats from "@/app/components/pages/data/about/components/AnimatedStats";
-import PerformanceMonitor from "@/app/components/pages/data/about/components/PerformanceMonitor";
-//import AnimatedJets from "@/app/components/pages/data/about/components/AnimatedJets";
-import { useServiceWorker } from "@/app/components/pages/data/about/hooks/useServiceWorker";
 import MainProfileCard from "@/app/components/pages/data/about/components/MainProfileCard";
+
+// Lazy load heavy background components for better performance
+const GlobeBackground = lazy(() => import("@/app/components/backgrounds/globe/GlobeBackground"));
+const FloatingParticles = lazy(() => import("@/app/components/pages/data/about/components/FloatingParticles"));
+const AnimatedStats = lazy(() => import("@/app/components/pages/data/about/components/AnimatedStats"));
+const PerformanceMonitor = lazy(() => import("@/app/components/pages/data/about/components/PerformanceMonitor"));
+const RollingGallery = lazy(() => import("@/app/components/backgrounds/rolling gallery/gallery").then(m => ({ default: m.RollingGallery })));
 
 interface AboutProps {
   setActiveSection?: (key: string) => void;
@@ -42,7 +43,11 @@ export default function About({ setActiveSection }: AboutProps = {}) {
 
   // Check if CV button should be enabled (default: true if not set)
   const enableCvButton = process.env.NEXT_PUBLIC_ENABLE_CV_BUTTON !== "false";
-  const { scrollYProgress } = useScroll();
+  // Optimize scroll progress - only track when visible
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  });
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
@@ -63,41 +68,65 @@ export default function About({ setActiveSection }: AboutProps = {}) {
     return () => clearInterval(imageTimer);
   }, [profileImages.length]);
 
-  // Initialize service worker
-  useServiceWorker();
-
   // Detect mobile devices to tweak preview behavior (client-side only)
   useEffect(() => {
     const ua = navigator.userAgent || "";
     setIsMobile(/Android|iPhone|iPad|iPod/i.test(ua));
   }, []);
 
-  // Typing animation for roles
+  // Initialize service worker - defer to avoid blocking initial render
   useEffect(() => {
+    // Defer service worker initialization to improve initial load
+    const timer = setTimeout(() => {
+      // Register service worker directly (not using hook to avoid rules violation)
+      if ("serviceWorker" in navigator && process.env.NODE_ENV === "production") {
+        navigator.serviceWorker
+          .register("/sw.js")
+          .then((registration) => {
+            console.log("SW registered: ", registration);
+          })
+          .catch((registrationError) => {
+            console.log("SW registration failed: ", registrationError);
+          });
+      }
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Typing animation for roles - optimized with useMemo for dependencies
+  const typingConfig = useMemo(() => ({
+    typingSpeed: aboutContent.animation.typingSpeed,
+    typingPause: aboutContent.animation.typingPause,
+    deletingSpeed: aboutContent.animation.deletingSpeed,
+  }), []);
+
+  useEffect(() => {
+    if (!isVisible) return; // Only animate when visible
+
     let timeout: NodeJS.Timeout;
     if (typing) {
       if (displayed.length < roles[roleIndex].length) {
         timeout = setTimeout(() => {
           setDisplayed(roles[roleIndex].slice(0, displayed.length + 1));
-        }, aboutContent.animation.typingSpeed);
+        }, typingConfig.typingSpeed);
       } else {
         timeout = setTimeout(
           () => setTyping(false),
-          aboutContent.animation.typingPause
+          typingConfig.typingPause
         );
       }
     } else {
       if (displayed.length > 0) {
         timeout = setTimeout(() => {
           setDisplayed(displayed.slice(0, -1));
-        }, aboutContent.animation.deletingSpeed);
+        }, typingConfig.deletingSpeed);
       } else {
         setTyping(true);
         setRoleIndex((prev) => (prev + 1) % roles.length);
       }
     }
     return () => clearTimeout(timeout);
-  }, [displayed, typing, roleIndex]);
+  }, [displayed, typing, roleIndex, typingConfig, isVisible]);
 
   // Intersection Observer for performance
   useEffect(() => {
@@ -203,16 +232,26 @@ export default function About({ setActiveSection }: AboutProps = {}) {
         style={{ scaleX }}
       />
 
-      {/* Fixed Background Components */}
+      {/* Fixed Background Components - Lazy loaded for performance */}
       <div className="fixed inset-0 z-0">
-        <GlobeBackground />
-        {/* <AnimatedJets /> */}
-        <FloatingParticles />
+        <Suspense fallback={null}>
+          <GlobeBackground />
+        </Suspense>
+        <Suspense fallback={null}>
+          <FloatingParticles />
+        </Suspense>
       </div>
-      <PerformanceMonitor />
+      {/* Performance Monitor - Only in development */}
+      {process.env.NODE_ENV === "development" && (
+        <Suspense fallback={null}>
+          <PerformanceMonitor />
+        </Suspense>
+      )}
 
-      {/* Enhanced Stats Section */}
-      <AnimatedStats />
+      {/* Enhanced Stats Section - Lazy loaded */}
+      <Suspense fallback={null}>
+        <AnimatedStats />
+      </Suspense>
 
       {/* Main Content Container */}
       <Suspense fallback={<ProfileSkeleton />}>
@@ -360,8 +399,10 @@ export default function About({ setActiveSection }: AboutProps = {}) {
                     <div className="text-xs text-gray-400">Technologies</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-green-400">1+</div>
-                    <div className="text-xs text-gray-400">Years Exp</div>
+                    <div className="text-xl font-bold text-green-400">
+                      {getFormattedExperience()}
+                    </div>
+                    <div className="text-xs text-gray-400">Experience</div>
                   </div>
                 </div>
               </motion.div>
@@ -780,8 +821,21 @@ export default function About({ setActiveSection }: AboutProps = {}) {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: 2.0, type: "spring" }}
                   >
-                    <div className="text-xl font-bold text-purple-400">1+</div>
-                    <div className="text-xs text-gray-400">Years Exp</div>
+                    <div className="text-xl font-bold text-purple-400">
+                      {getFormattedExperience()}
+                    </div>
+                    <div className="text-xs text-gray-400">Experience</div>
+                  </motion.div>
+                  <motion.div
+                    className="text-center col-span-2"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 2.2, type: "spring" }}
+                  >
+                    <div className="text-xl font-bold text-purple-400">
+                      {getProjectsCount()}
+                    </div>
+                    <div className="text-xs text-gray-400">Projects</div>
                   </motion.div>
                 </div>
               </motion.div>
@@ -816,7 +870,9 @@ export default function About({ setActiveSection }: AboutProps = {}) {
           </motion.h4>
 
           <div className="relative h-96 sm:h-[28rem] md:h-[36rem] lg:h-[40rem] xl:h-[44rem] rounded-2xl overflow-hidden bg-transparent">
-            <RollingGallery autoplay={true} pauseOnHover={false} />
+            <Suspense fallback={null}>
+              <RollingGallery autoplay={true} pauseOnHover={false} />
+            </Suspense>
           </div>
         </motion.div>
       </motion.div>

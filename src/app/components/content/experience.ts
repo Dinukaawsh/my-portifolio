@@ -1,6 +1,24 @@
 // Experience Page Content Configuration
 // Edit this file to update your work experience, company details, and other content
 
+// Type for single role experience (backward compatibility)
+type SingleRoleExperience = {
+  id: number;
+  company: string;
+  title: string;
+  period: string;
+  duration: string;
+  type: string;
+  location: string;
+  description: string;
+  responsibilities: string[];
+  skills: string[];
+  logo: string;
+  logoAlt: string;
+  color: string;
+  delay: number;
+};
+
 export const experienceContent = {
   // Page Header Information
   header: {
@@ -10,45 +28,96 @@ export const experienceContent = {
   },
 
   // Work Experience Data
+  // If a company has multiple roles, use the 'roles' array to show progression
+  // Otherwise, use the single role structure
   experiences: [
     {
       id: 1,
       company: "Twist Digital",
-      title: "Software Engineer (Full-Stack)",
-      period: "Mar 2025 - Present",
-      duration: "6 months",
-      type: "Internship",
       location: "Remote",
-      description:
-        "Currently working as a Software Engineer at Twist Digital, where I'm gaining hands-on experience in full-stack web development using modern technologies. My work spans both frontend and backend development, with a strong focus on Next.js for building scalable and high-performance applications.",
-      responsibilities: [
-        "Full-stack web development using Next.js and modern technologies",
-        "Deploying applications and managing CI/CD pipelines",
-        "Database design and migrations",
-        "Cloud hosting and DevOps practices",
-        "Building efficient, user-centric applications",
-      ],
-      skills: [
-        "Next.js",
-        "React.js",
-        "Node.js",
-        "TypeScript",
-        "JavaScript",
-        "Tailwind CSS",
-        "MongoDB",
-        "AWS",
-        "GitHub",
-        "Git",
-        "REST APIs",
-        "CI/CD",
-        "Data Migration",
-        "Webhooks",
-        "WebSockets",
-      ],
       logo: "/experince-images/twist.png",
       logoAlt: "Twist Digital Logo",
-      color: "bg-blue-500",
+      color: "bg-green-500",
       delay: 0.7,
+      // Multiple roles at the same company - shows progression like LinkedIn
+      roles: [
+        {
+          id: 1,
+          title: "Associate Software Engineer (Full-Stack)",
+          period: "Jan 2026 - Present",
+          duration: "Ongoing",
+          type: "Full-Time",
+          description:
+            "Promoted to Associate Software Engineer at Twist Digital, where I continue to work on full-stack web development using modern technologies. I'm taking on more responsibilities and leading development initiatives, with a strong focus on Next.js for building scalable and high-performance applications.",
+          responsibilities: [
+            "Full-stack web development using Next.js and modern technologies",
+            "Leading development initiatives and mentoring junior developers",
+            "Deploying applications and managing CI/CD pipelines",
+            "Database design and migrations",
+            "Cloud hosting and DevOps practices",
+            "Building efficient, user-centric applications",
+            "Code reviews and technical decision-making",
+          ],
+          skills: [
+            "Next.js",
+            "React.js",
+            "Node.js",
+            "TypeScript",
+            "JavaScript",
+            "Tailwind CSS",
+            "MongoDB",
+            "AWS",
+            "GitHub",
+            "Git",
+            "REST APIs",
+            "CI/CD",
+            "Data Migration",
+            "Webhooks",
+            "WebSockets",
+            "GraphQL",
+            "Docker",
+          ],
+        },
+        {
+          id: 2,
+          title: "Software Engineer Intern (Full-Stack)",
+          period: "Mar 2025 - Dec 2025",
+          duration: "10 months",
+          type: "Internship",
+          description:
+            "Started my professional journey as a Software Engineer Intern at Twist Digital, where I gained hands-on experience in full-stack web development using modern technologies. My work spanned both frontend and backend development, with a strong focus on Next.js for building scalable and high-performance applications.",
+          responsibilities: [
+            "Full-stack web development using Next.js and modern technologies",
+            "Deploying applications and managing CI/CD pipelines",
+            "Database design and migrations",
+            "Cloud hosting and DevOps practices",
+            "Building efficient, user-centric applications",
+            "Learning and implementing best practices in software development",
+          ],
+          skills: [
+            "Next.js",
+            "React.js",
+            "Node.js",
+            "TypeScript",
+            "JavaScript",
+            "Tailwind CSS",
+            "MongoDB",
+            "AWS",
+            "GitHub",
+            "Git",
+            "REST APIs",
+            "CI/CD",
+            "Data Migration",
+            "Webhooks",
+            "WebSockets",
+          ],
+        },
+      ],
+      // Combined period for the entire company experience
+      period: "Mar 2025 - Present",
+      // Combined description (optional, can be used for company overview)
+      description:
+        "Working at Twist Digital, progressing from Intern to Associate Software Engineer, focusing on full-stack web development using modern technologies.",
     },
   ],
 
@@ -144,7 +213,15 @@ export const getExperienceById = (id: number) => {
 };
 
 export const getExperiencesByType = (type: string) => {
-  return experienceContent.experiences.filter((exp) => exp.type === type);
+  return experienceContent.experiences.filter((exp) => {
+    // Check if experience has roles (new structure)
+    if (exp.roles && Array.isArray(exp.roles)) {
+      return exp.roles.some((role) => role.type === type);
+    }
+    // Backward compatibility for single role structure
+    const singleExp = exp as unknown as SingleRoleExperience;
+    return singleExp.type === type;
+  });
 };
 
 export const getExperiencesByLocation = (location: string) => {
@@ -156,7 +233,19 @@ export const getExperiencesByLocation = (location: string) => {
 export const getAllSkills = () => {
   const allSkills = new Set<string>();
   experienceContent.experiences.forEach((exp) => {
-    exp.skills.forEach((skill) => allSkills.add(skill));
+    // Check if experience has roles (new structure)
+    if ('roles' in exp && exp.roles && Array.isArray(exp.roles)) {
+      exp.roles.forEach((role) => {
+        role.skills.forEach((skill: string) => allSkills.add(skill));
+      });
+    } else {
+      // Backward compatibility for single role structure
+      const singleExp = exp as unknown as SingleRoleExperience;
+      const skills = singleExp.skills || [];
+      if (Array.isArray(skills)) {
+        skills.forEach((skill: string) => allSkills.add(skill));
+      }
+    }
   });
   return Array.from(allSkills);
 };

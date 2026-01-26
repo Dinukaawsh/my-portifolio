@@ -9,9 +9,19 @@ import Hyperspeed, {
   hyperspeedPresets,
 } from "../../backgrounds/hyperspeed/hyperspeed";
 
+// Type for single role experience (backward compatibility)
+type SingleRoleExperience = {
+  title: string;
+  type: string;
+  duration: string;
+  responsibilities: string[];
+  skills: string[];
+};
+
 export default function Experience() {
   const [isVisible, setIsVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [activeRoleIndex, setActiveRoleIndex] = useState(0); // For multiple roles at same company
   const [currentSkill, setCurrentSkill] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll();
@@ -200,13 +210,14 @@ export default function Experience() {
             transition={{ duration: 0.6, delay: 0.5 }}
           >
             <motion.button
-              onClick={() =>
+              onClick={() => {
                 setActiveIndex(
                   (prev) =>
                     (prev - 1 + experienceContent.experiences.length) %
                     experienceContent.experiences.length
-                )
-              }
+                );
+                setActiveRoleIndex(0); // Reset to first role
+              }}
               className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200 border border-white/20"
               aria-label="Previous experience"
               whileHover={{ scale: 1.1, rotate: -5 }}
@@ -232,7 +243,10 @@ export default function Experience() {
               {experienceContent.experiences.map((exp, index) => (
                 <motion.button
                   key={index}
-                  onClick={() => setActiveIndex(index)}
+                  onClick={() => {
+                    setActiveIndex(index);
+                    setActiveRoleIndex(0); // Reset to first role when switching companies
+                  }}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
                     activeIndex === index
                       ? "bg-blue-500 scale-125"
@@ -258,11 +272,12 @@ export default function Experience() {
             </div>
 
             <motion.button
-              onClick={() =>
+              onClick={() => {
                 setActiveIndex(
                   (prev) => (prev + 1) % experienceContent.experiences.length
-                )
-              }
+                );
+                setActiveRoleIndex(0); // Reset to first role
+              }}
               className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200 border border-white/20"
               aria-label="Next experience"
               whileHover={{ scale: 1.1, rotate: 5 }}
@@ -317,95 +332,311 @@ export default function Experience() {
                 />
               </div>
               <div className="flex-1">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
-                    {experienceContent.experiences[activeIndex].title}
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`px-3 py-1 rounded-full ${
-                        experienceContent.experienceTypes[
-                          experienceContent.experiences[
-                            activeIndex
-                          ].type.toLowerCase() as keyof typeof experienceContent.experienceTypes
-                        ]?.color ||
-                        experienceContent.experienceTypes.internship.color
-                      }`}
-                    >
-                      {experienceContent.experiences[activeIndex].type}
-                    </span>
-                    <span
-                      className={`px-3 py-1 rounded-full ${
-                        experienceContent.locations[
-                          experienceContent.experiences[
-                            activeIndex
-                          ].location.toLowerCase() as keyof typeof experienceContent.locations
-                        ]?.color || experienceContent.locations.remote.color
-                      }`}
-                    >
-                      {experienceContent.experiences[activeIndex].location}
-                    </span>
-                  </div>
-                </div>
-                <h4 className="text-lg sm:text-xl text-blue-400 font-semibold mb-2">
+                <h4 className="text-lg sm:text-xl text-blue-400 font-semibold mb-3">
                   {experienceContent.experiences[activeIndex].company}
                 </h4>
-                <div className="flex items-center gap-4 text-sm text-gray-300">
-                  <span className="flex items-center gap-2">
-                    <svg
-                      className="w-4 h-4 text-blue-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                    {experienceContent.experiences[activeIndex].period}
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <svg
-                      className="w-4 h-4 text-purple-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    {experienceContent.experiences[activeIndex].duration}
-                  </span>
-                </div>
+                
+                {/* Check if experience has multiple roles */}
+                {experienceContent.experiences[activeIndex].roles ? (
+                  // Multiple roles at same company - LinkedIn style
+                  <div className="space-y-4">
+                    {/* Role progression timeline */}
+                    <div className="relative">
+                      {/* Connecting line */}
+                      <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 via-purple-500 to-green-500 opacity-50"></div>
+                      
+                      {experienceContent.experiences[activeIndex].roles?.map((role, roleIdx) => (
+                        <motion.div
+                          key={role.id}
+                          className={`relative pl-10 pb-4 ${roleIdx === experienceContent.experiences[activeIndex].roles.length - 1 ? '' : 'mb-4'}`}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={isVisible ? { opacity: 1, x: 0 } : {}}
+                          transition={{ duration: 0.5, delay: 0.5 + roleIdx * 0.1 }}
+                        >
+                          {/* Timeline dot */}
+                          <motion.div
+                            className={`absolute left-3 top-1 w-3 h-3 rounded-full ${
+                              activeRoleIndex === roleIdx ? 'bg-blue-500 scale-125' : 'bg-gray-500'
+                            } border-2 border-gray-800 z-10 transition-all duration-300`}
+                            whileHover={{ scale: 1.3 }}
+                            onClick={() => setActiveRoleIndex(roleIdx)}
+                            style={{ cursor: 'pointer' }}
+                          />
+                          
+                          {/* Role card */}
+                          <motion.div
+                            className={`bg-gradient-to-br from-gray-900/60 via-gray-800/40 to-gray-900/60 backdrop-blur-xl rounded-xl p-4 border ${
+                              activeRoleIndex === roleIdx 
+                                ? 'border-blue-500/50 shadow-lg shadow-blue-500/20' 
+                                : 'border-gray-600/30'
+                            } transition-all duration-300 cursor-pointer`}
+                            onClick={() => setActiveRoleIndex(roleIdx)}
+                            whileHover={{ scale: 1.02, borderColor: 'rgba(59, 130, 246, 0.5)' }}
+                          >
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                              <h3 className="text-lg sm:text-xl font-bold text-white">
+                                {role.title}
+                              </h3>
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className={`px-3 py-1 rounded-full text-xs ${
+                                    experienceContent.experienceTypes[
+                                      role.type.toLowerCase() as keyof typeof experienceContent.experienceTypes
+                                    ]?.color ||
+                                    experienceContent.experienceTypes.internship.color
+                                  }`}
+                                >
+                                  {role.type}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4 text-sm text-gray-300">
+                              <span className="flex items-center gap-2">
+                                <svg
+                                  className="w-4 h-4 text-blue-400"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                  />
+                                </svg>
+                                {role.period}
+                              </span>
+                              <span className="flex items-center gap-2">
+                                <svg
+                                  className="w-4 h-4 text-purple-400"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                  />
+                                </svg>
+                                {role.duration}
+                              </span>
+                            </div>
+                          </motion.div>
+                        </motion.div>
+                      ))}
+                    </div>
+                    
+                    {/* Combined period for company */}
+                    <div className="flex items-center gap-4 text-sm text-gray-400 pt-2 border-t border-gray-700/50">
+                      <span className="flex items-center gap-2">
+                        <svg
+                          className="w-4 h-4 text-blue-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                        {experienceContent.experiences[activeIndex].period}
+                      </span>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs ${
+                          experienceContent.locations[
+                            experienceContent.experiences[activeIndex].location.toLowerCase() as keyof typeof experienceContent.locations
+                          ]?.color || experienceContent.locations.remote.color
+                        }`}
+                      >
+                        {experienceContent.experiences[activeIndex].location}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  // Single role (backward compatibility)
+                  <>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
+                        {(experienceContent.experiences[activeIndex] as unknown as SingleRoleExperience).title}
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`px-3 py-1 rounded-full ${
+                            experienceContent.experienceTypes[
+                              ((experienceContent.experiences[activeIndex] as unknown as SingleRoleExperience).type || "").toLowerCase() as keyof typeof experienceContent.experienceTypes
+                            ]?.color ||
+                            experienceContent.experienceTypes.internship.color
+                          }`}
+                        >
+                          {(experienceContent.experiences[activeIndex] as unknown as SingleRoleExperience).type}
+                        </span>
+                        <span
+                          className={`px-3 py-1 rounded-full ${
+                            experienceContent.locations[
+                              experienceContent.experiences[
+                                activeIndex
+                              ].location.toLowerCase() as keyof typeof experienceContent.locations
+                            ]?.color || experienceContent.locations.remote.color
+                          }`}
+                        >
+                          {experienceContent.experiences[activeIndex].location}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-gray-300">
+                      <span className="flex items-center gap-2">
+                        <svg
+                          className="w-4 h-4 text-blue-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                        {experienceContent.experiences[activeIndex].period}
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <svg
+                          className="w-4 h-4 text-purple-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        {(experienceContent.experiences[activeIndex] as unknown as SingleRoleExperience).duration || ""}
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
-            {/* Description */}
-            <p className="text-gray-200 text-sm sm:text-base leading-relaxed mb-6">
-              {experienceContent.experiences[activeIndex].description}
-            </p>
+            {/* Description and Details - Show active role if multiple roles exist */}
+            {experienceContent.experiences[activeIndex].roles ? (
+              // Multiple roles - show active role details
+              <>
+                <p className="text-gray-200 text-sm sm:text-base leading-relaxed mb-6">
+                  {experienceContent.experiences[activeIndex].roles[activeRoleIndex].description}
+                </p>
 
-            {/* Enhanced Responsibilities */}
-            <div className="mb-6">
-              <motion.h5
-                className="text-white font-semibold mb-3 text-sm sm:text-base"
-                initial={{ opacity: 0, x: -20 }}
-                animate={isVisible ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.7 }}
-              >
-                Key Responsibilities:
-              </motion.h5>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {experienceContent.experiences[
-                  activeIndex
-                ].responsibilities.map((resp, idx) => (
+                {/* Enhanced Responsibilities */}
+                <div className="mb-6">
+                  <motion.h5
+                    className="text-white font-semibold mb-3 text-sm sm:text-base"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={isVisible ? { opacity: 1, x: 0 } : {}}
+                    transition={{ duration: 0.6, delay: 0.7 }}
+                  >
+                    Key Responsibilities:
+                  </motion.h5>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {experienceContent.experiences[activeIndex].roles[activeRoleIndex].responsibilities.map((resp: string, idx: number) => (
+                      <motion.div
+                        key={idx}
+                        className="flex items-start gap-2"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={isVisible ? { opacity: 1, x: 0 } : {}}
+                        transition={{
+                          duration: 0.5,
+                          delay: 0.8 + idx * 0.1,
+                          type: "spring",
+                        }}
+                        whileHover={{ x: 5 }}
+                      >
+                        <motion.div
+                          className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"
+                          animate={{
+                            scale: [1, 1.2, 1],
+                            opacity: [0.7, 1, 0.7],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            delay: idx * 0.2,
+                          }}
+                        />
+                        <span className="text-gray-300 text-xs sm:text-sm">
+                          {resp}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Enhanced Skills */}
+                <div>
+                  <motion.h5
+                    className="text-white font-semibold mb-3 text-sm sm:text-base"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={isVisible ? { opacity: 1, x: 0 } : {}}
+                    transition={{ duration: 0.6, delay: 0.8 }}
+                  >
+                    Technologies & Skills:
+                  </motion.h5>
+                  <div className="flex flex-wrap gap-2">
+                    {experienceContent.experiences[activeIndex].roles[activeRoleIndex].skills.map(
+                      (skill: string, idx: number) => (
+                        <motion.span
+                          key={idx}
+                          className="px-2 sm:px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-medium border border-blue-500/30 hover:bg-blue-500/30 transition-colors duration-200"
+                          initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                          animate={isVisible ? { opacity: 1, scale: 1, y: 0 } : {}}
+                          transition={{
+                            duration: 0.5,
+                            delay: 0.9 + idx * 0.05,
+                            type: "spring",
+                            stiffness: 200,
+                          }}
+                          whileHover={{
+                            scale: 1.1,
+                            backgroundColor: "rgba(59, 130, 246, 0.3)",
+                            borderColor: "rgba(59, 130, 246, 0.6)",
+                          }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          {skill}
+                        </motion.span>
+                      )
+                    )}
+                  </div>
+                </div>
+              </>
+            ) : (
+              // Single role (backward compatibility)
+              <>
+                <p className="text-gray-200 text-sm sm:text-base leading-relaxed mb-6">
+                  {experienceContent.experiences[activeIndex].description}
+                </p>
+
+                {/* Enhanced Responsibilities */}
+                <div className="mb-6">
+                  <motion.h5
+                    className="text-white font-semibold mb-3 text-sm sm:text-base"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={isVisible ? { opacity: 1, x: 0 } : {}}
+                    transition={{ duration: 0.6, delay: 0.7 }}
+                  >
+                    Key Responsibilities:
+                  </motion.h5>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {((experienceContent.experiences[activeIndex] as unknown as SingleRoleExperience).responsibilities || []).map((resp: string, idx: number) => (
                   <motion.div
                     key={idx}
                     className="flex items-start gap-2"
@@ -438,43 +669,45 @@ export default function Experience() {
               </div>
             </div>
 
-            {/* Enhanced Skills */}
-            <div>
-              <motion.h5
-                className="text-white font-semibold mb-3 text-sm sm:text-base"
-                initial={{ opacity: 0, x: -20 }}
-                animate={isVisible ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.8 }}
-              >
-                Technologies & Skills:
-              </motion.h5>
-              <div className="flex flex-wrap gap-2">
-                {experienceContent.experiences[activeIndex].skills.map(
-                  (skill, idx) => (
-                    <motion.span
-                      key={idx}
-                      className="px-2 sm:px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-medium border border-blue-500/30 hover:bg-blue-500/30 transition-colors duration-200"
-                      initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                      animate={isVisible ? { opacity: 1, scale: 1, y: 0 } : {}}
-                      transition={{
-                        duration: 0.5,
-                        delay: 0.9 + idx * 0.05,
-                        type: "spring",
-                        stiffness: 200,
-                      }}
-                      whileHover={{
-                        scale: 1.1,
-                        backgroundColor: "rgba(59, 130, 246, 0.3)",
-                        borderColor: "rgba(59, 130, 246, 0.6)",
-                      }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {skill}
-                    </motion.span>
-                  )
-                )}
-              </div>
-            </div>
+                {/* Enhanced Skills */}
+                <div>
+                  <motion.h5
+                    className="text-white font-semibold mb-3 text-sm sm:text-base"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={isVisible ? { opacity: 1, x: 0 } : {}}
+                    transition={{ duration: 0.6, delay: 0.8 }}
+                  >
+                    Technologies & Skills:
+                  </motion.h5>
+                  <div className="flex flex-wrap gap-2">
+                    {((experienceContent.experiences[activeIndex] as unknown as SingleRoleExperience).skills || []).map(
+                      (skill: string, idx: number) => (
+                        <motion.span
+                          key={idx}
+                          className="px-2 sm:px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-medium border border-blue-500/30 hover:bg-blue-500/30 transition-colors duration-200"
+                          initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                          animate={isVisible ? { opacity: 1, scale: 1, y: 0 } : {}}
+                          transition={{
+                            duration: 0.5,
+                            delay: 0.9 + idx * 0.05,
+                            type: "spring",
+                            stiffness: 200,
+                          }}
+                          whileHover={{
+                            scale: 1.1,
+                            backgroundColor: "rgba(59, 130, 246, 0.3)",
+                            borderColor: "rgba(59, 130, 246, 0.6)",
+                          }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          {skill}
+                        </motion.span>
+                      )
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </motion.div>
         </motion.div>
       </div>
