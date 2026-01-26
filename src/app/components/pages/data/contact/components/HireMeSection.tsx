@@ -186,9 +186,10 @@ export default function HireMeSection({
                       formData: { action: "form_opened" },
                       submittedBy: "User clicked Google Form link",
                       timestamp: new Date().toLocaleString(),
+                      formUrl: GOOGLE_FORM_URL, // Include form URL in notification
                     }),
                   });
-                } catch (error) {
+                } catch {
                   // Silently fail - this is just a tracking notification
                   console.log("Could not send Google Form click notification");
                 }

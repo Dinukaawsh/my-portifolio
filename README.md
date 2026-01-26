@@ -577,7 +577,7 @@ src/
      const formResponses = e.values;
      const form = FormApp.getActiveForm();
      const items = form.getItems();
-     
+
      // Build form data object
      const formData = {};
      items.forEach((item, index) => {
@@ -585,26 +585,26 @@ src/
        const value = formResponses[index + 1] || ''; // +1 because e.values[0] is timestamp
        formData[title] = value;
      });
-     
+
      // Get submitter email if available
      const email = e.response.getRespondentEmail() || 'Anonymous';
-     
+
      // Your API endpoint URL (replace with your domain)
      const apiUrl = 'https://yourdomain.com/api/google-form';
-     
+
      // Send to your API
      const payload = {
        formData: formData,
        submittedBy: email,
        timestamp: new Date().toLocaleString()
      };
-     
+
      const options = {
        method: 'post',
        contentType: 'application/json',
        payload: JSON.stringify(payload)
      };
-     
+
      try {
        UrlFetchApp.fetch(apiUrl, options);
        Logger.log('Form submission sent to API successfully');
@@ -643,11 +643,52 @@ src/
 
 ## 🔧 Configuration
 
+### Versioning
+
+The portfolio uses **Semantic Versioning (SemVer)** format: `MAJOR.MINOR.PATCH` (e.g., `v1.2.3`)
+
+- **MAJOR**: Breaking changes or major feature additions
+- **MINOR**: New features (backward compatible)
+- **PATCH**: Bug fixes and small improvements
+
+**Current Version**: The version is displayed in the footer and automatically read from `package.json`.
+
+**How to Update Version**:
+
+1. **Update package.json**:
+   ```json
+   {
+     "version": "1.2.3"
+   }
+   ```
+
+2. **Version Commands** (using npm):
+   ```bash
+   # Patch version (1.0.0 -> 1.0.1)
+   npm version patch
+
+   # Minor version (1.0.0 -> 1.1.0)
+   npm version minor
+
+   # Major version (1.0.0 -> 2.0.0)
+   npm version major
+   ```
+
+3. **Manual Update**: Edit `package.json` directly and change the `version` field
+
+4. **Rebuild**: After updating, rebuild your app:
+   ```bash
+   npm run build
+   ```
+
+The version will automatically appear in the footer as `v1.2.3`.
+
 ### Next.js Configuration
 
 - **Turbopack**: Enabled for faster development builds
 - **Image Domains**: Configured for external image sources
 - **TypeScript**: Strict mode enabled
+- **Version Exposure**: App version from package.json is exposed as `NEXT_PUBLIC_APP_VERSION`
 
 ### Tailwind CSS
 

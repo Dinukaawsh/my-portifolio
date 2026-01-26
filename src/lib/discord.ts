@@ -45,9 +45,10 @@ export interface DiscordNotification {
       timestamp: string;
     };
     googleForm?: {
-      formData?: Record<string, any>;
+      formData?: Record<string, unknown>;
       timestamp: string;
       submittedBy?: string;
+      formUrl?: string;
     };
   };
 }
@@ -329,38 +330,43 @@ function createDiscordEmbed(notification: DiscordNotification) {
     };
   } else if (type === "googleForm") {
     const formData = data.googleForm?.formData || {};
+    const formUrl = data.googleForm?.formUrl;
     const fields = Object.entries(formData)
-      .slice(0, 10) // Limit to 10 fields to avoid Discord embed limits
+      .slice(0, 9) // Limit to 9 fields to make room for form link and time
       .map(([key, value]) => ({
         name: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1"),
-        value: typeof value === "string" && value.length > 1024 
-          ? value.substring(0, 1020) + "..." 
+        value: typeof value === "string" && value.length > 1024
+          ? value.substring(0, 1020) + "..."
           : String(value || "N/A"),
         inline: false,
       }));
 
+    // Build fields array with form link if available
+    const allFields = fields.length > 0 ? [...fields] : [];
+
+    // Add form link field if URL is available
+    if (formUrl) {
+      allFields.push({
+        name: "🔗 View Form & Responses",
+        value: `[Click here to open Google Form](${formUrl})`,
+        inline: false,
+      });
+    }
+
+    // Add timestamp
+    allFields.push({
+      name: "⏰ Time",
+      value: data.googleForm?.timestamp || new Date().toLocaleString(),
+      inline: true,
+    });
+
     return {
       title: "📋 New Google Form Submission!",
       color: 0x4285f4, // Google Blue
-      description: data.googleForm?.submittedBy 
+      description: data.googleForm?.submittedBy
         ? `Submitted by: ${data.googleForm.submittedBy}`
         : "Someone submitted your Hire Me form",
-      fields: fields.length > 0 
-        ? [
-            ...fields,
-            {
-              name: "⏰ Time",
-              value: data.googleForm?.timestamp || new Date().toLocaleString(),
-              inline: true,
-            },
-          ]
-        : [
-            {
-              name: "⏰ Time",
-              value: data.googleForm?.timestamp || new Date().toLocaleString(),
-              inline: true,
-            },
-          ],
+      fields: allFields,
       timestamp: new Date().toISOString(),
       footer: {
         text: "Google Form Submission",

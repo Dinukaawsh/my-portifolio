@@ -5,7 +5,8 @@ import { Resend } from "resend";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    let { name, email, subject, body: messageBody } = body;
+    const { name, subject, body: messageBody } = body;
+    let { email } = body;
 
     // Validate required fields
     if (!name || !email || !subject || !messageBody) {
@@ -115,7 +116,7 @@ export async function POST(request: Request) {
         const resend = new Resend(resendApiKey);
 
         // Get sender email from environment or use a default
-        let senderEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+        const senderEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
         const customDomainEmail = process.env.RESEND_FROM_EMAIL;
 
         const result = await resend.emails.send({

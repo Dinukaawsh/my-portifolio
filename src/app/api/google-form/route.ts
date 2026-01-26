@@ -10,6 +10,7 @@ export async function POST(request: Request) {
     const formData = body.formData || body;
     const submittedBy = body.submittedBy || body.email || body.name || "Unknown";
     const timestamp = body.timestamp || new Date().toLocaleString();
+    const formUrl = body.formUrl || process.env.NEXT_PUBLIC_GOOGLE_FORM_URL || "";
 
     // Send Discord notification
     await sendDiscordNotification({
@@ -19,6 +20,7 @@ export async function POST(request: Request) {
           formData,
           timestamp,
           submittedBy: String(submittedBy),
+          formUrl: String(formUrl),
         },
       },
     });

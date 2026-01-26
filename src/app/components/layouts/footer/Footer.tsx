@@ -1,11 +1,12 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { Heart, Code, Coffee, Sparkles } from "lucide-react";
+import { Heart, Code, Coffee, Sparkles, Tag } from "lucide-react";
 import { aboutContent } from "@/app/components/content/about";
 import Image from "next/image";
 import Threads from "@/app/components/backgrounds/footer_backgound/footer_background";
 import { useTheme } from "@/app/contexts/ThemeContext";
+import { getFormattedVersion } from "@/lib/version";
 
 interface FooterProps {
   setActiveSection?: (key: string) => void;
@@ -14,6 +15,7 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
   const { currentTheme } = useTheme();
   const currentYear = new Date().getFullYear();
+  const appVersion = getFormattedVersion();
 
   // Theme-aware colors for lightning effects
   const lightningColors = {
@@ -504,6 +506,20 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
             <Coffee className="w-3 h-3" />
             <span>&quot;Building dreams, one line of code at a time&quot;</span>
             <Heart className="w-3 h-3 text-red-400" />
+          </motion.div>
+
+          {/* Version Display */}
+          <motion.div
+            className="mt-2 flex items-center justify-center gap-1.5"
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 1.5 }}
+            viewport={{ once: true }}
+          >
+            <Tag className={`w-3 h-3 ${currentTextColors.secondary}`} />
+            <span className={`text-xs ${currentTextColors.secondary} font-mono`}>
+              {appVersion}
+            </span>
           </motion.div>
 
           {/* Made with Love */}
