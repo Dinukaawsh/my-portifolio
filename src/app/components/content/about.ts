@@ -41,8 +41,10 @@ const calculateTotalExperience = (): string | number => {
             endDate = parseDate(endStr);
           }
           if (startDate && endDate) {
+            // Calculate months difference and add 1 for inclusive counting
+            // (both start and end months count as experience)
             const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
-                              (endDate.getMonth() - startDate.getMonth());
+                              (endDate.getMonth() - startDate.getMonth()) + 1;
             totalMonths += monthsDiff;
           }
         }
@@ -64,8 +66,10 @@ const calculateTotalExperience = (): string | number => {
             endDate = parseDate(endStr);
           }
           if (startDate && endDate) {
+            // Calculate months difference and add 1 for inclusive counting
+            // (both start and end months count as experience)
             const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
-                              (endDate.getMonth() - startDate.getMonth());
+                              (endDate.getMonth() - startDate.getMonth()) + 1;
             totalMonths += monthsDiff;
           }
         }
@@ -343,8 +347,10 @@ export const getTotalExperienceMonths = (): number => {
             endDate = parseDate(endStr);
           }
           if (startDate && endDate) {
+            // Calculate months difference and add 1 for inclusive counting
+            // (both start and end months count as experience)
             const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
-                              (endDate.getMonth() - startDate.getMonth());
+                              (endDate.getMonth() - startDate.getMonth()) + 1;
             totalMonths += monthsDiff;
           }
         }
@@ -366,8 +372,10 @@ export const getTotalExperienceMonths = (): number => {
             endDate = parseDate(endStr);
           }
           if (startDate && endDate) {
+            // Calculate months difference and add 1 for inclusive counting
+            // (both start and end months count as experience)
             const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
-                              (endDate.getMonth() - startDate.getMonth());
+                              (endDate.getMonth() - startDate.getMonth()) + 1;
             totalMonths += monthsDiff;
           }
         }
