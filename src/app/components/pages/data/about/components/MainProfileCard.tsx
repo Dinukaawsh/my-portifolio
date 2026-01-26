@@ -33,6 +33,7 @@ interface MainProfileCardProps {
   roleIndex: number;
   skills: string[];
   openCvPreview: () => void;
+  enableCvButton?: boolean;
 }
 
 export default function MainProfileCard(props: MainProfileCardProps) {
@@ -46,6 +47,7 @@ export default function MainProfileCard(props: MainProfileCardProps) {
     roleIndex,
     skills,
     openCvPreview,
+    enableCvButton = true, // Default to true if not provided
   } = props;
 
   return (
@@ -465,36 +467,38 @@ export default function MainProfileCard(props: MainProfileCardProps) {
         </a>
       </div>
 
-      {/* CV Button */}
-      <motion.button
-        type="button"
-        onClick={openCvPreview}
-        className="inline-block px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold shadow-lg shadow-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 text-sm sm:text-base mb-4 sm:mb-6"
-        tabIndex={0}
-        whileHover={{
-          scale: 1.05,
-          y: -3,
-          boxShadow: "0 20px 40px rgba(59, 130, 246, 0.4)",
-        }}
-        whileTap={{ scale: 0.95 }}
-        animate={{
-          boxShadow: [
-            "0 10px 25px rgba(59, 130, 246, 0.3)",
-            "0 15px 35px rgba(147, 51, 234, 0.4)",
-            "0 10px 25px rgba(59, 130, 246, 0.3)",
-          ],
-        }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <motion.span
-          className="flex items-center gap-2"
-          animate={{ x: [0, 5, 0] }}
-          transition={{ duration: 1, repeat: Infinity }}
+      {/* CV Button - Only show if enabled via environment variable */}
+      {enableCvButton && (
+        <motion.button
+          type="button"
+          onClick={openCvPreview}
+          className="inline-block px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold shadow-lg shadow-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 text-sm sm:text-base mb-4 sm:mb-6"
+          tabIndex={0}
+          whileHover={{
+            scale: 1.05,
+            y: -3,
+            boxShadow: "0 20px 40px rgba(59, 130, 246, 0.4)",
+          }}
+          whileTap={{ scale: 0.95 }}
+          animate={{
+            boxShadow: [
+              "0 10px 25px rgba(59, 130, 246, 0.3)",
+              "0 15px 35px rgba(147, 51, 234, 0.4)",
+              "0 10px 25px rgba(59, 130, 246, 0.3)",
+            ],
+          }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <FileText className="w-4 h-4" />
-          Preview CV
-        </motion.span>
-      </motion.button>
+          <motion.span
+            className="flex items-center gap-2"
+            animate={{ x: [0, 5, 0] }}
+            transition={{ duration: 1, repeat: Infinity }}
+          >
+            <FileText className="w-4 h-4" />
+            Preview CV
+          </motion.span>
+        </motion.button>
+      )}
 
       {/* Social Links */}
       <motion.div

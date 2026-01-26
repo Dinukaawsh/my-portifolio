@@ -192,8 +192,18 @@ A modern, interactive portfolio website built with Next.js 15, featuring stunnin
    # WhatsApp Contact
    NEXT_PUBLIC_WHATSAPP_NUMBER=94767326845
 
+   # CV Button (optional, enable/disable CV preview button on main page)
+   # Set to "false" to hide the CV button, or omit/leave empty to show it (default: enabled)
+   NEXT_PUBLIC_ENABLE_CV_BUTTON=true
+
    # Contact Form Email (optional, for email notifications)
    CONTACT_EMAIL=your-email@example.com
+
+   # Resend API Key (for email sending)
+   # Get your API key from https://resend.com/api-keys
+   RESEND_API_KEY=re_your_resend_api_key
+   # Optional: Custom sender email (must be verified in Resend)
+   RESEND_FROM_EMAIL=contact@yourdomain.com
    ```
 
 4. **Run the development server**
@@ -252,8 +262,18 @@ NEXT_PUBLIC_GOOGLE_FORM_URL=https://forms.gle/your_form_id
 # WhatsApp Contact
 NEXT_PUBLIC_WHATSAPP_NUMBER=94767326845
 
+# CV Button (optional, enable/disable CV preview button on main page)
+# Set to "false" to hide the CV button, or omit/leave empty to show it (default: enabled)
+NEXT_PUBLIC_ENABLE_CV_BUTTON=true
+
 # Contact Form Email (optional, for email notifications)
 CONTACT_EMAIL=your-email@example.com
+
+# Resend API Key (for email sending)
+# Get your API key from https://resend.com/api-keys
+RESEND_API_KEY=re_your_resend_api_key
+# Optional: Custom sender email (must be verified in Resend)
+RESEND_FROM_EMAIL=contact@yourdomain.com
 ```
 
 ### OAuth Provider Updates for Production
@@ -487,7 +507,135 @@ src/
    - Create a new webhook
    - Copy the webhook URL to your `.env.local` file
 
-6. **Environment Variables**:
+6. **Resend Email Service Setup** (for Contact Form):
+
+   **Step 1: Create a Resend Account**
+   - Go to [resend.com](https://resend.com)
+   - Sign up for a free account (100 emails/day free tier)
+
+   **Step 2: Get Your API Key**
+   - After signing up, go to [API Keys page](https://resend.com/api-keys)
+   - Click "Create API Key"
+   - Give it a name (e.g., "Portfolio Contact Form")
+   - Copy the API key (starts with `re_`)
+   - Add it to your `.env.local`: `RESEND_API_KEY=re_your_api_key_here`
+
+   **Step 3: Set Up Sender Email (RESEND_FROM_EMAIL)**
+
+   The `RESEND_FROM_EMAIL` is the email address that will appear as the **sender** of contact form emails.
+
+   You have two options:
+
+   **Option A: Use Default (Quick Start - Testing Only)**
+   - Don't set `RESEND_FROM_EMAIL` in your `.env.local`
+   - Resend will use `onboarding@resend.dev` as the sender
+   - ⚠️ **Note**: This is only for testing. Emails from this address may go to spam.
+
+   **Option B: Use Your Own Domain (Recommended for Production)**
+   - Go to [Resend Domains](https://resend.com/domains)
+   - Click "Add Domain"
+   - Enter your domain (e.g., `yourdomain.com`)
+   - Follow the DNS verification steps:
+     - Add the provided DNS records to your domain's DNS settings
+     - Wait for verification (usually takes a few minutes)
+   - Once verified, you can use any email from that domain:
+     - Example: `contact@yourdomain.com`
+     - Example: `noreply@yourdomain.com`
+   - Add to `.env.local`: `RESEND_FROM_EMAIL=contact@yourdomain.com`
+
+   **Step 4: Set Recipient Email (CONTACT_EMAIL)**
+   - This is where you'll **receive** the contact form submissions
+   - Add to `.env.local`: `CONTACT_EMAIL=dinukaaw.sh@gmail.com` (or your preferred email)
+
+   **Summary of Environment Variables:**
+   ```bash
+   # Required: Your Resend API key
+   RESEND_API_KEY=re_your_api_key_here
+
+   # Optional: Custom sender email (must be verified domain in Resend)
+   # If not set, defaults to onboarding@resend.dev (testing only)
+   RESEND_FROM_EMAIL=contact@yourdomain.com
+
+   # Required: Where to receive contact form emails
+   CONTACT_EMAIL=dinukaaw.sh@gmail.com
+   ```
+
+7. **Google Form Discord Notifications Setup**:
+
+   To receive Discord notifications when someone submits your Google Form, you need to set up a Google Apps Script webhook.
+
+   **Step 1: Open Your Google Form**
+   - Go to your Google Form
+   - Click the three dots (⋮) in the top right
+   - Select "Script editor"
+
+   **Step 2: Create the Webhook Script**
+   - In the script editor, paste the following code:
+   ```javascript
+   function onFormSubmit(e) {
+     // Get form responses
+     const formResponses = e.values;
+     const form = FormApp.getActiveForm();
+     const items = form.getItems();
+     
+     // Build form data object
+     const formData = {};
+     items.forEach((item, index) => {
+       const title = item.getTitle();
+       const value = formResponses[index + 1] || ''; // +1 because e.values[0] is timestamp
+       formData[title] = value;
+     });
+     
+     // Get submitter email if available
+     const email = e.response.getRespondentEmail() || 'Anonymous';
+     
+     // Your API endpoint URL (replace with your domain)
+     const apiUrl = 'https://yourdomain.com/api/google-form';
+     
+     // Send to your API
+     const payload = {
+       formData: formData,
+       submittedBy: email,
+       timestamp: new Date().toLocaleString()
+     };
+     
+     const options = {
+       method: 'post',
+       contentType: 'application/json',
+       payload: JSON.stringify(payload)
+     };
+     
+     try {
+       UrlFetchApp.fetch(apiUrl, options);
+       Logger.log('Form submission sent to API successfully');
+     } catch (error) {
+       Logger.log('Error sending form submission: ' + error);
+     }
+   }
+   ```
+
+   **Step 3: Set Up the Trigger**
+   - In the script editor, click on the clock icon (Triggers) in the left sidebar
+   - Click "Add Trigger" at the bottom right
+   - Configure:
+     - Function: `onFormSubmit`
+     - Event source: "From form"
+     - Event type: "On form submit"
+   - Click "Save"
+
+   **Step 4: Update the API URL**
+   - Replace `https://yourdomain.com/api/google-form` with your actual domain
+   - For local testing: `http://localhost:3000/api/google-form` (won't work in production)
+   - For production: `https://dinukawickramarathna.me/api/google-form`
+
+   **Step 5: Test the Setup**
+   - Submit a test response to your Google Form
+   - Check your Discord channel for the notification
+   - Check the Apps Script execution log if there are issues
+
+   **Note**: The script will automatically run when someone submits your form. You'll receive Discord notifications with all the form data.
+
+8. **Environment Variables**:
    - Copy the example variables above
    - Replace placeholder values with your actual credentials
    - Generate NEXTAUTH_SECRET: `openssl rand -base64 32`

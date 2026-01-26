@@ -159,7 +159,7 @@ export default function Contact() {
   const themeTextColors = getThemeTextColors();
   const GOOGLE_FORM_URL = process.env.NEXT_PUBLIC_GOOGLE_FORM_URL;
   const WHATSAPP_NUMBER =
-    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "94767326845";
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "";
 
   // Handle contact form submission
   const handleContactFormSubmit = async (data: {

@@ -1,6 +1,6 @@
 // Discord Webhook Integration
 export interface DiscordNotification {
-  type: "visit" | "comment" | "registration" | "feedback" | "contact";
+  type: "visit" | "comment" | "registration" | "feedback" | "contact" | "googleForm";
   data: {
     visitor?: {
       ip?: string;
@@ -43,6 +43,11 @@ export interface DiscordNotification {
       subject: string;
       message: string;
       timestamp: string;
+    };
+    googleForm?: {
+      formData?: Record<string, any>;
+      timestamp: string;
+      submittedBy?: string;
     };
   };
 }
@@ -320,6 +325,45 @@ function createDiscordEmbed(notification: DiscordNotification) {
       timestamp: new Date().toISOString(),
       footer: {
         text: "Portfolio Contact Form",
+      },
+    };
+  } else if (type === "googleForm") {
+    const formData = data.googleForm?.formData || {};
+    const fields = Object.entries(formData)
+      .slice(0, 10) // Limit to 10 fields to avoid Discord embed limits
+      .map(([key, value]) => ({
+        name: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1"),
+        value: typeof value === "string" && value.length > 1024 
+          ? value.substring(0, 1020) + "..." 
+          : String(value || "N/A"),
+        inline: false,
+      }));
+
+    return {
+      title: "📋 New Google Form Submission!",
+      color: 0x4285f4, // Google Blue
+      description: data.googleForm?.submittedBy 
+        ? `Submitted by: ${data.googleForm.submittedBy}`
+        : "Someone submitted your Hire Me form",
+      fields: fields.length > 0 
+        ? [
+            ...fields,
+            {
+              name: "⏰ Time",
+              value: data.googleForm?.timestamp || new Date().toLocaleString(),
+              inline: true,
+            },
+          ]
+        : [
+            {
+              name: "⏰ Time",
+              value: data.googleForm?.timestamp || new Date().toLocaleString(),
+              inline: true,
+            },
+          ],
+      timestamp: new Date().toISOString(),
+      footer: {
+        text: "Google Form Submission",
       },
     };
   }

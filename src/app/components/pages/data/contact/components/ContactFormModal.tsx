@@ -29,6 +29,67 @@ export default function ContactFormModal({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
+  const validateEmail = (email: string): string | null => {
+    const trimmedEmail = email.trim();
+    
+    if (!trimmedEmail) {
+      return "Email is required";
+    }
+
+    // Check length
+    if (trimmedEmail.length > 254) {
+      return "Email address is too long (maximum 254 characters)";
+    }
+
+    // Comprehensive email regex
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    
+    if (!emailRegex.test(trimmedEmail)) {
+      return "Invalid email format. Please enter a valid email address";
+    }
+
+    // Check for common typos
+    if (trimmedEmail.includes("..")) {
+      return "Email cannot contain consecutive dots";
+    }
+
+    if (trimmedEmail.startsWith(".") || trimmedEmail.startsWith("@")) {
+      return "Email cannot start with a dot or @ symbol";
+    }
+
+    if (trimmedEmail.endsWith(".") || trimmedEmail.endsWith("@")) {
+      return "Email cannot end with a dot or @ symbol";
+    }
+
+    // Split and validate parts
+    const parts = trimmedEmail.split("@");
+    if (parts.length !== 2) {
+      return "Email must contain exactly one @ symbol";
+    }
+
+    const [localPart, domain] = parts;
+
+    if (localPart.length === 0 || localPart.length > 64) {
+      return "Email local part (before @) must be between 1 and 64 characters";
+    }
+
+    if (domain.length === 0 || domain.length > 255) {
+      return "Email domain (after @) must be between 1 and 255 characters";
+    }
+
+    if (!domain.includes(".")) {
+      return "Email domain must include a top-level domain (e.g., .com, .org)";
+    }
+
+    const domainParts = domain.split(".");
+    const tld = domainParts[domainParts.length - 1];
+    if (tld.length < 2 || !/^[a-zA-Z]+$/.test(tld)) {
+      return "Email must have a valid top-level domain (e.g., .com, .org)";
+    }
+
+    return null; // Valid email
+  };
+
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
@@ -36,10 +97,9 @@ export default function ContactFormModal({
       newErrors.name = "Name is required";
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      newErrors.email = emailError;
     }
 
     if (!formData.subject.trim()) {

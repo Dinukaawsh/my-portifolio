@@ -27,9 +27,13 @@ export default function HireMeSection({
   showHireOptions,
   setShowHireOptions,
   onContactMeClick,
-  whatsappNumber = "94767326845",
+  whatsappNumber,
 }: HireMeSectionProps) {
-  const whatsappUrl = `https://wa.me/${whatsappNumber}`;
+  // WhatsApp number comes from environment variable via parent component
+  // Parent reads from NEXT_PUBLIC_WHATSAPP_NUMBER and passes as prop
+  // Fallback only used if env var is not set
+  const whatsappNum = whatsappNumber || "";
+  const whatsappUrl = `https://wa.me/${whatsappNum}`;
 
   return (
     <div className="mb-8 text-center">
@@ -172,6 +176,23 @@ export default function HireMeSection({
               href={GOOGLE_FORM_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={async () => {
+                // Track Google Form link click (fallback notification)
+                try {
+                  await fetch("/api/google-form", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      formData: { action: "form_opened" },
+                      submittedBy: "User clicked Google Form link",
+                      timestamp: new Date().toLocaleString(),
+                    }),
+                  });
+                } catch (error) {
+                  // Silently fail - this is just a tracking notification
+                  console.log("Could not send Google Form click notification");
+                }
+              }}
               className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-white/10 text-white font-semibold rounded-xl border border-blue-400/40 hover:bg-white/15 transition"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

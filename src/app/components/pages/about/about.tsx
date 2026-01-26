@@ -39,6 +39,9 @@ export default function About({ setActiveSection }: AboutProps = {}) {
   const [isMobile, setIsMobile] = useState(false);
   const [showCvPreview, setShowCvPreview] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+
+  // Check if CV button should be enabled (default: true if not set)
+  const enableCvButton = process.env.NEXT_PUBLIC_ENABLE_CV_BUTTON !== "false";
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -225,6 +228,7 @@ export default function About({ setActiveSection }: AboutProps = {}) {
             roleIndex={roleIndex}
             skills={skills}
             openCvPreview={openCvPreview}
+            enableCvButton={enableCvButton}
           />
 
           {/* Enhanced Tech Stack Section - Better Desktop Layout */}
