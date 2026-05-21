@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useSpring } from "framer-motion";
@@ -5,6 +7,8 @@ import {
   experienceContent,
   getParticleConfig,
 } from "@/app/components/content/experience";
+import AmbientBackground from "@/app/components/common/AmbientBackground";
+import { seededRange } from "@/lib/seeded-random";
 import Hyperspeed, {
   hyperspeedPresets,
 } from "../../backgrounds/hyperspeed/hyperspeed";
@@ -604,11 +608,7 @@ export default function Experience() {
                             type: "spring",
                             stiffness: 200,
                           }}
-                          whileHover={{
-                            scale: 1.1,
-                            backgroundColor: "rgba(59, 130, 246, 0.3)",
-                            borderColor: "rgba(59, 130, 246, 0.6)",
-                          }}
+                          whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
                         >
                           {skill}
@@ -693,11 +693,7 @@ export default function Experience() {
                             type: "spring",
                             stiffness: 200,
                           }}
-                          whileHover={{
-                            scale: 1.1,
-                            backgroundColor: "rgba(59, 130, 246, 0.3)",
-                            borderColor: "rgba(59, 130, 246, 0.6)",
-                          }}
+                          whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
                         >
                           {skill}

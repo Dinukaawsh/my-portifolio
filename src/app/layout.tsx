@@ -9,8 +9,6 @@ export const metadata: Metadata = {
   description: "Full Stack Developer Portfolio",
 };
 
-// TODO: Refactor Navbar to use buttons and accept setActiveSection as a prop. This will be handled after the main logic is set up in page.tsx.
-
 export default function RootLayout({
   children,
 }: {

@@ -7,6 +7,7 @@ import {
   certificatesContent,
   getCertificatesByCategory,
 } from "@/app/components/content/certificates";
+import { seededRange } from "@/lib/seeded-random";
 import { Star, Trophy } from "lucide-react";
 import {
   Lightning,
@@ -96,7 +97,7 @@ export default function Certificates() {
               }}
               animate={{
                 y: [0, -70, -140, -210],
-                x: [0, Math.random() * 50 - 25],
+                x: [0, seededRange(i + 50, -25, 25), 0],
                 opacity: [0, 1, 0.8, 0],
                 scale: [0, 1, 1.5, 0],
               }}
@@ -217,11 +218,7 @@ export default function Certificates() {
                   delay: 0.5 + index * 0.1,
                   type: "spring",
                 }}
-                whileHover={{
-                  scale: 1.05,
-                  y: -2,
-                  boxShadow: "0 10px 25px rgba(59, 130, 246, 0.3)",
-                }}
+                whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
                 {category}

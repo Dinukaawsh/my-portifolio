@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useEffect, useState, useRef } from "react";
-import Flower from "@/app/components/backgrounds/flower/Flower";
+import AmbientBackground from "@/app/components/common/AmbientBackground";
 import { motion, useScroll, useSpring } from "framer-motion";
 import {
   referencesContent,
@@ -62,10 +64,7 @@ export default function References() {
         style={{ scaleX }}
       />
 
-      {/* Flower Background - Fixed */}
-      <div className="fixed inset-0 z-0">
-        <Flower />
-      </div>
+      <AmbientBackground variant="emerald" />
 
       {/* Floating Reference Icons */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">

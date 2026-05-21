@@ -1,8 +1,26 @@
 import { NextResponse } from "next/server";
 import { sendDiscordNotification } from "@/lib/discord";
+import { checkRateLimit, getClientIp } from "@/lib/security";
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const rate = checkRateLimit(`google-form:${ip}`, {
+      limit: 20,
+      windowMs: 60_000,
+    });
+    if (!rate.allowed) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
+    const webhookSecret = process.env.GOOGLE_FORM_WEBHOOK_SECRET;
+    if (webhookSecret) {
+      const provided = request.headers.get("x-webhook-secret");
+      if (provided !== webhookSecret) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    }
+
     const body = await request.json();
 
     // Validate that we received form data

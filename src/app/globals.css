@@ -66,9 +66,40 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Smooth transitions for theme changes */
-* {
+/* Smooth transitions for theme changes (layout surfaces only) */
+body,
+.site-shell,
+.theme-navbar-dark,
+.theme-navbar-light,
+.theme-navbar-water,
+.theme-navbar-sunset,
+.theme-navbar-forest {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* 2026 design tokens */
+:root {
+  --surface-elevated: rgba(255, 255, 255, 0.06);
+  --ring-subtle: rgba(255, 255, 255, 0.12);
+  --radius-card: 1.25rem;
+  --font-display: ui-sans-serif, system-ui, sans-serif;
+}
+
+.site-shell {
+  font-family: var(--font-display);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Navbar Theme Classes */

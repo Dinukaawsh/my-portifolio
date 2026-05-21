@@ -1,18 +1,16 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Heart, Code, Coffee, Sparkles, Tag } from "lucide-react";
 import { aboutContent } from "@/app/components/content/about";
 import Image from "next/image";
-import Threads from "@/app/components/backgrounds/footer_backgound/footer_background";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import { getFormattedVersion } from "@/lib/version";
+import { NAV_SECTIONS } from "@/lib/routes";
+import { seededRange } from "@/lib/seeded-random";
 
-interface FooterProps {
-  setActiveSection?: (key: string) => void;
-}
-
-const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
+const Footer: React.FC = () => {
   const { currentTheme } = useTheme();
   const currentYear = new Date().getFullYear();
   const appVersion = getFormattedVersion();
@@ -84,132 +82,20 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
 
   const currentTextColors = textColors[currentTheme];
 
-  const sections = [
-    { key: "about", label: "About" },
-    { key: "projects", label: "Projects" },
-    { key: "skills", label: "Skills" },
-    { key: "education", label: "Education" },
-    { key: "experience", label: "Experience" },
-    { key: "certificates", label: "Certificates" },
-    { key: "achievements", label: "Achievements" },
-    { key: "blog", label: "Blog" },
-    { key: "contact", label: "Contact" },
-  ];
-
-  const handleSectionClick = (key: string) => {
-    if (setActiveSection) {
-      setActiveSection(key);
-    }
-  };
-
   return (
     <footer
-      className="relative w-full backdrop-blur-xl border-t border-blue-500/30 shadow-2xl shadow-blue-500/20 py-8 px-4 sm:px-6 overflow-hidden"
+      className="relative w-full backdrop-blur-xl border-t border-white/10 py-8 px-4 sm:px-6 overflow-hidden"
       style={{ backgroundColor: "rgba(0, 0, 0, 0.95)" }}
     >
-      {/* Lightning Effects */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        {/* Lightning Bolts */}
-        {[0, 1, 2, 3].map((i) => (
-          <motion.div
-            key={`lightning-${i}`}
-            className="absolute"
-            style={{
-              left: `${20 + i * 20}%`,
-              top: `${10 + i * 15}%`,
-              width: "2px",
-              height: "200px",
-              background: `linear-gradient(to bottom, transparent, ${currentColors.primary}, ${currentColors.secondary}, transparent)`,
-              opacity: 0,
-            }}
-            animate={{
-              opacity: [0, 1, 0],
-              scaleY: [0, 1, 0],
-              boxShadow: [
-                `0 0 0px ${currentColors.primary}`,
-                `0 0 20px ${currentColors.primary}, 0 0 40px ${currentColors.secondary}`,
-                `0 0 0px ${currentColors.primary}`,
-              ],
-            }}
-            transition={{
-              duration: 0.8,
-              delay: i * 2,
-              repeat: Infinity,
-              repeatDelay: 3 + Math.random() * 2,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-
-        {/* Lightning Flashes */}
-        {[0, 1, 2].map((i) => (
-          <motion.div
-            key={`flash-${i}`}
-            className="absolute inset-0"
-            style={{
-              background: `radial-gradient(circle, ${currentColors.glow} 0%, transparent 70%)`,
-              opacity: 0,
-            }}
-            animate={{
-              opacity: [0, 0.3, 0],
-            }}
-            transition={{
-              duration: 0.3,
-              delay: i * 2.5,
-              repeat: Infinity,
-              repeatDelay: 4 + Math.random() * 3,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-
-        {/* Electric Sparks */}
-        {Array.from({ length: 15 }).map((_, i) => (
-          <motion.div
-            key={`spark-${i}`}
-            className="absolute w-1 h-1 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              backgroundColor: currentColors.primary,
-            }}
-            animate={{
-              opacity: [0, 1, 0],
-              scale: [0, 1.5, 0],
-              boxShadow: [
-                `0 0 0px ${currentColors.primary}`,
-                `0 0 10px ${currentColors.primary}, 0 0 20px ${currentColors.secondary}`,
-                `0 0 0px ${currentColors.primary}`,
-              ],
-            }}
-            transition={{
-              duration: 0.5,
-              delay: Math.random() * 3,
-              repeat: Infinity,
-              repeatDelay: 2 + Math.random() * 4,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Threads Background */}
       <div
+        className="absolute inset-0 pointer-events-none z-0 opacity-40"
         style={{
-          width: "100%",
-          height: "600px",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          zIndex: 1,
+          background: `radial-gradient(ellipse at 50% 0%, ${currentColors.glow}, transparent 70%)`,
         }}
-      >
-        <Threads amplitude={1} distance={0} enableMouseInteraction={false} />
-      </div>
+      />
 
-      {/* Floating Background Particles */}
-      <div className="absolute inset-0 pointer-events-none z-2">
-        {[0, 1, 2, 3, 4].map((i) => (
+      <div className="absolute inset-0 pointer-events-none z-[1] hidden motion-safe:block">
+        {[0, 1].map((i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 rounded-full"
@@ -220,7 +106,7 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
             }}
             animate={{
               y: [0, -40, -80, -120],
-              x: [0, Math.random() * 30 - 15],
+              x: [0, seededRange(i + 200, -15, 15), 0],
               opacity: [0, 1, 0.8, 0],
               scale: [0, 1, 1.2, 0],
             }}
@@ -307,17 +193,14 @@ const Footer: React.FC<FooterProps> = ({ setActiveSection }) => {
               Quick Links
             </h4>
             <div className="space-y-2">
-              {sections.map((section, index) => (
-                <motion.button
+              {NAV_SECTIONS.map((section) => (
+                <Link
                   key={section.key}
-                  onClick={() => handleSectionClick(section.key)}
-                  className={`block ${currentTextColors.link} ${currentTextColors.hover} transition-colors duration-300 text-sm text-left w-full`}
-                  whileHover={{ x: 5 }}
-                  transition={{ duration: 0.2 }}
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  href={section.path}
+                  className={`block ${currentTextColors.link} ${currentTextColors.hover} transition-colors duration-300 text-sm`}
                 >
                   {section.label}
-                </motion.button>
+                </Link>
               ))}
             </div>
           </motion.div>

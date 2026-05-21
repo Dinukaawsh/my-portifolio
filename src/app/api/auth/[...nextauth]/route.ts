@@ -15,6 +15,7 @@ interface ExtendedToken {
 }
 
 const handler = NextAuth({
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -55,6 +56,22 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ account, profile }) {
+      const allowedEmails = process.env.ALLOWED_ADMIN_EMAILS
+        ?.split(",")
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean);
+
+      if (!allowedEmails?.length) return true;
+
+      const email = (profile?.email || "").toLowerCase();
+      if (!email || !allowedEmails.includes(email)) {
+        return false;
+      }
+
+      void account;
+      return true;
+    },
     async session({ session, token }) {
       // Add provider information to session
       if ((token as ExtendedToken).provider) {
