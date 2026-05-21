@@ -12,6 +12,7 @@ import Image from "next/image";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { Code2, Camera } from "lucide-react";
 import { aboutContent, getFormattedExperience, getProjectsCount } from "@/app/components/content/about";
+import { seededRange } from "@/lib/seeded-random";
 import Footer from "@/app/components/layouts/footer/Footer";
 import ProfileSkeleton from "@/app/components/pages/data/about/components/ProfileSkeleton";
 import MainProfileCard from "@/app/components/pages/data/about/components/MainProfileCard";
@@ -23,14 +24,10 @@ const AnimatedStats = lazy(() => import("@/app/components/pages/data/about/compo
 const PerformanceMonitor = lazy(() => import("@/app/components/pages/data/about/components/PerformanceMonitor"));
 const RollingGallery = lazy(() => import("@/app/components/backgrounds/rolling gallery/gallery").then(m => ({ default: m.RollingGallery })));
 
-interface AboutProps {
-  setActiveSection?: (key: string) => void;
-}
-
 const roles = aboutContent.roles;
 const skills = aboutContent.skills;
 
-export default function About({ setActiveSection }: AboutProps = {}) {
+export default function About() {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayed, setDisplayed] = useState("");
   const [typing, setTyping] = useState(true);
@@ -44,10 +41,7 @@ export default function About({ setActiveSection }: AboutProps = {}) {
   // Check if CV button should be enabled (default: true if not set)
   const enableCvButton = process.env.NEXT_PUBLIC_ENABLE_CV_BUTTON !== "false";
   // Optimize scroll progress - only track when visible
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  });
+  const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
@@ -673,7 +667,7 @@ export default function About({ setActiveSection }: AboutProps = {}) {
                         scale: [0, 1, 0],
                         opacity: [0, 0.8, 0],
                         y: [0, -10, 0],
-                        x: [0, Math.random() * 20 - 10, 0],
+                        x: [0, seededRange(i + 100, -10, 10), 0],
                       }}
                       transition={{
                         duration: 2,
@@ -878,7 +872,7 @@ export default function About({ setActiveSection }: AboutProps = {}) {
       </motion.div>
 
       {/* Footer Section */}
-      <Footer setActiveSection={setActiveSection} />
+      <Footer />
 
       {/* CV Preview Modal */}
       {showCvPreview && (

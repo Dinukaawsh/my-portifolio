@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import VisitTracker from "./components/common/VisitTracker";
+import AppEntryGate from "./components/common/AppEntryGate";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import AuthProvider from "./components/common/AuthProvider";
 
@@ -8,8 +9,6 @@ export const metadata: Metadata = {
   title: "Dinuka Wickramarathna - Portfolio",
   description: "Full Stack Developer Portfolio",
 };
-
-// TODO: Refactor Navbar to use buttons and accept setActiveSection as a prop. This will be handled after the main logic is set up in page.tsx.
 
 export default function RootLayout({
   children,
@@ -24,6 +23,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <AuthProvider>
+            <AppEntryGate />
             <VisitTracker />
             {children}
           </AuthProvider>

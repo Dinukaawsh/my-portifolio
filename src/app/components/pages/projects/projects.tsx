@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState, useRef } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import ProjectIcon from "@/app/components/icons/projectsicons";
@@ -71,7 +73,7 @@ export default function Projects() {
       {/* Floating Project Icons */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {Array.from(
-          { length: projectsContent.animation.floatingParticles },
+          { length: Math.min(3, projectsContent.animation.floatingParticles) },
           (_, i) => {
             const config = getParticleConfig(i);
             return (

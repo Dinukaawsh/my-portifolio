@@ -1,6 +1,18 @@
+import {
+  formatDuration,
+  formatPageList,
+} from "@/lib/session-analytics";
+
 // Discord Webhook Integration
 export interface DiscordNotification {
-  type: "visit" | "comment" | "registration" | "feedback" | "contact" | "googleForm";
+  type:
+    | "visit"
+    | "session"
+    | "comment"
+    | "registration"
+    | "feedback"
+    | "contact"
+    | "googleForm";
   data: {
     visitor?: {
       ip?: string;
@@ -12,6 +24,22 @@ export interface DiscordNotification {
       page: string;
       sessionId?: string;
       isNewSession?: boolean;
+    };
+    session?: {
+      sessionId: string;
+      startedAt: number;
+      endedAt: number;
+      pages: { path: string; label: string; at: number }[];
+      userAgent: string;
+      deviceType: "mobile" | "tablet" | "desktop" | "unknown";
+      os: string;
+      browser: string;
+      reason: "leave" | "idle" | "hidden";
+      user?: {
+        name?: string;
+        email?: string;
+        provider?: string;
+      };
     };
     comment?: {
       name: string;
@@ -56,7 +84,9 @@ export interface DiscordNotification {
 export async function sendDiscordNotification(
   notification: DiscordNotification
 ) {
-  const webhookUrl = process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL;
+  const webhookUrl =
+    process.env.DISCORD_WEBHOOK_URL ||
+    process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL;
 
   if (!webhookUrl) {
     console.warn("Discord webhook URL not configured");
@@ -90,6 +120,74 @@ export async function sendDiscordNotification(
 
 function createDiscordEmbed(notification: DiscordNotification) {
   const { type, data } = notification;
+
+  if (type === "session" && data.session) {
+    const s = data.session;
+    const duration = formatDuration(s.endedAt - s.startedAt);
+    const pageList = formatPageList(s.pages);
+    const reasonLabel =
+      s.reason === "idle"
+        ? "Session idle timeout"
+        : s.reason === "hidden"
+          ? "Tab closed / navigated away"
+          : "Visitor left site";
+
+    const fields = [
+      {
+        name: "⏱️ Duration",
+        value: duration,
+        inline: true,
+      },
+      {
+        name: "📄 Pages viewed",
+        value: String(s.pages.length),
+        inline: true,
+      },
+      {
+        name: "🆔 Session",
+        value: s.sessionId,
+        inline: true,
+      },
+      {
+        name: "🛤️ Journey",
+        value: pageList || "—",
+        inline: false,
+      },
+      {
+        name: "🖥️ Device",
+        value: `${s.deviceType} · ${s.os} · ${s.browser}`,
+        inline: true,
+      },
+      {
+        name: "📤 End reason",
+        value: reasonLabel,
+        inline: true,
+      },
+      {
+        name: "🕐 Started",
+        value: new Date(s.startedAt).toLocaleString(),
+        inline: true,
+      },
+    ];
+
+    if (s.user?.name || s.user?.email) {
+      fields.unshift({
+        name: "👤 Signed in",
+        value: [s.user.name, s.user.email, s.user.provider]
+          .filter(Boolean)
+          .join(" · "),
+        inline: false,
+      });
+    }
+
+    return {
+      title: "📊 Portfolio session summary",
+      color: 0x5865f2,
+      fields,
+      timestamp: new Date(s.endedAt).toISOString(),
+      footer: { text: "Portfolio Analytics · one notification per visit" },
+    };
+  }
 
   if (type === "visit") {
     return {

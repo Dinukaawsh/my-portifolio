@@ -2,15 +2,13 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import SkillsBackground from "./components/backgrounds/skills/SkillsBackground";
+import AmbientBackground from "./components/common/AmbientBackground";
 
 export default function NotFound() {
   return (
     <div className="relative min-h-[100dvh] overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 z-0">
-        <SkillsBackground />
-      </div>
+      <AmbientBackground variant="violet" />
 
       {/* Overlay gradient for readability */}
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
@@ -53,7 +51,7 @@ export default function NotFound() {
           className="flex flex-wrap items-center justify-center gap-4"
         >
           <Link
-            href="/"
+            href="/about"
             className="group inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-6 py-3 text-white backdrop-blur-md transition hover:bg-white/20"
           >
             <span>Go Home</span>

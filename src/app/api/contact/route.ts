@@ -1,14 +1,35 @@
 import { NextResponse } from "next/server";
 import { sendDiscordNotification } from "@/lib/discord";
 import { Resend } from "resend";
+import {
+  checkRateLimit,
+  escapeHtml,
+  getClientIp,
+  sanitizeText,
+} from "@/lib/security";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, subject, body: messageBody } = body;
-    let { email } = body;
+    const ip = getClientIp(request);
+    const rate = checkRateLimit(`contact:${ip}`, { limit: 5, windowMs: 60_000 });
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: rate.retryAfterSec
+            ? { "Retry-After": String(rate.retryAfterSec) }
+            : undefined,
+        }
+      );
+    }
 
-    // Validate required fields
+    const body = await request.json();
+    const name = sanitizeText(body.name, 120);
+    const subject = sanitizeText(body.subject, 200);
+    const messageBody = sanitizeText(body.body, 5000);
+    let email = sanitizeText(body.email, 254);
+
     if (!name || !email || !subject || !messageBody) {
       return NextResponse.json(
         { error: "All fields are required" },
@@ -130,12 +151,12 @@ export async function POST(request: Request) {
                 New Contact Form Submission
               </h2>
               <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin-top: 20px;">
-                <p style="margin: 10px 0;"><strong style="color: #4F46E5;">Name:</strong> ${name}</p>
-                <p style="margin: 10px 0;"><strong style="color: #4F46E5;">Email:</strong> <a href="mailto:${email}" style="color: #4F46E5;">${email}</a></p>
-                <p style="margin: 10px 0;"><strong style="color: #4F46E5;">Subject:</strong> ${subject}</p>
+                <p style="margin: 10px 0;"><strong style="color: #4F46E5;">Name:</strong> ${escapeHtml(name)}</p>
+                <p style="margin: 10px 0;"><strong style="color: #4F46E5;">Email:</strong> <a href="mailto:${escapeHtml(email)}" style="color: #4F46E5;">${escapeHtml(email)}</a></p>
+                <p style="margin: 10px 0;"><strong style="color: #4F46E5;">Subject:</strong> ${escapeHtml(subject)}</p>
                 <div style="margin-top: 20px;">
                   <p style="margin: 10px 0;"><strong style="color: #4F46E5;">Message:</strong></p>
-                  <p style="background-color: white; padding: 15px; border-radius: 4px; border-left: 4px solid #4F46E5; white-space: pre-wrap;">${messageBody.replace(/\n/g, '<br>')}</p>
+                  <p style="background-color: white; padding: 15px; border-radius: 4px; border-left: 4px solid #4F46E5; white-space: pre-wrap;">${escapeHtml(messageBody).replace(/\n/g, "<br>")}</p>
                 </div>
               </div>
               <p style="color: #6b7280; font-size: 12px; margin-top: 20px;">

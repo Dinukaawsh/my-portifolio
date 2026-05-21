@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useTheme } from "@/app/contexts/ThemeContext";
@@ -850,10 +852,11 @@ export default function Contact() {
               />
 
               {/* Tabs */}
-              <div className="mb-6 flex justify-center">
-                <div className="inline-flex rounded-2xl overflow-hidden border border-blue-500/30 bg-white/5">
+              <div className="mb-6 flex justify-center w-full px-1">
+                <div className="grid grid-cols-2 w-full max-w-sm sm:max-w-md rounded-2xl overflow-hidden border border-blue-500/30 bg-white/5">
                   <button
-                    className={`px-4 sm:px-6 py-2 text-sm sm:text-base font-semibold transition-all ${
+                    type="button"
+                    className={`min-h-[2.75rem] px-3 sm:px-6 py-2.5 text-sm sm:text-base font-semibold transition-all ${
                       activeTab === "feedback"
                         ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                         : "text-blue-200 hover:bg-white/10"
@@ -863,7 +866,8 @@ export default function Contact() {
                     Feedback
                   </button>
                   <button
-                    className={`px-4 sm:px-6 py-2 text-sm sm:text-base font-semibold transition-all ${
+                    type="button"
+                    className={`min-h-[2.75rem] px-3 sm:px-6 py-2.5 text-sm sm:text-base font-semibold transition-all ${
                       activeTab === "comments"
                         ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                         : "text-blue-200 hover:bg-white/10"
