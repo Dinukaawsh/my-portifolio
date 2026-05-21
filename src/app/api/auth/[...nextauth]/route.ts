@@ -2,8 +2,6 @@ import NextAuth, { Session } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import LinkedInProvider from "next-auth/providers/linkedin";
-import { sendDiscordNotification } from "@/lib/discord";
-
 // Extend the Session type to include provider
 interface ExtendedSession extends Session {
   provider?: string;
@@ -86,27 +84,8 @@ const handler = NextAuth({
       if (account) {
         (token as ExtendedToken).provider = account.provider;
 
-        // Send Discord notification for new registration
-        try {
-          await sendDiscordNotification({
-            type: "registration",
-            data: {
-              registration: {
-                name: profile?.name || "Unknown",
-                email: profile?.email || "No email",
-                provider: account.provider,
-                image:
-                  (profile as { picture?: string; avatar_url?: string })
-                    ?.picture ||
-                  (profile as { picture?: string; avatar_url?: string })
-                    ?.avatar_url,
-                timestamp: new Date().toLocaleString(),
-              },
-            },
-          });
-        } catch (error) {
-          console.error("Failed to send registration notification:", error);
-        }
+        // OAuth sign-in is included in the session summary notification from VisitTracker
+        void profile;
       }
       return token;
     },
