@@ -1,6 +1,139 @@
 // About Page Content Configuration
 // Edit this file to update your personal information, skills, and other content
 
+// Import projects and experience data for dynamic calculations
+import { projectsContent } from "./projects";
+import { experienceContent } from "./experience";
+
+// Type for single role experience (backward compatibility)
+interface SingleRoleExperience {
+  period: string;
+  type?: string;
+  skills?: string[];
+  responsibilities?: string[];
+  title?: string;
+  duration?: string;
+}
+
+// Helper function to calculate total experience and return formatted string
+// Note: This function is used internally by getTotalExperienceMonths and getFormattedExperience
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const calculateTotalExperience = (): string | number => {
+  const experiences = experienceContent.experiences;
+  let totalMonths = 0;
+  const currentDate = new Date();
+
+  experiences.forEach((exp) => {
+    // Check if experience has multiple roles (new structure)
+    if (exp.roles && Array.isArray(exp.roles)) {
+      // Calculate from all roles in the company
+      exp.roles.forEach((role) => {
+        const period = role.period;
+        const parts = period.split(" - ");
+        if (parts.length === 2) {
+          const startStr = parts[0].trim();
+          const endStr = parts[1].trim();
+          const startDate = parseDate(startStr);
+          let endDate: Date | null = null;
+          if (endStr.toLowerCase() === "present" || endStr.toLowerCase() === "current") {
+            endDate = currentDate;
+          } else {
+            endDate = parseDate(endStr);
+          }
+          if (startDate && endDate) {
+            // Calculate months difference and add 1 for inclusive counting
+            // (both start and end months count as experience)
+            const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                              (endDate.getMonth() - startDate.getMonth()) + 1;
+            totalMonths += monthsDiff;
+          }
+        }
+      });
+    } else {
+      // Single role (backward compatibility)
+      const singleExp = exp as unknown as SingleRoleExperience;
+      const period = singleExp.period;
+      if (period) {
+        const parts = period.split(" - ");
+        if (parts.length === 2) {
+          const startStr = parts[0].trim();
+          const endStr = parts[1].trim();
+          const startDate = parseDate(startStr);
+          let endDate: Date | null = null;
+          if (endStr.toLowerCase() === "present" || endStr.toLowerCase() === "current") {
+            endDate = currentDate;
+          } else {
+            endDate = parseDate(endStr);
+          }
+          if (startDate && endDate) {
+            // Calculate months difference and add 1 for inclusive counting
+            // (both start and end months count as experience)
+            const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                              (endDate.getMonth() - startDate.getMonth()) + 1;
+            totalMonths += monthsDiff;
+          }
+        }
+      }
+    }
+  });
+
+  // If less than 12 months, return months, otherwise return years
+  if (totalMonths < 12) {
+    return `${totalMonths} month${totalMonths !== 1 ? 's' : ''}`;
+  } else {
+    const totalYears = totalMonths / 12;
+    const years = Math.floor(totalYears);
+    const remainingMonths = totalMonths % 12;
+
+    if (remainingMonths === 0) {
+      return years; // Return as number for clean display (e.g., "2+")
+    } else {
+      // Return formatted string with years and months
+      const yearsText = years > 0 ? `${years} year${years !== 1 ? 's' : ''}` : '';
+      const monthsText = remainingMonths > 0 ? `${remainingMonths} month${remainingMonths !== 1 ? 's' : ''}` : '';
+      return yearsText && monthsText ? `${yearsText} ${monthsText}` : yearsText || monthsText;
+    }
+  }
+};
+
+// Helper function to parse date strings like "Mar 2025" or "January 2023"
+const parseDate = (dateStr: string): Date | null => {
+  const months: Record<string, number> = {
+    jan: 0, january: 0,
+    feb: 1, february: 1,
+    mar: 2, march: 2,
+    apr: 3, april: 3,
+    may: 4,
+    jun: 5, june: 5,
+    jul: 6, july: 6,
+    aug: 7, august: 7,
+    sep: 8, september: 8,
+    oct: 9, october: 9,
+    nov: 10, november: 10,
+    dec: 11, december: 11,
+  };
+
+  const parts = dateStr.trim().split(" ");
+  if (parts.length >= 2) {
+    const monthStr = parts[0].toLowerCase();
+    const yearStr = parts[1];
+
+    const month = months[monthStr];
+    const year = parseInt(yearStr, 10);
+
+    if (month !== undefined && !isNaN(year)) {
+      return new Date(year, month, 1);
+    }
+  }
+
+  return null;
+};
+
+// Helper function to get projects count
+export const getProjectsCount = (): number => {
+  return projectsContent.projects.length;
+};
+
 export const aboutContent = {
   // Personal Information
   personal: {
@@ -12,7 +145,7 @@ export const aboutContent = {
     cvImage: "/CV/cv.png",
     cvFileName: "Dinuka_Wickramarathna_CV.pdf",
     description:
-      "I'm a passionate Full Stack Developer and Information Technology student pursuing a Bachelor of Information Technology (Hons), specializing in modern web technologies. With expertise across the entire software development lifecycle, I build robust, scalable applications using cutting-edge technologies. My technical proficiency includes frontend development with React.js and Next.js, backend architecture using Node.js and Express.js, and proficiency in JavaScript, TypeScript, and Python. I have extensive experience with both SQL and NoSQL databases including MongoDB and MySQL. I excel in designing RESTful APIs and GraphQL endpoints, implementing secure authentication with JWT, and creating responsive user interfaces with Tailwind CSS. My cloud infrastructure knowledge covers AWS services, CI/CD pipelines with GitHub Actions, and containerization using Docker and Kubernetes. Beyond technical skills, I bring strong problem-solving abilities, effective communication, and collaborative teamwork to every project. I'm committed to writing clean, maintainable code following industry best practices and delivering high-quality solutions that meet both business requirements and user needs.",
+      "I am a Full-Stack Software Engineer with a strong foundation in modern web development and a passion for building scalable, high-performance applications. I have completed my Bachelor of Information Technology (Honors) at ESOFT Metro Campus (ESU) and currently work as an Associate Software Engineer at Twist Digital. In my current role, I gain hands-on experience across the full development lifecycle, working on both frontend and backend systems. I primarily use Next.js and React to build user-centric, performant interfaces, while leveraging NestJS, Express, and Fastify to design robust backend services. I have experience developing both RESTful and GraphQL APIs, ensuring clean architecture and maintainable codebases. Beyond development, I am actively involved in application deployment, CI/CD pipeline management, database design, and schema migrations, which has strengthened my understanding of cloud hosting and modern DevOps practices. I regularly work with GitHub Actions and version control workflows to ensure reliable and efficient delivery. I am passionate about continuous learning and professional growth, and I actively pursue certifications to enhance my technical expertise. I am a critical thinker, problem solver, and strong communicator, capable of collaborating effectively within cross-functional teams. I am always eager to take on new challenges, contribute to impactful projects, and grow as a well-rounded full-stack engineer.",
   },
 
   // Prominent quote configuration
@@ -43,17 +176,17 @@ export const aboutContent = {
     "AWS",
   ],
 
-  // Statistics
+  // Statistics - Dynamically calculated
   stats: [
     {
       label: "Years Experience",
-      value: 1,
+      value: "dynamic", // Will be calculated from experience data
       icon: "TrendingUp",
       color: "from-blue-500 to-cyan-500",
     },
     {
       label: "Projects Completed",
-      value: 12,
+      value: "dynamic", // Will be calculated from projects data
       icon: "Target",
       color: "from-green-500 to-emerald-500",
     },
@@ -190,12 +323,121 @@ export const aboutContent = {
   },
 };
 
+// Helper function to get total experience in months (for numeric calculations)
+export const getTotalExperienceMonths = (): number => {
+  const experiences = experienceContent.experiences;
+  let totalMonths = 0;
+  const currentDate = new Date();
+
+  experiences.forEach((exp) => {
+    // Check if experience has multiple roles (new structure)
+    if (exp.roles && Array.isArray(exp.roles)) {
+      // Calculate from all roles in the company
+      exp.roles.forEach((role) => {
+        const period = role.period;
+        const parts = period.split(" - ");
+        if (parts.length === 2) {
+          const startStr = parts[0].trim();
+          const endStr = parts[1].trim();
+          const startDate = parseDate(startStr);
+          let endDate: Date | null = null;
+          if (endStr.toLowerCase() === "present" || endStr.toLowerCase() === "current") {
+            endDate = currentDate;
+          } else {
+            endDate = parseDate(endStr);
+          }
+          if (startDate && endDate) {
+            // Calculate months difference and add 1 for inclusive counting
+            // (both start and end months count as experience)
+            const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                              (endDate.getMonth() - startDate.getMonth()) + 1;
+            totalMonths += monthsDiff;
+          }
+        }
+      });
+    } else {
+      // Single role (backward compatibility)
+      const singleExp = exp as unknown as SingleRoleExperience;
+      const period = singleExp.period;
+      if (period) {
+        const parts = period.split(" - ");
+        if (parts.length === 2) {
+          const startStr = parts[0].trim();
+          const endStr = parts[1].trim();
+          const startDate = parseDate(startStr);
+          let endDate: Date | null = null;
+          if (endStr.toLowerCase() === "present" || endStr.toLowerCase() === "current") {
+            endDate = currentDate;
+          } else {
+            endDate = parseDate(endStr);
+          }
+          if (startDate && endDate) {
+            // Calculate months difference and add 1 for inclusive counting
+            // (both start and end months count as experience)
+            const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                              (endDate.getMonth() - startDate.getMonth()) + 1;
+            totalMonths += monthsDiff;
+          }
+        }
+      }
+    }
+  });
+  return totalMonths;
+};
+
+// Helper function to get formatted experience string
+export const getFormattedExperience = (): string => {
+  const totalMonths = getTotalExperienceMonths();
+  if (totalMonths < 12) {
+    return `${totalMonths} month${totalMonths !== 1 ? 's' : ''}`;
+  } else {
+    const years = Math.floor(totalMonths / 12);
+    const remainingMonths = totalMonths % 12;
+    if (remainingMonths === 0) {
+      return `${years} year${years !== 1 ? 's' : ''}`;
+    } else {
+      const yearsText = `${years} year${years !== 1 ? 's' : ''}`;
+      const monthsText = `${remainingMonths} month${remainingMonths !== 1 ? 's' : ''}`;
+      return `${yearsText} ${monthsText}`;
+    }
+  }
+};
+
 // Helper function to get dynamic stats
 export const getDynamicStats = () => {
-  return aboutContent.stats.map((stat) => ({
-    ...stat,
-    value: stat.value === "dynamic" ? aboutContent.skills.length : stat.value,
-  }));
+  return aboutContent.stats.map((stat) => {
+    if (stat.value === "dynamic") {
+      // Calculate dynamic values based on label
+      if (stat.label === "Years Experience") {
+        const totalMonths = getTotalExperienceMonths();
+        // For stats display, show years if >= 1 year, otherwise show as number for "+" format
+        if (totalMonths >= 12) {
+          const years = Math.floor(totalMonths / 12);
+          return {
+            ...stat,
+            value: years,
+          };
+        } else {
+          return {
+            ...stat,
+            value: totalMonths,
+            label: "Months Experience", // Update label for months
+          };
+        }
+      } else if (stat.label === "Projects Completed") {
+        return {
+          ...stat,
+          value: getProjectsCount(),
+        };
+      } else if (stat.label === "Technologies") {
+        return {
+          ...stat,
+          value: aboutContent.skills.length,
+        };
+      }
+    }
+    return stat;
+  });
 };
 
 // Export individual sections for easier access

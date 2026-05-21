@@ -7,11 +7,7 @@ import { publicationsContent } from "@/app/components/content/publications";
 import { SplineScene } from "@/app/components/backgrounds/robot/splite";
 import { Spotlight } from "@/app/components/backgrounds/robot/spotlight";
 
-type PublicationsProps = {
-  setActiveSection: React.Dispatch<React.SetStateAction<string>>;
-};
-
-export default function Publications({ setActiveSection }: PublicationsProps) {
+export default function Publications() {
   const [isVisible, setIsVisible] = useState(false);
   const [activePlatform, setActivePlatform] = useState("All");
   const [currentIndicator, setCurrentIndicator] = useState(0);
@@ -45,14 +41,13 @@ export default function Publications({ setActiveSection }: PublicationsProps) {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          setActiveSection("Publications");
         }
       },
       { threshold: 0.1 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
-  }, [setActiveSection]);
+  }, []);
 
   return (
     <section

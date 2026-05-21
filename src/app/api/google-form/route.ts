@@ -1,0 +1,74 @@
+import { NextResponse } from "next/server";
+import { sendDiscordNotification } from "@/lib/discord";
+import { checkRateLimit, getClientIp } from "@/lib/security";
+
+export async function POST(request: Request) {
+  try {
+    const ip = getClientIp(request);
+    const rate = checkRateLimit(`google-form:${ip}`, {
+      limit: 20,
+      windowMs: 60_000,
+    });
+    if (!rate.allowed) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
+    const webhookSecret = process.env.GOOGLE_FORM_WEBHOOK_SECRET;
+    if (webhookSecret) {
+      const provided = request.headers.get("x-webhook-secret");
+      if (provided !== webhookSecret) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    }
+
+    const body = await request.json();
+
+    // Validate that we received form data
+    // Google Apps Script will send the form responses here
+    const formData = body.formData || body;
+    const submittedBy = body.submittedBy || body.email || body.name || "Unknown";
+    const timestamp = body.timestamp || new Date().toLocaleString();
+    const formUrl = body.formUrl || process.env.NEXT_PUBLIC_GOOGLE_FORM_URL || "";
+
+    // Send Discord notification
+    await sendDiscordNotification({
+      type: "googleForm",
+      data: {
+        googleForm: {
+          formData,
+          timestamp,
+          submittedBy: String(submittedBy),
+          formUrl: String(formUrl),
+        },
+      },
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Google Form submission received and notification sent",
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error processing Google Form submission:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to process Google Form submission",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// Allow GET for testing
+export async function GET() {
+  return NextResponse.json(
+    {
+      message: "Google Form webhook endpoint is active",
+      instructions: "Configure Google Apps Script to POST form submissions to this endpoint",
+    },
+    { status: 200 }
+  );
+}

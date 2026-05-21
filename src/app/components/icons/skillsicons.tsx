@@ -13,6 +13,7 @@ import {
   SiLaravel,
   SiDjango,
   SiExpress,
+  SiFastify,
   SiMongodb,
   SiMysql,
   SiAmazon,
@@ -71,6 +72,7 @@ const CustomIcon: React.FC<CustomIconProps> = ({
     "custom:laravel": SiLaravel,
     "custom:django": SiDjango,
     "custom:express": SiExpress,
+    "custom:fastify": SiFastify,
     "custom:nestjs": SiNestjs,
 
     // APIs

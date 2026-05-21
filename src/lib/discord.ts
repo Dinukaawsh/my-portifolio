@@ -1,6 +1,18 @@
+import {
+  formatDuration,
+  formatPageList,
+} from "@/lib/session-analytics";
+
 // Discord Webhook Integration
 export interface DiscordNotification {
-  type: "visit" | "comment" | "registration" | "feedback";
+  type:
+    | "visit"
+    | "session"
+    | "comment"
+    | "registration"
+    | "feedback"
+    | "contact"
+    | "googleForm";
   data: {
     visitor?: {
       ip?: string;
@@ -12,6 +24,22 @@ export interface DiscordNotification {
       page: string;
       sessionId?: string;
       isNewSession?: boolean;
+    };
+    session?: {
+      sessionId: string;
+      startedAt: number;
+      endedAt: number;
+      pages: { path: string; label: string; at: number }[];
+      userAgent: string;
+      deviceType: "mobile" | "tablet" | "desktop" | "unknown";
+      os: string;
+      browser: string;
+      reason: "leave" | "idle" | "hidden";
+      user?: {
+        name?: string;
+        email?: string;
+        provider?: string;
+      };
     };
     comment?: {
       name: string;
@@ -37,13 +65,28 @@ export interface DiscordNotification {
       image?: string;
       timestamp: string;
     };
+    contact?: {
+      name: string;
+      email: string;
+      subject: string;
+      message: string;
+      timestamp: string;
+    };
+    googleForm?: {
+      formData?: Record<string, unknown>;
+      timestamp: string;
+      submittedBy?: string;
+      formUrl?: string;
+    };
   };
 }
 
 export async function sendDiscordNotification(
   notification: DiscordNotification
 ) {
-  const webhookUrl = process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL;
+  const webhookUrl =
+    process.env.DISCORD_WEBHOOK_URL ||
+    process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL;
 
   if (!webhookUrl) {
     console.warn("Discord webhook URL not configured");
@@ -77,6 +120,74 @@ export async function sendDiscordNotification(
 
 function createDiscordEmbed(notification: DiscordNotification) {
   const { type, data } = notification;
+
+  if (type === "session" && data.session) {
+    const s = data.session;
+    const duration = formatDuration(s.endedAt - s.startedAt);
+    const pageList = formatPageList(s.pages);
+    const reasonLabel =
+      s.reason === "idle"
+        ? "Session idle timeout"
+        : s.reason === "hidden"
+          ? "Tab closed / navigated away"
+          : "Visitor left site";
+
+    const fields = [
+      {
+        name: "⏱️ Duration",
+        value: duration,
+        inline: true,
+      },
+      {
+        name: "📄 Pages viewed",
+        value: String(s.pages.length),
+        inline: true,
+      },
+      {
+        name: "🆔 Session",
+        value: s.sessionId,
+        inline: true,
+      },
+      {
+        name: "🛤️ Journey",
+        value: pageList || "—",
+        inline: false,
+      },
+      {
+        name: "🖥️ Device",
+        value: `${s.deviceType} · ${s.os} · ${s.browser}`,
+        inline: true,
+      },
+      {
+        name: "📤 End reason",
+        value: reasonLabel,
+        inline: true,
+      },
+      {
+        name: "🕐 Started",
+        value: new Date(s.startedAt).toLocaleString(),
+        inline: true,
+      },
+    ];
+
+    if (s.user?.name || s.user?.email) {
+      fields.unshift({
+        name: "👤 Signed in",
+        value: [s.user.name, s.user.email, s.user.provider]
+          .filter(Boolean)
+          .join(" · "),
+        inline: false,
+      });
+    }
+
+    return {
+      title: "📊 Portfolio session summary",
+      color: 0x5865f2,
+      fields,
+      timestamp: new Date(s.endedAt).toISOString(),
+      footer: { text: "Portfolio Analytics · one notification per visit" },
+    };
+  }
 
   if (type === "visit") {
     return {
@@ -273,6 +384,90 @@ function createDiscordEmbed(notification: DiscordNotification) {
       timestamp: new Date().toISOString(),
       footer: {
         text: "Portfolio Feedback",
+      },
+    };
+  } else if (type === "contact") {
+    return {
+      title: "📧 New Contact Form Submission!",
+      color: 0x00d4ff, // Cyan
+      fields: [
+        {
+          name: "👤 Name",
+          value: data.contact?.name || "Anonymous",
+          inline: true,
+        },
+        {
+          name: "📧 Email",
+          value: data.contact?.email || "No email",
+          inline: true,
+        },
+        {
+          name: "📌 Subject",
+          value: data.contact?.subject || "No subject",
+          inline: false,
+        },
+        {
+          name: "💬 Message",
+          value: data.contact?.message
+            ? data.contact.message.length > 500
+              ? data.contact.message.substring(0, 500) + "..."
+              : data.contact.message
+            : "No message",
+          inline: false,
+        },
+        {
+          name: "⏰ Time",
+          value: data.contact?.timestamp || "Unknown",
+          inline: true,
+        },
+      ],
+      timestamp: new Date().toISOString(),
+      footer: {
+        text: "Portfolio Contact Form",
+      },
+    };
+  } else if (type === "googleForm") {
+    const formData = data.googleForm?.formData || {};
+    const formUrl = data.googleForm?.formUrl;
+    const fields = Object.entries(formData)
+      .slice(0, 9) // Limit to 9 fields to make room for form link and time
+      .map(([key, value]) => ({
+        name: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1"),
+        value: typeof value === "string" && value.length > 1024
+          ? value.substring(0, 1020) + "..."
+          : String(value || "N/A"),
+        inline: false,
+      }));
+
+    // Build fields array with form link if available
+    const allFields = fields.length > 0 ? [...fields] : [];
+
+    // Add form link field if URL is available
+    if (formUrl) {
+      allFields.push({
+        name: "🔗 View Form & Responses",
+        value: `[Click here to open Google Form](${formUrl})`,
+        inline: false,
+      });
+    }
+
+    // Add timestamp
+    allFields.push({
+      name: "⏰ Time",
+      value: data.googleForm?.timestamp || new Date().toLocaleString(),
+      inline: true,
+    });
+
+    return {
+      title: "📋 New Google Form Submission!",
+      color: 0x4285f4, // Google Blue
+      description: data.googleForm?.submittedBy
+        ? `Submitted by: ${data.googleForm.submittedBy}`
+        : "Someone submitted your Hire Me form",
+      fields: allFields,
+      timestamp: new Date().toISOString(),
+      footer: {
+        text: "Google Form Submission",
       },
     };
   }

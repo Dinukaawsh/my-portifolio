@@ -41,7 +41,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     (theme: Theme) => {
       if (!isClient) return;
 
-      const navbar = document.querySelector("nav");
+      const navbar = document.querySelector("[data-site-nav]");
       if (navbar) {
         // Remove existing theme classes
         navbar.classList.remove(

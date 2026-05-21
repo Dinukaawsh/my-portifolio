@@ -1,646 +1,453 @@
-# 🚀 Dinuka Wickramarathna - Portfolio Website
+# Dinuka Wickramarathna — Portfolio
 
-A modern, interactive portfolio website built with Next.js 15, featuring stunning 3D animations, smooth transitions, and a dynamic theme system.
+A modern, full-stack portfolio built with **Next.js 16** (App Router), featuring multi-page routing, OAuth authentication, Firebase-backed comments, Discord analytics, and a dynamic five-theme UI.
 
-## ✨ Features
+**Live site:** [dinukawickramarathana.me](https://www.dinukawickramarathana.me)  
+**Current version:** `v1.1.0` (shown in the footer, sourced from `package.json`)
 
-### 🎨 Interactive Preloader
+---
 
-- Animated typing effect for the developer's name
-- Real-time clock display
-- Floating particle animations
-- 3D text rendering with Three.js
-- Animated horse background element
+## Table of contents
 
-### 🌈 Dynamic Theme System
+- [What's new in v1.1](#whats-new-in-v11-phase-2)
+- [Features](#features)
+- [Routes](#routes)
+- [Tech stack](#tech-stack)
+- [Project structure](#project-structure)
+- [Getting started](#getting-started)
+- [Environment variables](#environment-variables)
+- [OAuth setup](#oauth-setup)
+- [Discord & analytics](#discord--analytics)
+- [Deployment](#deployment)
+- [Versioning](#versioning)
+- [Customization](#customization)
+- [Contact](#contact)
 
-- **5 Beautiful Themes**: Dark, Light, Water, Sunset, and Forest
-- Real-time theme switching
-- Smooth color transitions
-- Context-based theme management
-- Responsive design for all themes
+---
 
-### 🎭 Smooth Animations
+## What's new in v1.1 (Phase 2)
 
-- Framer Motion for page transitions
-- GSAP for advanced animations
-- React Spring for physics-based animations
-- Intersection Observer for scroll-triggered effects
-- Particle.js for background effects
+### App Router & navigation
 
-### 📱 Responsive Design
+- **Per-page URLs** instead of a single-page tab switcher — each section has its own route, metadata, and lazy-loaded UI.
+- **Shared shell** via `(site)` layout: navbar, theme provider, and footer wrap all main pages.
+- **Central route config** in `src/lib/routes.ts` for nav labels and paths.
 
-- Mobile-first approach
-- Tailwind CSS 4 for styling
-- Adaptive layouts for all screen sizes
-- Touch-friendly interactions
+### Welcome / entry flow
 
-### 🎯 Portfolio Sections
+- **Lightweight welcome screen** (`WelcomeScreen`) with typing animation (no heavy Three.js preloader).
+- **New browser tab:** welcome once → then `/about`.
+- **Refresh:** stays on the **same page** (session remembered in `sessionStorage`).
+- **`/`** entry: welcome → About; deep links use `AppEntryGate` on first visit in a tab.
 
-- **About**: Personal introduction and background
-- **Skills**: Technical skills with interactive displays
-- **Projects**: Showcase of development work
-- **Education**: Academic background
-- **Experience**: Professional work history
-- **Certificates**: Professional certifications
-- **Achievements**: Notable accomplishments
-- **References**: Professional references
-- **Blog**: Articles and thoughts
-- **Publications**: Research papers and formal articles (optional)
-- **Contact**: Contact information and form with interactive comment system
+### Performance
 
-### 💬 Interactive Comment & Feedback System
+- Replaced heavy backgrounds on several pages with **CSS-only `AmbientBackground`** (Projects, Experience, Achievements, References, 404).
+- **Deterministic animations** (`seeded-random`) to fix React hydration mismatches.
+- **Lighter footer** (removed WebGL Threads / lightning spam).
+- **Framer Motion** tuned to avoid animating Tailwind `oklab` colors and invalid `boxShadow` values.
 
-- **Real-time Comments**: Live comment updates using Firebase Firestore
-- **Social Authentication**: Google, GitHub and Linkedin login for feedback submission
-- **User Profiles**: Display user profile pictures and names with feedback
-- **Role-based Feedback**: Users can specify their role (Developer, Designer, etc.)
-- **Custom Role Input**: "Other" option with custom role specification
-- **Theme-aware UI**: Dropdown and form colors adapt to selected theme
-- **Community Engagement**: Visitors can leave comments and submit feedback
-- **Rich Display**: Shows user info, role, rating, timestamp, and provider
-- **Form Validation**: Proper input validation and error handling
+### Security
 
-### 🔔 Discord Integration & Analytics
+- **`middleware.ts`** — security headers (CSP, `X-Frame-Options`, etc.).
+- **Contact API** — rate limiting, input sanitization, HTML escaping in emails.
+- **Google Form webhook** — optional `GOOGLE_FORM_WEBHOOK_SECRET` header.
+- **Discord webhook** — prefer server-only `DISCORD_WEBHOOK_URL` (client analytics go through `/api/analytics/session`).
+- **NextAuth** — `NEXTAUTH_SECRET`, optional `ALLOWED_ADMIN_EMAILS` allowlist, safe `redirect` callback.
 
-- **Visit Tracking**: Real-time notifications when someone visits your portfolio
-- **User Registration**: Notifications when users sign up via Google/GitHub
-- **Feedback Notifications**: Instant Discord alerts for new feedback submissions
-- **Comment Notifications**: Instant Discord alerts for new comments
-- **Session Analytics**: Track new vs returning visitors
-- **Rich Discord Embeds**: Beautiful notifications with visitor details and user profiles
-- **Performance Monitoring**: Track page visits and user engagement
-- **Provider Tracking**: Know which OAuth provider users used
+### Auth & contact UX
 
-### 🧭 Hiring Flow
+- **Sign in / sign out** on Contact stays on **`/contact`** (`callbackUrl` from current path).
+- **Facebook Login** (when `FACEBOOK_CLIENT_ID` / `FACEBOOK_CLIENT_SECRET` are set).
+- **Responsive social login buttons** (`SocialAuthButtons` component).
 
-- "Hire Me" CTA with external Google Form
-- Configurable via `NEXT_PUBLIC_GOOGLE_FORM_URL`
+### Discord notifications
 
-### 🎨 3D & Visual Effects
+- **No more per-page visit spam** — one **session summary** when the user leaves, goes idle (~15 min), or hides the tab (~45s).
+- Summary includes: duration, page journey, device/browser, signed-in user if applicable.
 
-- Three.js integration for 3D scenes
-- Custom 3D text rendering
-- Interactive background elements
-- Smooth camera movements
-- WebGL-powered graphics
+---
 
-## 🛠️ Technologies Used
+## Features
 
-### Frontend Framework
+### Portfolio sections
 
-- **Next.js 15** - React framework with App Router
-- **React 19** - Latest React with concurrent features
-- **TypeScript 5** - Type-safe development
+| Section | Route | Description |
+|--------|-------|-------------|
+| About | `/about` | Profile, CV preview, stats, gallery |
+| Skills | `/skills` | Skills by category, letter-glitch background |
+| Projects | `/projects` | Project showcase with filters |
+| Education | `/education` | Academic history |
+| Experience | `/experience` | Work history (multi-role support) |
+| Certificates | `/certificates` | Certifications grid |
+| Achievements | `/achievements` | Awards and highlights |
+| Blog | `/blog` | Articles |
+| Contact | `/contact` | Hire Me, WhatsApp, comments, feedback, contact modal |
+| References | `/references` | Professional references |
+| Publications | `/publications` | Research / publications |
+| Privacy | `/privacy` | Privacy policy |
 
-### Styling & UI
+Navbar shows the main sections; References and Publications are available by URL.
 
-- **Tailwind CSS 4** - Utility-first CSS framework
-- **PostCSS** - CSS processing
-- **Lucide React** - Beautiful icon library
-- **React Icons** - Comprehensive icon collection
+### Themes
 
-### Animation Libraries
+Five themes: **Dark**, **Light**, **Water**, **Sunset**, **Forest** — persisted via `ThemeContext`, applied to body and navbar (`theme-navbar-*` classes).
 
-- **Framer Motion** - Production-ready motion library
-- **GSAP** - Professional-grade animations
-- **React Spring** - Spring-physics based animations
-- **Anime.js** - Lightweight animation library
+### Contact & hiring
 
-### 3D Graphics
+- **Hire Me** — external Google Form
+- **Contact Me** — modal form → `/api/contact` (Resend email + Discord)
+- **WhatsApp** — configurable via `NEXT_PUBLIC_WHATSAPP_NUMBER`
+- **Comments** — Firebase Firestore (no login required)
+- **Feedback** — requires OAuth (Google, GitHub, LinkedIn, Facebook)
 
-- **Three.js** - 3D graphics library
-- **React Three Fiber** - React renderer for Three.js
-- **React Three Drei** - Useful helpers for React Three Fiber
+### 3D & visual effects (optional / per-page)
 
-### State Management & Utilities
+Legacy background components remain under `components/backgrounds/` (Three.js, Spline, Hyperspeed, etc.). Heavier effects are still used on some pages (e.g. About globe, Skills glitch); Phase 2 moved several pages to lighter CSS backgrounds.
 
-- **React Context API** - Theme and state management
-- **React Intersection Observer** - Scroll-based animations
-- **NextAuth.js** - Social authentication (Google, GitHub, LinkedIn)
-- **Firebase** - Backend services integration (Firestore, Authentication)
-- **Discord Webhooks** - Real-time notifications and analytics
+---
 
-### Development Tools
+## Routes
 
-- **ESLint** - Code linting
-- **TypeScript** - Type checking
-- **Turbopack** - Fast development builds
+```
+/                    → Welcome screen → redirects to /about (new tab session)
+/about
+/skills
+/projects
+/education
+/experience
+/certificates
+/achievements
+/blog
+/contact
+/references
+/publications
+/privacy
+/api/auth/[...nextauth]
+/api/contact
+/api/analytics/session
+/api/google-form
+/api/cv-webhook
+```
 
-## 🚀 Getting Started
+---
+
+## Tech stack
+
+| Layer | Technology |
+|-------|------------|
+| Framework | Next.js 16 (App Router, Turbopack dev) |
+| UI | React 19, TypeScript 5, Tailwind CSS 4 |
+| Animation | Framer Motion (primary); GSAP / Three.js on select sections |
+| Auth | NextAuth.js v4 (JWT sessions) |
+| Database | Firebase Firestore (comments, feedback) |
+| Email | Resend |
+| Notifications | Discord webhooks |
+
+---
+
+## Project structure
+
+```
+my-portifolio/
+├── public/
+│   └── CV/                    # cv.pdf, cv.png
+├── src/
+│   ├── app/
+│   │   ├── (site)/            # Main portfolio layout + pages
+│   │   │   ├── layout.tsx     # Navbar + main shell
+│   │   │   ├── about/page.tsx
+│   │   │   ├── skills/page.tsx
+│   │   │   ├── projects/page.tsx
+│   │   │   ├── education/page.tsx
+│   │   │   ├── experience/page.tsx
+│   │   │   ├── certificates/page.tsx
+│   │   │   ├── achievements/page.tsx
+│   │   │   ├── blog/page.tsx
+│   │   │   ├── contact/page.tsx
+│   │   │   ├── references/page.tsx
+│   │   │   └── publications/page.tsx
+│   │   ├── api/
+│   │   │   ├── auth/[...nextauth]/route.ts
+│   │   │   ├── contact/route.ts
+│   │   │   ├── analytics/session/route.ts
+│   │   │   ├── google-form/route.ts
+│   │   │   └── cv-webhook/route.ts
+│   │   ├── components/
+│   │   │   ├── backgrounds/     # 3D / WebGL / decorative (legacy + selective use)
+│   │   │   ├── common/        # AuthProvider, ThemeSwitcher, VisitTracker,
+│   │   │   │                  # WelcomeScreen, AppEntryGate, AmbientBackground
+│   │   │   ├── content/       # Section data (*.ts)
+│   │   │   ├── icons/
+│   │   │   ├── layouts/       # Navbar, Footer
+│   │   │   └── pages/         # Section UI (about, contact, …)
+│   │   ├── contexts/
+│   │   │   ├── ThemeContext.tsx
+│   │   │   └── PortfolioNavContext.tsx
+│   │   ├── hooks/
+│   │   ├── styles/
+│   │   ├── globals.css
+│   │   ├── layout.tsx         # Root: providers, AppEntryGate, VisitTracker
+│   │   ├── page.tsx           # "/" welcome entry
+│   │   ├── not-found.tsx
+│   │   └── privacy/page.tsx
+│   ├── lib/
+│   │   ├── routes.ts          # Nav + path helpers
+│   │   ├── welcome.ts         # Welcome session keys
+│   │   ├── auth-url.ts        # OAuth callback URLs
+│   │   ├── security.ts        # Rate limit, escapeHtml, sanitize
+│   │   ├── session-analytics.ts
+│   │   ├── discord.ts
+│   │   ├── firebase.ts
+│   │   ├── version.ts
+│   │   ├── seeded-random.ts
+│   │   └── utils.ts
+│   └── middleware.ts          # Security headers
+├── next.config.ts
+├── package.json
+└── .env                       # Local secrets (never commit)
+```
+
+### Key files (Phase 2)
+
+| File | Role |
+|------|------|
+| `src/lib/routes.ts` | Single source of truth for nav paths |
+| `src/app/components/common/WelcomeScreen.tsx` | Entry preloader |
+| `src/app/components/common/AppEntryGate.tsx` | First-visit welcome on deep links |
+| `src/app/components/common/VisitTracker.tsx` | Session analytics → Discord |
+| `src/app/components/common/AmbientBackground.tsx` | Lightweight page backgrounds |
+| `src/app/components/pages/data/contact/components/SocialAuthButtons.tsx` | OAuth login grid |
+| `src/middleware.ts` | HTTP security headers |
+
+---
+
+## Getting started
 
 ### Prerequisites
 
-- Node.js 18+
-- npm or yarn package manager
+- **Node.js** 20.9+ (18+ minimum)
+- **npm** or yarn
 
-### Installation
+### Install & run
 
-1. **Clone the repository**
+```bash
+git clone https://github.com/Dinukaawsh/my-portifolio.git
+cd my-portifolio
+npm install
+```
 
-   ```bash
-   git clone https://github.com/yourusername/portfolio.git
-   cd portfolio
-   ```
+Create `.env` in the project root (see [Environment variables](#environment-variables)), then:
 
-2. **Install dependencies**
+```bash
+npm run dev
+```
 
-   ```bash
-   npm install
-   ```
+Open [http://localhost:3000](http://localhost:3000) — you should see the welcome screen, then About.
 
-3. **Set up environment variables**
-
-   ```bash
-   # Create .env.local file with the following variables:
-
-   # NextAuth.js Configuration
-   NEXTAUTH_URL=http://localhost:3000
-   NEXTAUTH_SECRET=your-nextauth-secret-here
-
-   # Google OAuth
-   GOOGLE_CLIENT_ID=your-google-client-id
-   GOOGLE_CLIENT_SECRET=your-google-client-secret
-
-   # GitHub OAuth
-   GITHUB_ID=your-github-client-id
-   GITHUB_SECRET=your-github-client-secret
-
-   # LinkedIn OAuth
-   LINKEDIN_CLIENT_ID=your-linkedin-client-id
-   LINKEDIN_CLIENT_SECRET=your-linkedin-client-secret
-
-   # Firebase Configuration
-   NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-   NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-
-   # Discord Webhook URL
-   NEXT_PUBLIC_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your_webhook_url
-
-   # Google Form (Hire Me)
-   NEXT_PUBLIC_GOOGLE_FORM_URL=https://forms.gle/your_form_id
-   ```
-
-4. **Run the development server**
-
-   ```bash
-   npm run dev
-   ```
-
-5. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-### Build for Production
+### Production build
 
 ```bash
 npm run build
 npm start
 ```
 
-## 🚀 Production Deployment
+---
 
-### Environment Variables for Production
+## Environment variables
 
-Create `.env.production` or set environment variables in your deployment platform:
+Copy into `.env` (or `.env.local`). **Never commit real secrets.**
+
+### Required (core)
 
 ```bash
-# NextAuth.js Configuration
-NEXTAUTH_URL=https://yourdomain.com
-NEXTAUTH_SECRET=your-production-nextauth-secret
+# App
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=                        # openssl rand -base64 32
 
-# Google OAuth (Production)
-GOOGLE_CLIENT_ID=your-production-google-client-id
-GOOGLE_CLIENT_SECRET=your-production-google-client-secret
+# OAuth — Google
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 
-# GitHub OAuth (Production)
-GITHUB_ID=your-production-github-client-id
-GITHUB_SECRET=your-production-github-client-secret
+# OAuth — GitHub
+GITHUB_ID=
+GITHUB_SECRET=
 
-# LinkedIn OAuth (Production)
-LINKEDIN_CLIENT_ID=your-production-linkedin-client-id
-LINKEDIN_CLIENT_SECRET=your-production-linkedin-client-secret
+# OAuth — LinkedIn
+LINKEDIN_CLIENT_ID=
+LINKEDIN_CLIENT_SECRET=
 
-# Firebase Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-
-# Discord Webhook URL
-NEXT_PUBLIC_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your_webhook_url
-
-# Google Form (Hire Me)
-NEXT_PUBLIC_GOOGLE_FORM_URL=https://forms.gle/your_form_id
+# Firebase (comments / feedback)
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
 ```
 
-### OAuth Provider Updates for Production
+### Optional (recommended)
 
-1. **Google OAuth**:
+```bash
+# OAuth — Facebook (App ID + App Secret from Meta Developer Console)
+FACEBOOK_CLIENT_ID=
+FACEBOOK_CLIENT_SECRET=
 
-   - Update redirect URI to: `https://yourdomain.com/api/auth/callback/google`
-   - Add JavaScript origin: `https://yourdomain.com`
+# Restrict who can sign in (comma-separated emails). Leave unset = anyone.
+ALLOWED_ADMIN_EMAILS=dinukaaw.sh@gmail.com
 
-2. **GitHub OAuth**:
+# Discord (prefer server-only; fallback: NEXT_PUBLIC_DISCORD_WEBHOOK_URL)
+DISCORD_WEBHOOK_URL=
 
-   - Update callback URL to: `https://yourdomain.com/api/auth/callback/github`
+# Contact form email (Resend)
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=contact@yourdomain.com
+CONTACT_EMAIL=your-email@example.com
 
-3. **LinkedIn (OpenID Connect)**:
+# Hire Me & WhatsApp
+NEXT_PUBLIC_GOOGLE_FORM_URL=
+NEXT_PUBLIC_WHATSAPP_NUMBER=
 
-   - Enable OpenID Connect on LinkedIn Developer Portal
-   - Add redirect URI: `https://yourdomain.com/api/auth/callback/linkedin`
-   - Recommended scopes: `openid profile email`
+# CV button on About (set "false" to hide)
+NEXT_PUBLIC_ENABLE_CV_BUTTON=true
 
-### Deployment Platforms
+# Google Apps Script → /api/google-form (optional shared secret)
+GOOGLE_FORM_WEBHOOK_SECRET=
 
-#### Vercel (Recommended)
-
-1. Connect your GitHub repository
-2. Add environment variables in Vercel dashboard
-3. Deploy automatically on push
-
-#### Netlify
-
-1. Connect your repository
-2. Build command: `npm run build`
-3. Publish directory: `.next`
-4. Add environment variables
-
-#### Other Platforms
-
-- AWS Amplify
-- Railway
-- Render
-- DigitalOcean App Platform
-
-## 📁 Project Structure
-
-```
-src/
-├── app/
-│   ├── api/                         # API routes
-│   │   ├── auth/
-│   │   │   └── [...nextauth]/       # NextAuth.js authentication routes
-│   │   │       └── route.ts         # OAuth provider configuration
-│   │   └── cv-webhook/              # Discord webhook for CV tracking
-│   │       └── route.ts
-│   ├── components/
-│   │   ├── backgrounds/             # 3D scenes and animations
-│   │   │   ├── 3d-text/
-│   │   │   │   ├── 3DScene.tsx
-│   │   │   │   └── 3DText.tsx
-│   │   │   ├── balls/
-│   │   │   │   └── balls.tsx
-│   │   │   ├── dotted-text/
-│   │   │   │   └── dottedtext.tsx
-│   │   │   ├── flower/
-│   │   │   │   └── Flower.tsx
-│   │   │   ├── focus text/
-│   │   │   │   └── text.tsx
-│   │   │   ├── footer_backgound/
-│   │   │   │   └── footer_background.tsx
-│   │   │   ├── galaxy/
-│   │   │   │   └── galaxy.tsx
-│   │   │   ├── globe/
-│   │   │   │   └── GlobeBackground.tsx
-│   │   │   ├── horse/
-│   │   │   │   └── Horse.tsx
-│   │   │   ├── hyperspeed/
-│   │   │   │   └── hyperspeed.tsx
-│   │   │   ├── letter-glich/
-│   │   │   │   └── glich.tsx
-│   │   │   ├── line background/
-│   │   │   │   └── line-backgroung.tsx
-│   │   │   ├── perloader/
-│   │   │   │   └── preloader.tsx
-│   │   │   ├── Pixel_blast/
-│   │   │   │   └── pixel.tsx
-│   │   │   ├── robot/
-│   │   │   │   ├── card.tsx
-│   │   │   │   ├── splite.tsx
-│   │   │   │   └── spotlight.tsx
-│   │   │   ├── rolling gallery/
-│   │   │   │   └── gallery.tsx
-│   │   │   ├── skills/
-│   │   │   │   ├── README.md
-│   │   │   │   └── SkillsBackground.tsx
-│   │   │   └── thunderbolt/
-│   │   │       └── thunderbolt.tsx
-│   │   ├── common/                 # Reusable components
-│   │   │   ├── AuthProvider.tsx
-│   │   │   ├── ThemeSwitcher.tsx
-│   │   │   └── VisitTracker.tsx
-│   │   ├── content/                # Content data files
-│   │   │   ├── about.ts
-│   │   │   ├── achievements.ts
-│   │   │   ├── blog.ts
-│   │   │   ├── certificates.ts
-│   │   │   ├── contact.ts
-│   │   │   ├── education.ts
-│   │   │   ├── experience.ts
-│   │   │   ├── projects.ts
-│   │   │   ├── references.ts       # (optional, future)
-│   │   │   ├── publications.ts     # (optional, future)
-│   │   │   └── skills.ts
-│   │   ├── icons/
-│   │   │   ├── projectsicons.tsx
-│   │   │   └── skillsicons.tsx
-│   │   ├── layouts/
-│   │   │   ├── footer/
-│   │   │   │   └── Footer.tsx
-│   │   │   └── navbar/
-│   │   │       └── Navbar.tsx
-│   │   └── pages/                  # Portfolio section pages
-│   │       ├── about/
-│   │       │   └── about.tsx
-│   │       ├── achivements/
-│   │       │   └── achievements.tsx
-│   │       ├── blogs/
-│   │       │   └── blog.tsx
-│   │       ├── certificates/
-│   │       │   └── certificates.tsx
-│   │       ├── contacts/
-│   │       │   └── contact.tsx
-│   │       ├── data/
-│   │       │   ├── about/
-│   │       │   │   ├── components/
-│   │       │   │   │   ├── AnimatedJets.tsx
-│   │       │   │   │   ├── AnimatedStats.tsx
-│   │       │   │   │   ├── FloatingParticles.tsx
-│   │       │   │   │   ├── MainProfileCard.tsx
-│   │       │   │   │   ├── PerformanceMonitor.tsx
-│   │       │   │   │   └── ProfileSkeleton.tsx
-│   │       │   │   └── hooks/
-│   │       │   │       └── useServiceWorker.ts
-│   │       │   └── contact/
-│   │       │       └── components/
-│   │       │           ├── CommentsForm.tsx
-│   │       │           ├── CommentsList.tsx
-│   │       │           ├── FeedbackForm.tsx
-│   │       │           ├── FeedbackList.tsx
-│   │       │           └── HireMeSection.tsx
-│   │       ├── education/
-│   │       │   └── education.tsx
-│   │       ├── experience/
-│   │       │   └── experience.tsx
-│   │       ├── projects/
-│   │       │   └── projects.tsx
-│   │       ├── references/         # (optional, future)
-│   │       │   └── references.tsx
-│   │       ├── publications/       # (optional, future)
-│   │       │   └── publications.tsx
-│   │       └── skills/
-│   │           └── skills.tsx
-│   ├── contexts/
-│   │   ├── THEME_SYSTEM_README.md
-│   │   └── ThemeContext.tsx
-│   ├── favicon.ico
-│   ├── globals.css                # Global styles and theme variables
-│   ├── hooks/
-│   │   └── useThemeStyles.ts
-│   ├── layout.tsx                 # Root layout with providers
-│   ├── not-found.tsx              # Custom 404 page
-│   ├── page.tsx                   # Home page
-│   └── privacy/
-│       └── page.tsx               # Privacy page
-├── lib/                            # Utility functions and configurations
-│   ├── discord.ts                  # Discord webhook integration
-│   ├── firebase.ts                 # Firebase configuration
-│   └── utils.ts                    # General utility functions
-
+# Public site URL helpers (built from package.json at build)
+# NEXT_PUBLIC_APP_VERSION is set in next.config.ts automatically
 ```
 
-## 🎨 Customization
+### Variable reference
 
-### Adding New Themes
-
-1. Update the `Theme` type in `ThemeContext.tsx`
-2. Add theme-specific CSS classes
-3. Implement theme switching logic
-
-### Adding New Sections
-
-1. Create a new component in `components/pages/`
-2. Add it to the `sections` array in `page.tsx`
-3. Update navigation if needed
-4. (Optional) Publications: when you add it, create `components/pages/publications/publications.tsx` and include its data in `components/content` if needed
-
-### Setting Up Authentication & Backend Services
-
-1. **Firebase Setup**:
-
-   - Go to [Firebase Console](https://console.firebase.google.com/)
-   - Create a new project or use existing one
-   - Go to Project Settings → General → Your Apps
-   - Add a web app and copy the config values
-   - Enable Firestore Database in your project
-   - Create collections: `comments` and `feedback`
-
-2. **Google OAuth Setup**:
-
-   - Go to [Google Cloud Console](https://console.cloud.google.com/)
-   - Create/select your project
-   - Enable Google+ API
-   - Create OAuth 2.0 credentials
-   - Add authorized redirect URI: `http://localhost:3000/api/auth/callback/google`
-   - Add authorized JavaScript origin: `http://localhost:3000`
-
-3. **GitHub OAuth Setup**:
-
-   - Go to GitHub Settings → Developer settings → OAuth Apps
-   - Create new OAuth App
-   - Set Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
-
-4. **LinkedIn (OpenID Connect) Setup**:
-
-   - Go to LinkedIn Developer Portal → Your App → Products → Add "Sign In with LinkedIn using OpenID Connect"
-   - Copy Client ID and Client Secret into `.env.local`
-   - Add redirect URI: `http://localhost:3000/api/auth/callback/linkedin`
-   - Set scopes: `openid profile email`
-
-5. **Discord Webhook Setup**:
-
-   - Go to your Discord server
-   - Server Settings → Integrations → Webhooks
-   - Create a new webhook
-   - Copy the webhook URL to your `.env.local` file
-
-6. **Environment Variables**:
-   - Copy the example variables above
-   - Replace placeholder values with your actual credentials
-   - Generate NEXTAUTH_SECRET: `openssl rand -base64 32`
-   - Restart your development server after adding the file
-
-## 🔧 Configuration
-
-### Next.js Configuration
-
-- **Turbopack**: Enabled for faster development builds
-- **Image Domains**: Configured for external image sources
-- **TypeScript**: Strict mode enabled
-
-### Tailwind CSS
-
-- **Version 4**: Latest features and improvements
-- **Custom Colors**: Theme-specific color palettes
-- **Responsive Design**: Mobile-first approach
-
-## 📱 Browser Support
-
-- **Modern Browsers**: Chrome 90+, Firefox 88+, Safari 14+
-- **Mobile**: iOS 14+, Android 10+
-- **Features**: ES2020, CSS Grid, Flexbox, WebGL
-
-## 🚀 Performance Features
-
-- **Code Splitting**: Automatic route-based splitting
-- **Image Optimization**: Next.js built-in optimization
-- **Lazy Loading**: Components load on demand
-- **Bundle Analysis**: Built-in performance monitoring
-- **Real-time Analytics**: Live visitor and engagement tracking
-- **Optimized 3D Rendering**: Efficient WebGL performance
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👨‍💻 Author
-
-**Dinuka Wickramarathna**
-
-- Full Stack Developer
-- Passionate about modern web technologies
-- Creator of interactive digital experiences
-
-## 🙏 Acknowledgments
-
-- **Three.js Community** for 3D graphics inspiration
-- **Framer Motion Team** for amazing animation library
-- **Tailwind CSS Team** for the utility-first approach
-- **Next.js Team** for the amazing React framework
-
-### Component References
-
-- CodePen: https://codepen.io/
-- 21st.dev: https://21st.dev/
-- ReactBits: https://reactbits.dev/
-
-## 📞 Contact
-
-- **Email**: dinukaaw.sh@gmail.com
-- **LinkedIn**: https://www.linkedin.com/in/dinuka-wickramarathna-88468b214/
-- **GitHub**: https://github.com/Dinukaawsh
-- **X (Twitter)**: https://x.com/DinukaAshan14
-- **Medium**: https://medium.com/@dinukaaw.sh
-- **Facebook**: https://web.facebook.com/dinuka.wickramarathna
-- **WhatsApp**: https://wa.me/94767326845
-
-## 🔧 Advanced Features Setup
-
-### Social Authentication System
-
-The portfolio includes a complete social authentication system:
-
-- **Google OAuth**: Users can sign in with their Google account
-- **GitHub OAuth**: Users can sign in with their GitHub account
-- **LinkedIn OIDC**: Users can sign in with their LinkedIn account
-- **NextAuth.js Integration**: Secure authentication handling
-- **User Profiles**: Display profile pictures and names
-- **Session Management**: Persistent login sessions
-
-### Feedback System
-
-A sophisticated feedback system where authenticated users can:
-
-- Submit detailed feedback with ratings
-- Specify their role (Developer, Designer, Product Manager, etc.)
-- Add custom roles when "Other" is selected
-- View all feedback with user profiles
-- See provider information (Google/GitHub/LinkedIn)
-
-### Comment System
-
-The portfolio includes a fully functional comment system where visitors can:
-
-- Leave comments on your contact page (no authentication required)
-- See real-time updates of all comments
-- Engage with your portfolio content
-- View comment timestamps and user information
-
-### Discord Notifications
-
-Get instant notifications when:
-
-- Someone visits your portfolio
-- New users register via Google/GitHub/LinkedIn
-- New feedback is submitted
-- New comments are posted
-- Track visitor analytics and engagement
-
-### Firebase Integration
-
-- **Firestore Database**: Stores all comments, feedback, and user data
-- **Real-time Updates**: Instant synchronization across devices
-- **Scalable Backend**: Handles traffic and data efficiently
-- **Security Rules**: Proper access control for data
-
-### Theme System
-
-- **5 Beautiful Themes**: Dark, Light, Water, Sunset, Forest
-- **Theme-aware Components**: All UI elements adapt to selected theme
-- **Smooth Transitions**: Seamless theme switching
-- **Persistent Settings**: Theme choice saved across sessions
+| Variable | Purpose |
+|----------|---------|
+| `ALLOWED_ADMIN_EMAILS` | Only these emails may complete OAuth sign-in |
+| `GOOGLE_FORM_WEBHOOK_SECRET` | Must be sent as `x-webhook-secret` when calling `/api/google-form` |
+| `FACEBOOK_CLIENT_ID` | Meta App **ID** |
+| `FACEBOOK_CLIENT_SECRET` | Meta App **Secret** |
+| `DISCORD_WEBHOOK_URL` | Server-side Discord webhook (session summaries, contact, etc.) |
 
 ---
 
-⭐ **Star this repository if you found it helpful!**
+## OAuth setup
 
-### Comment System
+Use these **exact** callback URLs (local + production):
 
-The portfolio includes a fully functional comment system where visitors can:
+| Provider | Redirect URI |
+|----------|----------------|
+| Google | `{ORIGIN}/api/auth/callback/google` |
+| GitHub | `{ORIGIN}/api/auth/callback/github` |
+| LinkedIn | `{ORIGIN}/api/auth/callback/linkedin` |
+| Facebook | `{ORIGIN}/api/auth/callback/facebook` |
 
-- Leave comments on your contact page (no authentication required)
-- See real-time updates of all comments
-- Engage with your portfolio content
-- View comment timestamps and user information
+Examples:
 
-### Discord Notifications
+- Local: `http://localhost:3000/api/auth/callback/facebook`
+- Production: `https://www.dinukawickramarathana.me/api/auth/callback/facebook`
 
-Get instant notifications when:
+**Facebook (Meta):** Add product **Facebook Login** → Web → paste redirect URIs (not the homepage URL). App ID → `FACEBOOK_CLIENT_ID`, App Secret → `FACEBOOK_CLIENT_SECRET`.
 
-- Someone visits your portfolio
-- New users register via Google/GitHub/LinkedIn
-- New feedback is submitted
-- New comments are posted
-- Track visitor analytics and engagement
+**Production:** Set `NEXTAUTH_URL=https://www.dinukawickramarathana.me` on your host.
 
-### Firebase Integration
-
-- **Firestore Database**: Stores all comments, feedback, and user data
-- **Real-time Updates**: Instant synchronization across devices
-- **Scalable Backend**: Handles traffic and data efficiently
-- **Security Rules**: Proper access control for data
-
-### Theme System
-
-- **5 Beautiful Themes**: Dark, Light, Water, Sunset, Forest
-- **Theme-aware Components**: All UI elements adapt to selected theme
-- **Smooth Transitions**: Seamless theme switching
-- **Persistent Settings**: Theme choice saved across sessions
+Sign-in and sign-out from **Contact** return to `/contact` automatically.
 
 ---
+
+## Discord & analytics
+
+### Session summary (default)
+
+- Tracks pages visited in the browser tab session.
+- Sends **one** Discord embed when the session ends (leave / idle / tab hidden).
+- Includes journey, duration, device info, and logged-in user if present.
+- Implemented in `VisitTracker` → `POST /api/analytics/session`.
+
+### Immediate notifications (unchanged)
+
+- Contact form submissions
+- New comments / feedback (client → Discord where configured)
+- Google Form webhook (via Apps Script)
+
+### Google Form → Discord
+
+1. Google Form → ⋮ → **Script editor**
+2. `onFormSubmit` trigger → `POST` to `https://your-domain.com/api/google-form`
+3. If using `GOOGLE_FORM_WEBHOOK_SECRET`, add header: `x-webhook-secret: <your secret>`
+
+---
+
+## Deployment
+
+### Vercel (recommended)
+
+1. Connect the GitHub repo.
+2. Add all environment variables (production `NEXTAUTH_URL`, OAuth callbacks, etc.).
+3. Deploy on push.
+
+### Production checklist
+
+- [ ] `NEXTAUTH_URL` = production URL  
+- [ ] OAuth redirect URIs updated for production domain  
+- [ ] Facebook redirect: `/api/auth/callback/facebook` (not `/` alone)  
+- [ ] `npm run build` succeeds  
+- [ ] Footer shows expected version (`v1.1.0`)  
+- [ ] Test Contact → sign in → stays on `/contact`  
+- [ ] Test Discord session summary (browse several pages, close tab)
+
+---
+
+## Versioning
+
+[Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`
+
+- Source: `package.json` → `"version"`
+- Display: footer via `src/lib/version.ts` → `NEXT_PUBLIC_APP_VERSION` at build time
+
+```bash
+npm version patch   # 1.1.0 → 1.1.1
+npm version minor   # 1.1.0 → 1.2.0
+npm version major   # 1.1.0 → 2.0.0
+npm run build
+```
+
+---
+
+## Customization
+
+### Add a new section
+
+1. Add content in `src/app/components/content/your-section.ts`
+2. Create UI in `src/app/components/pages/your-section/`
+3. Add route in `src/lib/routes.ts` (`NAV_SECTIONS` / `ALL_SECTIONS`)
+4. Create `src/app/(site)/your-section/page.tsx` importing the component + `metadata`
+5. Navbar picks up new entries from `routes.ts` automatically
+
+### Add a theme
+
+See `src/app/contexts/THEME_SYSTEM_README.md` and `globals.css` (`theme-navbar-*`, body gradients).
+
+### Toggle CV button
+
+`NEXT_PUBLIC_ENABLE_CV_BUTTON=false` hides the CV preview on About.
+
+---
+
+## Contact
+
+**Dinuka Wickramarathna** — Full Stack Developer
+
+- Email: dinukaaw.sh@gmail.com  
+- Website: [dinukawickramarathana.me](https://www.dinukawickramarathana.me)  
+- [LinkedIn](https://www.linkedin.com/in/dinuka-wickramarathna-88468b214/) · [GitHub](https://github.com/Dinukaawsh) · [X](https://x.com/DinukaAshan14) · [WhatsApp](https://wa.me/94767326845)
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE) if present.
+
+---
+
 
 ⭐ **Star this repository if you found it helpful!**

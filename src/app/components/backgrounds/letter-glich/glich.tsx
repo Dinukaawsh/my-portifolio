@@ -1,3 +1,5 @@
+"use client";
+
 import { useRef, useEffect } from "react";
 
 const LetterGlitch = ({
@@ -17,6 +19,8 @@ const LetterGlitch = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number | null>(null);
+  const isActiveRef = useRef(false);
+  const dimensionsRef = useRef({ width: 0, height: 0 });
   const letters = useRef<
     {
       char: string;
@@ -91,18 +95,41 @@ const LetterGlitch = ({
     }));
   };
 
+  const drawLetters = () => {
+    if (!isActiveRef.current || !context.current || letters.current.length === 0) {
+      return;
+    }
+
+    const { width, height } = dimensionsRef.current;
+    if (width <= 0 || height <= 0) return;
+
+    const ctx = context.current;
+    ctx.clearRect(0, 0, width, height);
+    ctx.font = `${fontSize}px monospace`;
+    ctx.textBaseline = "top";
+
+    letters.current.forEach((letter, index) => {
+      const x = (index % grid.current.columns) * charWidth;
+      const y = Math.floor(index / grid.current.columns) * charHeight;
+      ctx.fillStyle = letter.color;
+      ctx.fillText(letter.char, x, y);
+    });
+  };
+
   const resizeCanvas = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !isActiveRef.current) return;
+
     const parent = canvas.parentElement;
     if (!parent) return;
 
     const dpr = window.devicePixelRatio || 1;
     const rect = parent.getBoundingClientRect();
 
-    // Ensure minimum dimensions
     const width = Math.max(rect.width, window.innerWidth);
     const height = Math.max(rect.height, window.innerHeight);
+
+    dimensionsRef.current = { width, height };
 
     canvas.width = width * dpr;
     canvas.height = height * dpr;
@@ -117,22 +144,6 @@ const LetterGlitch = ({
     const { columns, rows } = calculateGrid(width, height);
     initializeLetters(columns, rows);
     drawLetters();
-  };
-
-  const drawLetters = () => {
-    if (!context.current || letters.current.length === 0) return;
-    const ctx = context.current;
-    const { width, height } = canvasRef.current!.getBoundingClientRect();
-    ctx.clearRect(0, 0, width, height);
-    ctx.font = `${fontSize}px monospace`;
-    ctx.textBaseline = "top";
-
-    letters.current.forEach((letter, index) => {
-      const x = (index % grid.current.columns) * charWidth;
-      const y = Math.floor(index / grid.current.columns) * charHeight;
-      ctx.fillStyle = letter.color;
-      ctx.fillText(letter.char, x, y);
-    });
   };
 
   const updateLetters = () => {
@@ -182,6 +193,8 @@ const LetterGlitch = ({
   };
 
   const animate = () => {
+    if (!isActiveRef.current) return;
+
     const now = Date.now();
     if (now - lastGlitchTime.current >= glitchSpeed) {
       updateLetters();
@@ -196,31 +209,46 @@ const LetterGlitch = ({
     animationRef.current = requestAnimationFrame(animate);
   };
 
+  const stopAnimation = () => {
+    isActiveRef.current = false;
+    if (animationRef.current !== null) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+  };
+
+  const startAnimation = () => {
+    stopAnimation();
+    isActiveRef.current = true;
+    animationRef.current = requestAnimationFrame(animate);
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     context.current = canvas.getContext("2d");
+    isActiveRef.current = true;
 
-    // Initial resize with a small delay to ensure DOM is ready
     const initialResize = () => {
+      if (!isActiveRef.current) return;
       resizeCanvas();
-      animate();
+      startAnimation();
     };
 
-    // Use requestAnimationFrame to ensure DOM is fully rendered
     requestAnimationFrame(() => {
       setTimeout(initialResize, 50);
     });
 
-    let resizeTimeout: NodeJS.Timeout;
+    let resizeTimeout: ReturnType<typeof setTimeout>;
 
     const handleResize = () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
-        cancelAnimationFrame(animationRef.current as number);
+        if (!isActiveRef.current) return;
+        stopAnimation();
         resizeCanvas();
-        animate();
+        startAnimation();
       }, 150);
     };
 
@@ -228,7 +256,10 @@ const LetterGlitch = ({
     window.addEventListener("orientationchange", handleResize);
 
     return () => {
-      cancelAnimationFrame(animationRef.current!);
+      clearTimeout(resizeTimeout);
+      stopAnimation();
+      context.current = null;
+      letters.current = [];
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleResize);
     };
@@ -239,10 +270,10 @@ const LetterGlitch = ({
     <div className="relative w-full h-full bg-black overflow-hidden">
       <canvas ref={canvasRef} className="block w-full h-full" />
       {outerVignette && (
-        <div className="absolute top-0 left-0 w-full h-full pointer-events-none bg-[radial-gradient(circle,_rgba(0,0,0,0)_60%,_rgba(0,0,0,1)_100%)]"></div>
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none bg-[radial-gradient(circle,_rgba(0,0,0,0)_60%,_rgba(0,0,0,1)_100%)]" />
       )}
       {centerVignette && (
-        <div className="absolute top-0 left-0 w-full h-full pointer-events-none bg-[radial-gradient(circle,_rgba(0,0,0,0.8)_0%,_rgba(0,0,0,0)_60%)]"></div>
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none bg-[radial-gradient(circle,_rgba(0,0,0,0.8)_0%,_rgba(0,0,0,0)_60%)]" />
       )}
     </div>
   );

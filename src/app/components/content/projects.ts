@@ -17,6 +17,77 @@ export const projectsContent = {
   projects: [
     {
       id: 1,
+      title: "TailorX Web Site",
+      description:
+        "This project is a TailorX web site that helps users to find the best tailor for their clothes and book an appointment with them, it is built using Nest js, Next js, graphql, Jwt, MongoDB, Stripe, Docker, heroku, CI/CD, GitHub Actions.",
+      technologies: [
+        "Nest js",
+        "Next js",
+        "graphql",
+        "Jwt",
+        "websocket",
+        "MongoDB",
+        "Stripe",
+        "Docker",
+        "heroku",
+        "CI/CD",
+        "GitHub Actions",
+      ],
+      image: "/project1.jpg",
+      github: "https://github.com/Dinukaawsh/TailorX-core-frontend",
+      live: "https://tailor-x-core-frontend.vercel.app/",
+      category: "Full-Stack",
+      featured: true,
+      color: "bg-green-500",
+      delay: 0.7,
+    },
+    {
+      id: 2,
+      title: "Portfolio Website",
+      description:
+        "A modern, responsive portfolio website built with Next.js and Tailwind CSS, featuring smooth animations and dark mode. And also firebase for storing the data. It is a portfolio website that showcases my projects and skills.",
+      technologies: [
+        "Next.js",
+        "React",
+        "Tailwind CSS",
+        "Framer Motion",
+        "TypeScript",
+        "Vercel",
+        "Firebase",
+      ],
+      image: "/project5.jpg",
+      github: "https://github.com/Dinukaawsh/my-portfolio",
+      live: "https://my-portfolio-6w9u.vercel.app/",
+      category: "Frontend",
+      featured: true,
+      color: "bg-indigo-500",
+      delay: 1.1,
+    },
+    {
+      id: 3,
+      title: " Hello World - Language Translator App",
+      description:
+        "A language translator application that allows users to translate text from one language to another using the Google Translate API.",
+      technologies: [
+        "React",
+        "JavaScript",
+        "express js",
+        "node js",
+        "HTML",
+        "Tailwind CSS",
+        "Google Translate API",
+        "DeepL API",
+      ],
+      image: "/project3.jpg",
+      github: "https://github.com/Dinukaawsh/translator",
+      live: "https://hello-world-six-mocha.vercel.app/",
+      category: "Frontend",
+      featured: false,
+      color: "bg-purple-500",
+      delay: 0.9,
+    },
+    {
+      id: 4,
       title: "blog application",
       description:
         "This project is a blog application built using Django. It allows users to register, log in, create, read, update, and delete blog posts. Users can also comment on posts.",
@@ -40,8 +111,9 @@ export const projectsContent = {
       color: "bg-green-500",
       delay: 0.7,
     },
+
     {
-      id: 2,
+      id: 5,
       title: "E-Commerce Platform",
       description:
         "A full-stack e-commerce solution built with PHP, featuring user authentication, product management, shopping cart, and payment integration with Stripe.",
@@ -66,28 +138,7 @@ export const projectsContent = {
       delay: 0.8,
     },
     {
-      id: 3,
-      title: "Language Translator App",
-      description:
-        "A language translator application that allows users to translate text from one language to another using the Google Translate API.",
-      technologies: [
-        "React",
-        "JavaScript",
-        "HTML",
-        "Tailwind CSS",
-        "Google Translate API",
-        "DeepL API",
-      ],
-      image: "/project3.jpg",
-      github: "https://github.com/Dinukaawsh/translator",
-      live: "https://dinukaawsh.github.io/translator/",
-      category: "Frontend",
-      featured: false,
-      color: "bg-purple-500",
-      delay: 0.9,
-    },
-    {
-      id: 4,
+      id: 6,
       title: "Online Blood Bank Web Site",
       description:
         "A full-stack online blood bank web site built with PHP, featuring user authentication, blood donation, blood request, and blood donation management.",
@@ -111,31 +162,10 @@ export const projectsContent = {
       color: "bg-red-500",
       delay: 1.0,
     },
+
     {
-      id: 5,
-      title: "Portfolio Website",
-      description:
-        "A modern, responsive portfolio website built with Next.js and Tailwind CSS, featuring smooth animations and dark mode. And also firebase for storing the data.",
-      technologies: [
-        "Next.js",
-        "React",
-        "Tailwind CSS",
-        "Framer Motion",
-        "TypeScript",
-        "Vercel",
-        "Firebase",
-      ],
-      image: "/project5.jpg",
-      github: "https://github.com/Dinukaawsh/my-portfolio",
-      live: "https://my-portfolio-6w9u.vercel.app/",
-      category: "Frontend",
-      featured: true,
-      color: "bg-indigo-500",
-      delay: 1.1,
-    },
-    {
-      id: 6,
-      title: "Movie Rental System",
+      id: 7,
+      title: "Blaster - Movie Rental System",
       description:
         "A full-stack movie rental system built with PHP, featuring user authentication, movie management, rental management, and payment integration with Stripe.",
       technologies: [

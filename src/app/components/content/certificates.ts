@@ -213,6 +213,92 @@ export const certificatesContent = {
       verificationUrl:
         "https://www.udemy.com/certificate/UC-31d4b2a9-9f65-4fdd-8803-4658f85e6a1d/",
     },
+    {
+      id: 8,
+      title: "SQL, MYSQL, POSTGRESQL & MONGODB: All-in-One Database Course",
+      issuer: "Udemy",
+      issuerLogo: GraduationCap,
+      category: "Development",
+      issueDate: "2025-12-24",
+      expiryDate: null,
+      credentialId: null,
+      credentialUrl:
+        "https://www.udemy.com/certificate/UC-7fb3e97f-00e9-4e5d-99bc-4e849f325ea8/",
+      certificateImage: "/certificates-images/9.png",
+      description:
+        "SQL, MYSQL, POSTGRESQL & MONGODB: All-in-One Database Course covering the basics of SQL, MYSQL, POSTGRESQL & MONGODB and how to use it in real-world applications.",
+      skills: ["SQL", "MYSQL", "POSTGRESQL", "MONGODB"],
+      featured: true,
+      color: "bg-blue-600",
+      delay: 1.0,
+      verificationUrl:
+        "https://www.udemy.com/certificate/UC-7fb3e97f-00e9-4e5d-99bc-4e849f325ea8/",
+    },
+    {
+      id: 9,
+      title:
+        "Master Full-Stack Web Development with JavaScript, jQuery & TypeScript through Hands-On Projects and Real-World Example.  ",
+      issuer: "Udemy",
+      issuerLogo: GraduationCap,
+      category: "Programming",
+      issueDate: "2025-08-08",
+      expiryDate: null,
+      credentialId: null,
+      credentialUrl:
+        "https://www.udemy.com/certificate/UC-6f0853a2-230b-467b-8a14-00b7ba7fc25a/",
+      certificateImage: "/certificates-images/8.png",
+      description:
+        "Master Full-Stack Web Development with JavaScript, jQuery & TypeScript through Hands-On Projects and Real-World Example. course covering the basics of Full-Stack Web Development and how to use it in real-world applications.",
+      skills: [
+        "Full-Stack Web Development",
+        "JavaScript",
+        "jQuery",
+        "TypeScript",
+      ],
+      featured: true,
+      color: "bg-blue-600",
+      delay: 1.1,
+      verificationUrl:
+        "https://www.udemy.com/certificate/UC-6f0853a2-230b-467b-8a14-00b7ba7fc25a/",
+    },
+    {
+      id: 10,
+      title:
+        " JavaScript Mastery From Basics to Advanced 2025",
+      issuer: "Udemy",
+      issuerLogo: GraduationCap,
+      category: "Programming",
+      issueDate: "2026-01-16",
+      expiryDate: null,
+      credentialId: null,
+      credentialUrl:
+        "https://www.udemy.com/certificate/UC-d04cf232-b0c2-455c-91a2-264c5b99f9fc/",
+      certificateImage: "/certificates-images/10.png",
+      description:
+        "JavaScript Mastery From Basics to Advanced 2025 course covering the basics of JavaScript and how to use it in real-world applications.",
+      skills: [
+        "JavaScript Mastery",
+        "JavaScript Basics",
+        "JavaScript Advanced",
+        "JavaScript Projects",
+        "JavaScript Real-World Examples",
+        "JavaScript Hands-On Projects",
+        "JavaScript Types",
+        "JavaScript Functions",
+        "JavaScript Objects",
+        "JavaScript Arrays",
+        "JavaScript Loops",
+        "JavaScript Conditionals",
+        "JavaScript Error Handling",
+        "JavaScript Debugging",
+        "JavaScript Performance Optimization",
+      ],
+      featured: true,
+      color: "bg-blue-600",
+      delay: 1.1,
+      verificationUrl:
+        "https://www.udemy.com/certificate/UC-d04cf232-b0c2-455c-91a2-264c5b99f9fc/",
+    },
   ],
 
   // Animation Settings

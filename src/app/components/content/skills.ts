@@ -48,6 +48,12 @@ export const skillsContent = {
         icon: "custom:express",
       },
       {
+        name: "Fastify",
+        level: 85,
+        color: "#000000",
+        icon: "custom:fastify",
+      },
+      {
         name: "NestJS",
         level: 80,
         color: "#000000",

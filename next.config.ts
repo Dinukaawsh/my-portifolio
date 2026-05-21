@@ -1,6 +1,13 @@
 import type { NextConfig } from "next";
 
+// Read version from package.json
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const packageJson = require("./package.json");
+
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_APP_VERSION: packageJson.version,
+  },
   images: {
     remotePatterns: [
       {
@@ -24,6 +31,18 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "media.licdn.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "platform-lookaside.fbsbx.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "graph.facebook.com",
         port: "",
         pathname: "/**",
       },

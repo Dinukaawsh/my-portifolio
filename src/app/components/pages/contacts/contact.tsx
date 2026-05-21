@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useTheme } from "@/app/contexts/ThemeContext";
@@ -29,6 +31,7 @@ import CommentsForm from "@/app/components/pages/data/contact/components/Comment
 import CommentsList from "@/app/components/pages/data/contact/components/CommentsList";
 import FeedbackForm from "@/app/components/pages/data/contact/components/FeedbackForm";
 import FeedbackList from "@/app/components/pages/data/contact/components/FeedbackList";
+import ContactFormModal from "@/app/components/pages/data/contact/components/ContactFormModal";
 
 // Extend the Session type to include provider
 interface ExtendedSession {
@@ -64,7 +67,7 @@ export default function Contact() {
   const { data: session } = useSession();
   const { currentTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<"comments" | "feedback">(
-    "comments"
+    "feedback"
   );
   const [submitted, setSubmitted] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
@@ -106,6 +109,8 @@ export default function Contact() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [showHireOptions, setShowHireOptions] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [contactFormLoading, setContactFormLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const loadingCommentsRef = useRef(false);
@@ -155,6 +160,39 @@ export default function Contact() {
 
   const themeTextColors = getThemeTextColors();
   const GOOGLE_FORM_URL = process.env.NEXT_PUBLIC_GOOGLE_FORM_URL;
+  const WHATSAPP_NUMBER =
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "";
+
+  // Handle contact form submission
+  const handleContactFormSubmit = async (data: {
+    name: string;
+    email: string;
+    subject: string;
+    body: string;
+  }) => {
+    try {
+      setContactFormLoading(true);
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to send message");
+      }
+
+      // Success - modal will handle the success state
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      throw error; // Re-throw to let modal handle it
+    } finally {
+      setContactFormLoading(false);
+    }
+  };
 
   // const formatFirestoreTimestamp = (ts?: Timestamp): string => {
   //   try {
@@ -809,23 +847,16 @@ export default function Contact() {
                 GOOGLE_FORM_URL={GOOGLE_FORM_URL}
                 showHireOptions={showHireOptions}
                 setShowHireOptions={setShowHireOptions}
+                onContactMeClick={() => setShowContactModal(true)}
+                whatsappNumber={WHATSAPP_NUMBER}
               />
 
               {/* Tabs */}
-              <div className="mb-6 flex justify-center">
-                <div className="inline-flex rounded-2xl overflow-hidden border border-blue-500/30 bg-white/5">
+              <div className="mb-6 flex justify-center w-full px-1">
+                <div className="grid grid-cols-2 w-full max-w-sm sm:max-w-md rounded-2xl overflow-hidden border border-blue-500/30 bg-white/5">
                   <button
-                    className={`px-4 sm:px-6 py-2 text-sm sm:text-base font-semibold transition-all ${
-                      activeTab === "comments"
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                        : "text-blue-200 hover:bg-white/10"
-                    }`}
-                    onClick={() => setActiveTab("comments")}
-                  >
-                    Comments
-                  </button>
-                  <button
-                    className={`px-4 sm:px-6 py-2 text-sm sm:text-base font-semibold transition-all ${
+                    type="button"
+                    className={`min-h-[2.75rem] px-3 sm:px-6 py-2.5 text-sm sm:text-base font-semibold transition-all ${
                       activeTab === "feedback"
                         ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                         : "text-blue-200 hover:bg-white/10"
@@ -833,6 +864,17 @@ export default function Contact() {
                     onClick={() => setActiveTab("feedback")}
                   >
                     Feedback
+                  </button>
+                  <button
+                    type="button"
+                    className={`min-h-[2.75rem] px-3 sm:px-6 py-2.5 text-sm sm:text-base font-semibold transition-all ${
+                      activeTab === "comments"
+                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                        : "text-blue-200 hover:bg-white/10"
+                    }`}
+                    onClick={() => setActiveTab("comments")}
+                  >
+                    Comments
                   </button>
                 </div>
               </div>
@@ -902,6 +944,14 @@ export default function Contact() {
           )}
         </div>
       </section>
+
+      {/* Contact Form Modal */}
+      <ContactFormModal
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+        onSubmit={handleContactFormSubmit}
+        loading={contactFormLoading}
+      />
     </>
   );
 }
