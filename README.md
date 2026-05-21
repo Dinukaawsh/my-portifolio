@@ -190,7 +190,7 @@ A modern, interactive portfolio website built with Next.js 15, featuring stunnin
    NEXT_PUBLIC_GOOGLE_FORM_URL=https://forms.gle/your_form_id
 
    # WhatsApp Contact
-   NEXT_PUBLIC_WHATSAPP_NUMBER=94767326845
+   NEXT_PUBLIC_WHATSAPP_NUMBER=
 
    # CV Button (optional, enable/disable CV preview button on main page)
    # Set to "false" to hide the CV button, or omit/leave empty to show it (default: enabled)
