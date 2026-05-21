@@ -46,11 +46,11 @@ export default function HireMeSection({
         </p>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-4">
+        <div className="flex flex-col sm:flex-row gap-3 justify-stretch sm:justify-center items-stretch sm:items-center mb-4 w-full">
           <motion.button
             type="button"
             onClick={() => setShowHireOptions((v) => !v)}
-            className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold text-sm sm:text-lg rounded-xl sm:rounded-2xl border-2 border-blue-400/50 hover:from-blue-600 hover:to-purple-700 hover:border-blue-300 transition-all duration-300 shadow-2xl shadow-blue-500/30 hover:shadow-3xl hover:shadow-blue-500/50 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-400/50 focus:scale-105 active:scale-95 w-full sm:w-auto justify-center"
+            className="inline-flex w-full sm:w-auto sm:min-w-[10rem] items-center justify-center gap-2 sm:gap-3 px-4 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold text-sm sm:text-lg rounded-xl sm:rounded-2xl border-2 border-blue-400/50 hover:from-blue-600 hover:to-purple-700 hover:border-blue-300 transition-all duration-300 shadow-2xl shadow-blue-500/30 focus:outline-none focus-visible:ring-4 focus:ring-blue-400/50 active:scale-[0.98]"
             whileHover={{
               scale: 1.05,
               boxShadow: "0 25px 50px rgba(59, 130, 246, 0.4)",
@@ -95,7 +95,7 @@ export default function HireMeSection({
           <motion.button
             type="button"
             onClick={onContactMeClick}
-            className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-sm sm:text-lg rounded-xl sm:rounded-2xl border-2 border-green-400/50 hover:from-green-600 hover:to-emerald-700 hover:border-green-300 transition-all duration-300 shadow-2xl shadow-green-500/30 hover:shadow-3xl hover:shadow-green-500/50 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-400/50 focus:scale-105 active:scale-95 w-full sm:w-auto justify-center"
+            className="inline-flex w-full sm:w-auto sm:min-w-[10rem] items-center justify-center gap-2 sm:gap-3 px-4 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-sm sm:text-lg rounded-xl sm:rounded-2xl border-2 border-green-400/50 hover:from-green-600 hover:to-emerald-700 hover:border-green-300 transition-all duration-300 shadow-2xl shadow-green-500/30 focus:outline-none focus-visible:ring-4 focus:ring-green-400/50 active:scale-[0.98]"
             whileHover={{
               scale: 1.05,
               boxShadow: "0 25px 50px rgba(16, 185, 129, 0.4)",
@@ -112,7 +112,7 @@ export default function HireMeSection({
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-semibold rounded-xl border-2 border-[#25D366]/50 hover:from-[#25D366]/90 hover:to-[#128C7E]/90 transition-all duration-300 shadow-lg shadow-[#25D366]/30 hover:shadow-xl hover:shadow-[#25D366]/50 hover:scale-105 mb-4"
+          className="inline-flex w-full sm:w-auto items-center justify-center gap-3 px-6 py-3.5 min-h-[3rem] bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-semibold rounded-xl border-2 border-[#25D366]/50 hover:from-[#25D366]/90 hover:to-[#128C7E]/90 transition-all duration-300 shadow-lg shadow-[#25D366]/30 mb-4"
           whileHover={{
             scale: 1.05,
             boxShadow: "0 20px 40px rgba(37, 211, 102, 0.4)",
@@ -149,10 +149,10 @@ export default function HireMeSection({
           transition={{ duration: 0.25 }}
           className={`overflow-hidden ${showHireOptions ? "mt-2" : ""}`}
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-3 w-full">
             <motion.a
               href={`mailto:${contactContent.contactInfo.email}`}
-              className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-white/10 text-white font-semibold rounded-xl border border-blue-400/40 hover:bg-white/15 transition"
+              className="inline-flex w-full min-w-0 items-center justify-center gap-2 px-4 py-3.5 min-h-[3rem] bg-white/10 text-white text-sm font-semibold rounded-xl border border-blue-400/40 hover:bg-white/15 transition"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -194,11 +194,11 @@ export default function HireMeSection({
                   console.log("Could not send Google Form click notification");
                 }
               }}
-              className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-white/10 text-white font-semibold rounded-xl border border-blue-400/40 hover:bg-white/15 transition"
+              className="inline-flex w-full min-w-0 items-center justify-center gap-2 px-4 py-3.5 min-h-[3rem] bg-white/10 text-white text-sm font-semibold rounded-xl border border-blue-400/40 hover:bg-white/15 transition"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   fill="currentColor"
                   d="M19 2H10a2 2 0 00-2 2v2h2V4h9v16h-9v-2H8v2a2 2 0 002 2h9a2 2 0 002-2V4a2 2 0 00-2-2z"

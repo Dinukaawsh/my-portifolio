@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { saveLastPath } from "@/lib/welcome";
 import {
   SESSION_STORAGE_KEY,
   SESSION_REPORTED_KEY,
@@ -181,6 +182,7 @@ export default function VisitTracker() {
   }, [flushSession]);
 
   useEffect(() => {
+    saveLastPath(pathname);
     recordPage(pathname);
     resetIdleTimer();
   }, [pathname, recordPage, resetIdleTimer]);

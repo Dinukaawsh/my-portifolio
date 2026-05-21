@@ -3,8 +3,10 @@
 import React, { useRef, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { FaGoogle, FaGithub, FaLinkedin } from "react-icons/fa";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
+import SocialAuthButtons from "@/app/components/pages/data/contact/components/SocialAuthButtons";
+import { usePathname } from "next/navigation";
+import { getAuthCallbackUrl, getSignOutCallbackUrl } from "@/lib/auth-url";
 import {
   User,
   Code,
@@ -55,6 +57,9 @@ export default function FeedbackForm({
   setDropdownOpen,
 }: FeedbackFormProps) {
   const { data: session } = useSession();
+  const pathname = usePathname();
+  const authCallbackUrl = getAuthCallbackUrl(pathname);
+  const signOutUrl = getSignOutCallbackUrl(pathname);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -81,48 +86,17 @@ export default function FeedbackForm({
           </p>
         </div>
 
-        <div className="text-center py-8">
-          <div className="mb-6">
-            <h3 className="text-xl font-semibold text-white mb-4">
+        <div className="py-6 sm:py-8 w-full min-w-0">
+          <div className="mb-6 px-1">
+            <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 text-center">
               Login to Submit Feedback
             </h3>
-            <p className="text-gray-300 text-sm mb-6">
+            <p className="text-gray-300 text-sm text-center">
               Choose your preferred login method:
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto w-full">
-            <motion.button
-              onClick={() => signIn("google", { callbackUrl: "/" })}
-              className="flex items-center justify-center gap-3 px-4 py-3 sm:px-6 sm:py-4 bg-white text-gray-800 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-200 shadow-lg w-full"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FaGoogle className="w-6 h-6" />
-              Google
-            </motion.button>
-
-            <motion.button
-              onClick={() => signIn("github", { callbackUrl: "/" })}
-              className="flex items-center justify-center gap-3 px-4 py-3 sm:px-6 sm:py-4 bg-gray-800 text-white rounded-xl font-semibold hover:bg-gray-700 transition-all duration-200 shadow-lg w-full"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FaGithub className="w-6 h-6" />
-              GitHub
-            </motion.button>
-            <motion.button
-              type="button"
-              onClick={() => signIn("linkedin", { callbackUrl: "/" })}
-              className="flex items-center justify-center gap-3 px-4 py-3 sm:px-6 sm:py-4 bg-[#0A66C2] text-white rounded-xl font-semibold hover:bg-[#004182] transition-all duration-200 shadow-lg w-full"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              aria-label="Sign in with LinkedIn"
-            >
-              <FaLinkedin className="w-6 h-6" />
-              LinkedIn
-            </motion.button>
-          </div>
+          <SocialAuthButtons callbackUrl={authCallbackUrl} />
         </div>
       </div>
     );
@@ -131,19 +105,22 @@ export default function FeedbackForm({
   return (
     <div className="mb-8">
       <div className="mb-6 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl border border-green-500/20">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left min-w-0">
           <Image
             src={session.user?.image || ""}
             alt={session.user?.name || "User"}
             width={48}
             height={48}
-            className="w-12 h-12 rounded-full border-2 border-green-400"
+            className="w-12 h-12 shrink-0 rounded-full border-2 border-green-400"
           />
-          <div>
+          <div className="min-w-0 w-full sm:w-auto">
             <h4 className="text-white font-semibold">{session.user?.name}</h4>
-            <p className="text-gray-300 text-sm">{session.user?.email}</p>
+            <p className="text-gray-300 text-sm break-all">{session.user?.email}</p>
             <button
-              onClick={() => signOut()}
+              type="button"
+              onClick={() =>
+                signOut({ callbackUrl: signOutUrl, redirect: true })
+              }
               className="text-green-400 text-xs hover:text-green-300 transition-colors"
             >
               Sign out
