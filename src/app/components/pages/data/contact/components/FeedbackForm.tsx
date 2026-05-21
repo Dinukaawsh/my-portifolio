@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useSession, signOut } from "next-auth/react";
 import SocialAuthButtons from "@/app/components/pages/data/contact/components/SocialAuthButtons";
+import SignOutConfirmModal from "@/app/components/pages/data/contact/components/SignOutConfirmModal";
 import { usePathname } from "next/navigation";
 import { getAuthCallbackUrl, getSignOutCallbackUrl } from "@/lib/auth-url";
 import {
@@ -61,6 +62,20 @@ export default function FeedbackForm({
   const authCallbackUrl = getAuthCallbackUrl(pathname);
   const signOutUrl = getSignOutCallbackUrl(pathname);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+
+  const handleConfirmSignOut = useCallback(async () => {
+    setSigningOut(true);
+    try {
+      await signOut({ redirect: false });
+      setShowSignOutModal(false);
+      window.location.assign(signOutUrl);
+    } catch (err) {
+      console.error("Sign out failed:", err);
+      setSigningOut(false);
+    }
+  }, [signOutUrl]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -118,16 +133,22 @@ export default function FeedbackForm({
             <p className="text-gray-300 text-sm break-all">{session.user?.email}</p>
             <button
               type="button"
-              onClick={() =>
-                signOut({ callbackUrl: signOutUrl, redirect: true })
-              }
-              className="text-green-400 text-xs hover:text-green-300 transition-colors"
+              onClick={() => setShowSignOutModal(true)}
+              className="text-green-400 text-xs hover:text-green-300 transition-colors underline-offset-2 hover:underline"
             >
               Sign out
             </button>
           </div>
         </div>
       </div>
+
+      <SignOutConfirmModal
+        isOpen={showSignOutModal}
+        onClose={() => !signingOut && setShowSignOutModal(false)}
+        onConfirm={handleConfirmSignOut}
+        session={session}
+        loading={signingOut}
+      />
 
       {feedbackSubmitted ? (
         <motion.div
