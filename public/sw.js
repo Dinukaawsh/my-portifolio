@@ -1,160 +1,63 @@
-// Service Worker for Portfolio - Caching Strategy
-// This enables offline support and faster page loads
+// Service Worker — network-first for pages; cache static assets only.
+// Bump CACHE_VERSION when deploying so returning visitors get fresh HTML.
 
-const CACHE_NAME = 'portfolio-v1.0.0';
-const RUNTIME_CACHE = 'portfolio-runtime-v1.0.0';
+const CACHE_VERSION = "v1.1.0";
+const STATIC_CACHE = `portfolio-static-${CACHE_VERSION}`;
 
-// Assets to cache immediately on install
-// Note: This is a single-page app, so we mainly cache the root page
-// Other assets (images, fonts, etc.) will be cached on-demand
-const STATIC_ASSETS = [
-  '/',  // Main page (single-page app with sections)
-  // Add other static assets if needed (images, fonts, etc.)
-];
+const STATIC_ASSETS = ["/favicon.ico"];
 
-// Install event - cache static assets
-self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing...');
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('[Service Worker] Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
-      })
-      .then(() => {
-        // Force the waiting service worker to become the active service worker
-        return self.skipWaiting();
-      })
-      .catch((error) => {
-        console.error('[Service Worker] Cache failed:', error);
-      })
+    caches
+      .open(STATIC_CACHE)
+      .then((cache) => cache.addAll(STATIC_ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
-// Activate event - clean up old caches
-self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activating...');
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          // Delete old caches that don't match current version
-          if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
-            console.log('[Service Worker] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-    .then(() => {
-      // Take control of all pages immediately
-      return self.clients.claim();
-    })
+    caches
+      .keys()
+      .then((names) =>
+        Promise.all(
+          names
+            .filter((name) => name !== STATIC_CACHE)
+            .map((name) => caches.delete(name))
+        )
+      )
+      .then(() => self.clients.claim())
   );
 });
 
-// Fetch event - serve from cache, fallback to network
-self.addEventListener('fetch', (event) => {
+self.addEventListener("fetch", (event) => {
   const { request } = event;
+  if (request.method !== "GET") return;
+
   const url = new URL(request.url);
+  if (url.origin !== location.origin) return;
 
-  // Skip non-GET requests
-  if (request.method !== 'GET') {
+  // HTML / navigations: always network first (avoids stale SPA cache on custom domain)
+  if (request.mode === "navigate" || request.destination === "document") {
+    event.respondWith(
+      fetch(request).catch(() => caches.match(request).then((r) => r || caches.match("/")))
+    );
     return;
   }
 
-  // Skip cross-origin requests
-  if (url.origin !== location.origin) {
-    return;
-  }
-
-  // Strategy: Cache First, then Network
-  // This provides fast loading for repeat visits
+  // Static assets: stale-while-revalidate
   event.respondWith(
-    caches.match(request)
-      .then((cachedResponse) => {
-        // Return cached version if available
-        if (cachedResponse) {
-          console.log('[Service Worker] Serving from cache:', request.url);
-          return cachedResponse;
-        }
-
-        // Otherwise, fetch from network
-        return fetch(request)
-          .then((response) => {
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clone the response (response is a stream, can only be consumed once)
-            const responseToCache = response.clone();
-
-            // Cache the fetched response
-            caches.open(RUNTIME_CACHE)
-              .then((cache) => {
-                console.log('[Service Worker] Caching new resource:', request.url);
-                cache.put(request, responseToCache);
-              });
-
-            return response;
-          })
-          .catch((error) => {
-            console.error('[Service Worker] Fetch failed:', error);
-            // Return offline fallback if available
-            if (request.destination === 'document') {
-              return caches.match('/');
-            }
-            throw error;
-          });
-      })
-  );
-});
-
-// Message event - handle messages from the main thread
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-
-  if (event.data && event.data.type === 'CACHE_URLS') {
-    event.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => {
-        return cache.addAll(event.data.urls);
-      })
-    );
-  }
-});
-
-// Background sync (optional - for future use)
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'background-sync') {
-    console.log('[Service Worker] Background sync triggered');
-    // Add background sync logic here if needed
-  }
-});
-
-// Push notification (optional - for future use)
-self.addEventListener('push', (event) => {
-  if (event.data) {
-    const data = event.data.json();
-    const title = data.title || 'Portfolio Update';
-    const options = {
-      body: data.body || 'You have a new update!',
-      icon: '/globe.svg',
-      badge: '/globe.svg',
-    };
-
-    event.waitUntil(
-      self.registration.showNotification(title, options)
-    );
-  }
-});
-
-// Notification click handler
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  event.waitUntil(
-    clients.openWindow('/')
+    caches.open(STATIC_CACHE).then(async (cache) => {
+      const cached = await cache.match(request);
+      const network = fetch(request)
+        .then((response) => {
+          if (response?.status === 200) {
+            cache.put(request, response.clone());
+          }
+          return response;
+        })
+        .catch(() => cached);
+      return cached || network;
+    })
   );
 });
