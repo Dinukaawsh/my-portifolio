@@ -348,6 +348,8 @@ Examples:
 
 **Facebook (Meta):** Add product **Facebook Login** → Web → paste redirect URIs (not the homepage URL). App ID → `FACEBOOK_CLIENT_ID`, App Secret → `FACEBOOK_CLIENT_SECRET`.
 
+If you see *“This app needs at least one supported permission”*: in the Meta app go to **Use cases** → **Facebook Login** → **Customize** and add **`email`** and **`public_profile`**. Under **App roles**, add your Facebook account as **Administrator** or **Tester** while the app is in **Development** mode (or switch the app **Live** for public login).
+
 **Production:** Set `NEXTAUTH_URL=https://www.dinukawickramarathana.me` on your host.
 
 Sign-in and sign-out from **Contact** return to `/contact` automatically.
