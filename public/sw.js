@@ -37,6 +37,11 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== location.origin) return;
 
+  // Never cache auth or API — stale session breaks login/logout UI
+  if (url.pathname.startsWith("/api/")) {
+    return;
+  }
+
   // HTML / navigations: always network first (avoids stale SPA cache on custom domain)
   if (request.mode === "navigate" || request.destination === "document") {
     event.respondWith(

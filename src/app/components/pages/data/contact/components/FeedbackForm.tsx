@@ -57,7 +57,7 @@ export default function FeedbackForm({
   dropdownOpen,
   setDropdownOpen,
 }: FeedbackFormProps) {
-  const { data: session } = useSession();
+  const { data: session, status, update } = useSession();
   const pathname = usePathname();
   const authCallbackUrl = getAuthCallbackUrl(pathname);
   const signOutUrl = getSignOutCallbackUrl(pathname);
@@ -69,13 +69,14 @@ export default function FeedbackForm({
     setSigningOut(true);
     try {
       await signOut({ redirect: false });
+      await update();
       setShowSignOutModal(false);
-      window.location.assign(signOutUrl);
+      window.location.href = signOutUrl;
     } catch (err) {
       console.error("Sign out failed:", err);
       setSigningOut(false);
     }
-  }, [signOutUrl]);
+  }, [signOutUrl, update]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -90,6 +91,17 @@ export default function FeedbackForm({
       document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [dropdownOpen, setDropdownOpen]);
+
+  if (status === "loading") {
+    return (
+      <div className="mb-8 flex justify-center py-10">
+        <div
+          className="h-8 w-8 animate-spin rounded-full border-2 border-green-400/30 border-t-green-400"
+          aria-label="Checking sign-in status"
+        />
+      </div>
+    );
+  }
 
   if (!session) {
     return (
