@@ -16,6 +16,7 @@ export const skillsContent = {
       { name: "JavaScript", level: 95, color: "#F7DF1E", icon: "custom:js" },
       { name: "TypeScript", level: 90, color: "#3178C6", icon: "custom:ts" },
       { name: "Python", level: 85, color: "#3776AB", icon: "custom:python" },
+      { name: "Dart", level: 80, color: "#0175C2", icon: "custom:dart" },
       // { name: "PHP", level: 80, color: "#777BB4", icon: "custom:php" },
     ],
 
@@ -23,6 +24,7 @@ export const skillsContent = {
       { name: "React.js", level: 95, color: "#61DAFB", icon: "custom:react" },
       { name: "Next.js", level: 90, color: "#000000", icon: "custom:nextjs" },
       { name: "Vue.js", level: 85, color: "#42B883", icon: "custom:vue" },
+      { name: "Flutter", level: 82, color: "#02569B", icon: "custom:flutter" },
       {
         name: "Tailwind CSS",
         level: 88,
@@ -88,10 +90,28 @@ export const skillsContent = {
       { name: "MongoDB", level: 85, color: "#47A248", icon: "custom:mongodb" },
       { name: "MySQL", level: 80, color: "#4479A1", icon: "custom:mysql" },
       {
+        name: "PostgreSQL",
+        level: 85,
+        color: "#4169E1",
+        icon: "custom:postgresql",
+      },
+      {
         name: "Firebase",
         level: 80,
         color: "#FFCA28",
         icon: "custom:firebase",
+      },
+      {
+        name: "Prisma",
+        level: 85,
+        color: "#2D3748",
+        icon: "custom:prisma",
+      },
+      {
+        name: "Mongoose",
+        level: 88,
+        color: "#880000",
+        icon: "custom:mongoose",
       },
     ],
 
@@ -162,7 +182,7 @@ export const skillsContent = {
     languages: "Programming Languages",
     frontendFrameworks: "Frontend Frameworks",
     backendFrameworks: "Backend Frameworks",
-    databases: "Databases",
+    databases: "Databases & ORMs",
     cloudServices: "Cloud Services",
     apis: "APIs",
     cicd: "CI/CD",

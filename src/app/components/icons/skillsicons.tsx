@@ -4,9 +4,11 @@ import {
   SiTypescript,
   SiPython,
   SiPhp,
+  SiDart,
   SiReact,
   SiNextdotjs,
   SiVuedotjs,
+  SiFlutter,
   SiTailwindcss,
   SiBootstrap,
   SiNodedotjs,
@@ -16,6 +18,9 @@ import {
   SiFastify,
   SiMongodb,
   SiMysql,
+  SiPostgresql,
+  SiPrisma,
+  SiMongoose,
   SiAmazon,
   SiVercel,
   SiRailway,
@@ -59,11 +64,13 @@ const CustomIcon: React.FC<CustomIconProps> = ({
     "custom:ts": SiTypescript,
     "custom:python": SiPython,
     "custom:php": SiPhp,
+    "custom:dart": SiDart,
 
     // Frontend Frameworks
     "custom:react": SiReact,
     "custom:nextjs": SiNextdotjs,
     "custom:vue": SiVuedotjs,
+    "custom:flutter": SiFlutter,
     "custom:tailwind": SiTailwindcss,
     "custom:bootstrap": SiBootstrap,
 
@@ -74,6 +81,7 @@ const CustomIcon: React.FC<CustomIconProps> = ({
     "custom:express": SiExpress,
     "custom:fastify": SiFastify,
     "custom:nestjs": SiNestjs,
+    "custom:prisma": SiPrisma,
 
     // APIs
     "custom:rest": TbApi,
@@ -82,10 +90,12 @@ const CustomIcon: React.FC<CustomIconProps> = ({
     "custom:jwt": TbKey,
     "custom:websocket": TbPlug,
 
-    // Databases
+    // Databases & ORMs
     "custom:mongodb": SiMongodb,
     "custom:mysql": SiMysql,
+    "custom:postgresql": SiPostgresql,
     "custom:firebase": SiFirebase,
+    "custom:mongoose": SiMongoose,
 
     // Cloud Services
     "custom:aws": SiAmazon,
