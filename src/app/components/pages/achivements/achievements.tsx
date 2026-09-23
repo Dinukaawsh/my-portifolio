@@ -60,7 +60,7 @@ export default function Achievements() {
   return (
     <section
       ref={sectionRef}
-      className="w-full h-full relative flex flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8 bg-black"
+      className="w-full min-h-full relative flex flex-col items-center justify-start overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
     >
       {/* Progress Bar */}
       <motion.div
@@ -68,14 +68,12 @@ export default function Achievements() {
         style={{ scaleX }}
       />
 
-      {/* Responsive Backgrounds */}
-      {/* Mobile: Skills Background */}
-      <div className="fixed inset-0 z-0 bg-black md:hidden">
+      {/* Viewport-fixed backgrounds (must not sit inside overflow-y scroll containers) */}
+      <div className="pointer-events-none fixed inset-0 z-0 bg-black md:hidden" aria-hidden>
         <SkillsBackground />
       </div>
 
-      {/* Desktop: PixelBlast Background */}
-      <div className="hidden md:block fixed inset-0 z-0 bg-black">
+      <div className="pointer-events-none fixed inset-0 z-0 bg-black hidden md:block" aria-hidden>
         <PixelBlast
           variant="circle"
           pixelSize={6}

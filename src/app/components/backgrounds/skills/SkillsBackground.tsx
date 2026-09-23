@@ -107,7 +107,7 @@ export default function SkillsBackground() {
   if (!isClient) {
     return (
       <div
-        className="fixed inset-0 w-full h-full pointer-events-none z-0"
+        className="absolute inset-0 w-full h-full pointer-events-none"
         style={{ backgroundColor: "#000000" }}
       />
     );
@@ -115,7 +115,7 @@ export default function SkillsBackground() {
 
   return (
     <div
-      className="fixed inset-0 w-full h-full pointer-events-none z-0"
+      className="absolute inset-0 w-full h-full pointer-events-none"
       style={{ backgroundColor: "#000000" }}
     >
       {/* Floating Skills Icons */}

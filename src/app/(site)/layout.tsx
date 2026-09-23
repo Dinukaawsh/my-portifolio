@@ -10,7 +10,7 @@ export default function SiteLayout({
     <PortfolioNavProvider>
       <div className="site-shell min-h-screen flex flex-col">
         <Navbar />
-        <main className="relative flex-1 w-full min-h-0">{children}</main>
+        <main className="relative flex-1 w-full">{children}</main>
       </div>
     </PortfolioNavProvider>
   );
