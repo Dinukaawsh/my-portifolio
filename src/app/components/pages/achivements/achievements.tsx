@@ -68,12 +68,20 @@ export default function Achievements() {
         style={{ scaleX }}
       />
 
-      {/* Viewport-fixed backgrounds (must not sit inside overflow-y scroll containers) */}
-      <div className="pointer-events-none fixed inset-0 z-0 bg-black md:hidden" aria-hidden>
+      {/* Full-viewport backgrounds */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-black md:hidden"
+        style={{ width: "100vw", height: "100dvh" }}
+        aria-hidden
+      >
         <SkillsBackground />
       </div>
 
-      <div className="pointer-events-none fixed inset-0 z-0 bg-black hidden md:block" aria-hidden>
+      <div
+        className="pointer-events-none fixed inset-0 z-0 hidden overflow-hidden bg-black md:block"
+        style={{ width: "100vw", height: "100dvh" }}
+        aria-hidden
+      >
         <PixelBlast
           variant="circle"
           pixelSize={6}
@@ -90,8 +98,8 @@ export default function Achievements() {
           liquidRadius={1.2}
           liquidWobbleSpeed={5}
           speed={0.6}
-          edgeFade={0.25}
-          transparent
+          edgeFade={0.05}
+          transparent={false}
         />
       </div>
 

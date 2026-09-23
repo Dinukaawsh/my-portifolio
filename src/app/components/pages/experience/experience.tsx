@@ -71,8 +71,11 @@ export default function Experience() {
         style={{ scaleX }}
       />
 
-      {/* Hyperspeed — viewport-fixed */}
-      <div className="pointer-events-none fixed inset-0 z-0 bg-black experience-bg" aria-hidden>
+      {/* Hyperspeed — full viewport (canvas resizes to window) */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 h-[100dvh] w-screen overflow-hidden bg-black experience-bg"
+        aria-hidden
+      >
         <Hyperspeed effectOptions={hyperspeedPresets.one} />
       </div>
 
