@@ -7,7 +7,6 @@ import {
   experienceContent,
   getParticleConfig,
 } from "@/app/components/content/experience";
-import AmbientBackground from "@/app/components/common/AmbientBackground";
 import { seededRange } from "@/lib/seeded-random";
 import Hyperspeed, {
   hyperspeedPresets,
@@ -64,7 +63,7 @@ export default function Experience() {
   return (
     <section
       ref={sectionRef}
-      className="w-full h-full relative flex flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
+      className="w-full min-h-full relative flex flex-col items-center justify-start overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
     >
       {/* Progress Bar */}
       <motion.div
@@ -72,8 +71,8 @@ export default function Experience() {
         style={{ scaleX }}
       />
 
-      {/* Hyperspeed Background - Fixed */}
-      <div className="fixed inset-0 z-0 bg-black experience-bg">
+      {/* Hyperspeed — viewport-fixed */}
+      <div className="pointer-events-none fixed inset-0 z-0 bg-black experience-bg" aria-hidden>
         <Hyperspeed effectOptions={hyperspeedPresets.one} />
       </div>
 

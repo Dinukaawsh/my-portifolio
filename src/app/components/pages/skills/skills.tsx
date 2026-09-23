@@ -216,7 +216,7 @@ export default function Skills() {
   return (
     <section
       ref={sectionRef}
-      className="w-full h-full overflow-y-auto overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
+      className="w-full min-h-full relative overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
     >
       {/* Progress Bar */}
       <motion.div

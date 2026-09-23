@@ -53,7 +53,7 @@ export default function Publications() {
     <section
       id="publications"
       ref={sectionRef}
-      className="w-full h-full relative flex flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
+      className="w-full min-h-full relative flex flex-col items-center justify-start overflow-x-hidden px-2 sm:px-4 py-4 sm:py-8"
     >
       {/* Progress Bar */}
       <motion.div
