@@ -392,6 +392,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
       uEdgeFade: { value: number };
     };
     resizeObserver?: ResizeObserver;
+    onWindowResize?: () => void;
     raf?: number;
     quad?: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>;
     timeOffset?: number;
@@ -426,6 +427,8 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
       if (threeRef.current) {
         const t = threeRef.current;
         t.resizeObserver?.disconnect();
+        if (t.onWindowResize)
+          window.removeEventListener("resize", t.onWindowResize);
         cancelAnimationFrame(t.raf!);
         t.quad?.geometry.dispose();
         t.material.dispose();
@@ -486,23 +489,31 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
       scene.add(quad);
       const clock = new THREE.Clock();
       const setSize = () => {
-        const w = container.clientWidth || 1;
-        const h = container.clientHeight || 1;
-        renderer.setSize(w, h, false);
+        const w = Math.max(1, window.innerWidth);
+        const h = Math.max(1, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        // updateStyle true so canvas CSS matches viewport
+        renderer.setSize(w, h, true);
+        renderer.domElement.style.position = "absolute";
+        renderer.domElement.style.inset = "0";
+        renderer.domElement.style.width = "100%";
+        renderer.domElement.style.height = "100%";
+        renderer.domElement.style.display = "block";
+        // Shader uses gl_FragCoord → drawing-buffer pixels
         uniforms.uResolution.value.set(
           renderer.domElement.width,
           renderer.domElement.height
         );
-        if (threeRef.current?.composer)
-          threeRef.current.composer.setSize(
-            renderer.domElement.width,
-            renderer.domElement.height
-          );
+        // postprocessing EffectComposer expects CSS pixels (it applies DPR itself)
+        threeRef.current?.composer?.setSize(w, h);
         uniforms.uPixelSize.value = pixelSize * renderer.getPixelRatio();
       };
       setSize();
       const ro = new ResizeObserver(setSize);
       ro.observe(container);
+      window.addEventListener("resize", setSize);
+      requestAnimationFrame(setSize);
+      setTimeout(setSize, 100);
       const randomFloat = () => {
         if (typeof window !== "undefined" && window.crypto?.getRandomValues) {
           const u32 = new Uint32Array(1);
@@ -554,8 +565,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
           });
         composer.addPass(noisePass);
       }
-      if (composer)
-        composer.setSize(renderer.domElement.width, renderer.domElement.height);
+      if (composer) composer.setSize(window.innerWidth, window.innerHeight);
       const mapToPixels = (e: PointerEvent) => {
         const rect = renderer.domElement.getBoundingClientRect();
         const scaleX = renderer.domElement.width / rect.width;
@@ -626,6 +636,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         clickIx: 0,
         uniforms,
         resizeObserver: ro,
+        onWindowResize: setSize,
         raf,
         quad,
         timeOffset,
@@ -664,6 +675,8 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
       if (!threeRef.current) return;
       const t = threeRef.current;
       t.resizeObserver?.disconnect();
+      if (t.onWindowResize)
+        window.removeEventListener("resize", t.onWindowResize);
       cancelAnimationFrame(t.raf!);
       t.quad?.geometry.dispose();
       t.material.dispose();
@@ -699,7 +712,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full h-full relative overflow-hidden ${className ?? ""}`}
+      className={`absolute inset-0 h-full w-full overflow-hidden ${className ?? ""}`}
       style={style}
       aria-label="PixelBlast interactive background"
     />

@@ -970,11 +970,31 @@ function resizeRendererToDisplaySize(
   const canvas = renderer.domElement;
   const width = canvas.clientWidth;
   const height = canvas.clientHeight;
-  const needResize = canvas.width !== width || canvas.height !== height;
+  if (!width || !height) return false;
+  const needResize =
+    canvas.width !== Math.floor(width * renderer.getPixelRatio()) ||
+    canvas.height !== Math.floor(height * renderer.getPixelRatio());
   if (needResize) {
-    setSize(width, height, false);
+    setSize(width, height, true);
   }
   return needResize;
+}
+
+function getViewportSize(container: HTMLElement) {
+  const rect = container.getBoundingClientRect();
+  const width = Math.max(
+    Math.floor(rect.width),
+    container.clientWidth,
+    window.innerWidth,
+    1
+  );
+  const height = Math.max(
+    Math.floor(rect.height),
+    container.clientHeight,
+    window.innerHeight,
+    1
+  );
+  return { width, height };
 }
 
 class App {
@@ -998,6 +1018,8 @@ class App {
   speedUpTarget: number;
   speedUp: number;
   timeOffset: number;
+  private boundOnWindowResize: () => void;
+  private resizeObserver: ResizeObserver | null = null;
 
   constructor(container: HTMLElement, options: HyperspeedOptions) {
     this.options = options;
@@ -1013,15 +1035,19 @@ class App {
       antialias: false,
       alpha: true,
     });
-    this.renderer.setSize(container.offsetWidth, container.offsetHeight, false);
-    this.renderer.setPixelRatio(window.devicePixelRatio);
+    const { width: initW, height: initH } = getViewportSize(container);
+    this.renderer.setSize(initW, initH, true);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.domElement.style.width = "100%";
+    this.renderer.domElement.style.height = "100%";
+    this.renderer.domElement.style.display = "block";
 
     this.composer = new EffectComposer(this.renderer);
     container.appendChild(this.renderer.domElement);
 
     this.camera = new THREE.PerspectiveCamera(
       options.fov,
-      container.offsetWidth / container.offsetHeight,
+      initW / initH,
       0.1,
       10000
     );
@@ -1081,14 +1107,21 @@ class App {
     this.onTouchEnd = this.onTouchEnd.bind(this);
     this.onContextMenu = this.onContextMenu.bind(this);
 
-    window.addEventListener("resize", this.onWindowResize.bind(this));
+    this.boundOnWindowResize = this.onWindowResize.bind(this);
+    window.addEventListener("resize", this.boundOnWindowResize);
+    this.resizeObserver = new ResizeObserver(() => this.onWindowResize());
+    this.resizeObserver.observe(this.container);
+    // Catch late layout (navbar/scrollbar) after first paint
+    requestAnimationFrame(() => this.onWindowResize());
+    setTimeout(() => this.onWindowResize(), 100);
   }
 
   onWindowResize() {
-    const width = this.container.offsetWidth;
-    const height = this.container.offsetHeight;
+    const { width, height } = getViewportSize(this.container);
 
-    this.renderer.setSize(width, height);
+    this.renderer.setSize(width, height, true);
+    this.renderer.domElement.style.width = "100%";
+    this.renderer.domElement.style.height = "100%";
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.composer.setSize(width, height);
@@ -1272,7 +1305,9 @@ class App {
       this.scene.clear();
     }
 
-    window.removeEventListener("resize", this.onWindowResize.bind(this));
+    window.removeEventListener("resize", this.boundOnWindowResize);
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = null;
     if (this.container) {
       this.container.removeEventListener("mousedown", this.onMouseDown);
       this.container.removeEventListener("mouseup", this.onMouseUp);
@@ -1569,7 +1604,13 @@ const Hyperspeed: FC<HyperspeedProps> = ({ effectOptions = {} }) => {
     };
   }, [mergedOptions]);
 
-  return <div id="lights" className="w-full h-full" ref={hyperspeed}></div>;
+  return (
+    <div
+      id="lights"
+      className="absolute inset-0 h-full w-full overflow-hidden"
+      ref={hyperspeed}
+    />
+  );
 };
 
 export default Hyperspeed;

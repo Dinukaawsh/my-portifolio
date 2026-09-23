@@ -636,6 +636,15 @@ body {
   background-image: none !important;
 }
 
+#lights,
+#lights canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  max-width: none;
+  max-height: none;
+}
+
 .experience-card {
   background-color: rgba(0, 0, 0, 0.8) !important;
   background-image: none !important;
