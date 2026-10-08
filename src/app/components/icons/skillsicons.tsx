@@ -39,6 +39,7 @@ import {
   SiTerraform,
   SiNginx,
   SiNgrok,
+  SiN8N,
 } from "react-icons/si";
 import { VscVscode } from "react-icons/vsc";
 import { BiGitBranch } from "react-icons/bi";
@@ -118,6 +119,7 @@ const CustomIcon: React.FC<CustomIconProps> = ({
     "custom:docker": SiDocker,
     "custom:nginx": SiNginx,
     "custom:ngrok": SiNgrok,
+    "custom:n8n": SiN8N,
   };
 
   const IconComponent = iconMap[iconName];

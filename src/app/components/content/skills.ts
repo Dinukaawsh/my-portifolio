@@ -159,6 +159,7 @@ export const skillsContent = {
       { name: "Docker", level: 75, color: "#2496ED", icon: "custom:docker" },
       { name: "Nginx", level: 80, color: "#009639", icon: "custom:nginx" },
       { name: "ngrok", level: 75, color: "#FF6C37", icon: "custom:ngrok" },
+      { name: "n8n", level: 85, color: "#EA4B71", icon: "custom:n8n" },
     ],
 
     softSkills: [
